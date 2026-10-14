@@ -1,20 +1,38 @@
 ---
 import Base from "../layouts/Base.astro";
+import { withBase } from "../lib/text.js";
+const u = (p = "") => withBase(import.meta.env.BASE_URL, p);
+const REPO = "https://github.com/monsieurgregorio2001-coder/slop-editorial";
 ---
-<Base title="Method | Slop Editorial" description="How the sample site is built and what its automated gates check." page="about">
-  <article class="piece">
-    <p class="label">Method</p>
-    <h1>What the build refuses to ship</h1>
-    <div class="body">
-      <p>This site is a static build. Before it can be deployed, a gate script reads every generated page and fails the build on any violation.</p>
-      <h2>Voice</h2>
-      <p>No em dashes, no semicolons, and no contractions in visible prose. The rule is mechanical so that it never depends on a reviewer being tired.</p>
-      <h2>Honesty</h2>
-      <p>Every piece page must carry the sample notice. A page that loses it fails the build.</p>
-      <h2>Speed</h2>
-      <p>Critical CSS is inlined, no third-party host is contacted, and the JavaScript budget is small. A service worker caches repeat visits. A hover-intent queue fetches the next page before the click.</p>
-      <h2>Care</h2>
-      <p>Reduced motion is applied before first paint. Every image has alt text. Every internal link must resolve to a built file.</p>
-    </div>
+<Base title="Method · Slop Editorial" description="How Slop Editorial is made: a satire built as software, with a pipeline that keeps a human in the loop." page="about">
+  <article class="about">
+    <p class="sys">Method</p>
+    <h1 class="about__h">Generation is cheap. Taste is not.</h1>
+    <p class="lede">Slop Editorial is a deadpan satire of AI content and the attention economy. It targets platforms, metrics, incentives, and the person reading, never people.</p>
+
+    <h2>Problem</h2>
+    <p>AI makes images nearly free, so publications drift into content that nobody decided to make.</p>
+    <h2>Build</h2>
+    <p>A static Astro site with scroll-driven staging, a real 3D object with three render tiers, and build gates that enforce voice and speed. Beside it sits a Python pipeline that estimates, caps, approves, and logs every generation.</p>
+    <h2>Result</h2>
+    <p>The release tracker and the approval queue show the point of the whole thing. Approval happens with a human, not a button.</p>
+
+    <h2>Honesty notes</h2>
+    <ul>
+      <li>Every image is drawn in code. There are no photographs and no image generation services.</li>
+      <li>Ratings, ranks, views, and prices are staged and live in this browser only.</li>
+      <li>The site sets no cookies and runs no analytics. The cookie sheet is the joke.</li>
+      <li>Fonts are self-hosted under the SIL Open Font License. <a href={u("OFL.txt")}>Read the license</a>.</li>
+    </ul>
+    <p><a class="btn" href={REPO} rel="noopener">Read the code</a></p>
   </article>
 </Base>
+
+<style>
+  .about { max-width: 68ch; margin: 0 auto; padding: clamp(40px, 8vh, 96px) var(--gutter) 96px; display: grid; gap: 16px; }
+  .about__h { font: 800 clamp(40px, 6vw, 80px)/1 var(--display); letter-spacing: -.04em; }
+  .lede { font-size: 20px; }
+  h2 { font: 700 22px/1.2 var(--display); letter-spacing: -.02em; margin-top: 20px; }
+  ul { margin: 0; padding-left: 1.2em; display: grid; gap: 8px; }
+  .btn { display: inline-flex; align-items: center; text-decoration: none; margin-top: 12px; }
+</style>

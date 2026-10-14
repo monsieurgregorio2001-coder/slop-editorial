@@ -10,14 +10,23 @@
     "preview": "astro preview",
     "check": "node scripts/check.mjs",
     "test": "node --test test/",
-    "verify": "node scripts/verify.mjs"
+    "verify": "node scripts/verify.mjs",
+    "poster": "node scripts/render-poster.mjs",
+    "art": "node scripts/make-art.mjs",
+    "logo": "python3 scripts/make-logo.py",
+    "screenshots": "node scripts/screenshots.mjs"
   },
   "dependencies": {
     "@astrojs/mdx": "^8.0.3",
-    "astro": "^7.3.7"
+    "astro": "^7.3.7",
+    "gsap": "^3.15.0",
+    "motion": "^14.2.0",
+    "three": "^0.186.1"
   },
   "devDependencies": {
-    "playwright-core": "^1.64.0"
+    "axe-core": "^4.14.0",
+    "playwright-core": "^1.64.0",
+    "sharp": "^0.35.5"
   },
   "engines": {
     "node": ">=22.12.0"

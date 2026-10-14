@@ -1,8 +1,11 @@
-// Fetch-ahead on intent: start the work before the click. A hover (after 100 ms), a focus or a
-// touch begins fetching the next page. The HTML is held in memory and handed to the router at
-// navigation time, so the click costs no request. Requests go through a small queue with
-// priorities and hard limits so neither the server nor the reader's connection is flooded.
-// The service worker (public/sw.js) is the layer beneath this one, for repeat visits.
+// Fetch-ahead on intent, the way fast catalog sites do: start the work before
+// the click. A hover (after 100 ms) or a focus or a touch begins fetching the
+// next page. The HTML is held in memory and handed straight to the router at
+// navigation time, so the click costs no request at all; the page is also
+// parsed early so its hero image is already decoding. Requests go through a
+// small queue with priorities and hard limits so the server and the reader's
+// connection are never flooded. The service worker (public/sw.js) is the
+// layer beneath this one, for repeat visits.
 
 const HOVER_MS = 100;
 const MAX_CONCURRENT = 2;
@@ -22,16 +25,30 @@ function allowed(): boolean {
   return !(c?.saveData || /(^|-)2g$/.test(c?.effectiveType ?? ""));
 }
 
+const parse = (html: string) => new DOMParser().parseFromString(html, "text/html");
+
+/** Decode the incoming hero (if any), so the swap never shows a blank. */
+function heroReady(doc: Document | undefined, base: string): Promise<unknown> {
+  const hero = doc?.querySelector<HTMLImageElement>("img[fetchpriority='high']");
+  if (!hero) return Promise.resolve();
+  const im = new Image();
+  im.sizes = hero.getAttribute("sizes") || "100vw";
+  const srcset = hero.closest("picture")?.querySelector("source")?.getAttribute("srcset") ?? hero.getAttribute("srcset");
+  if (srcset) im.srcset = srcset;
+  im.src = new URL(hero.getAttribute("src") ?? "", base).href;
+  return im.decode().catch(() => {});
+}
+
 function pump() {
   while (active < MAX_CONCURRENT && queue.length) {
     queue.sort((a, b) => b.prio - a.prio);
     const job = queue.shift()!;
     active++; stats.started++; stats.maxActive = Math.max(stats.maxActive, active);
-    const html = fetch(job.url, { credentials: "same-origin", headers: { Accept: "text/html" } })
+    const html = fetch(job.url, { credentials: "same-origin", headers: { Accept: "text/html" }, priority: job.prio > 1 ? "high" : "low" } as RequestInit)
       .then((r) => (r.ok && (r.headers.get("content-type") || "").includes("text/html") ? r.text() : ""))
       .catch(() => "");
     held.set(job.url, { html, at: performance.now() });
-    html.then((h) => { if (!h) held.delete(job.url); })
+    html.then((h) => { if (h) void heroReady(parse(h), new URL(job.url, location.href).href); else held.delete(job.url); })
       .finally(() => { active--; stats.completed++; pump(); });
   }
 }
@@ -49,15 +66,17 @@ export function fetchAhead(href: string, prio: number) {
   pump();
 }
 
-// The in-memory layer: when the router prepares a page this module already holds, the held HTML
-// becomes the new document and no request is made.
+// The in-memory layer: when the router prepares a page this module already
+// holds, the held HTML becomes the new document and no request is made. The
+// hero decode is awaited here, in the one place the router waits.
 document.addEventListener("astro:before-preparation", (e) => {
   const ev = e as Event & { to: URL; newDocument: Document; loader: () => Promise<void> };
   const prev = ev.loader;
   ev.loader = async () => {
     const have = held.get(ev.to.pathname + ev.to.search);
     const html = have && performance.now() - have.at < TTL_MS ? await have.html : "";
-    if (html) { ev.newDocument = new DOMParser().parseFromString(html, "text/html"); stats.served++; } else await prev();
+    if (html) { ev.newDocument = parse(html); stats.served++; } else await prev();
+    await Promise.race([heroReady(ev.newDocument, ev.to.href), new Promise((r) => setTimeout(r, 1500))]);
   };
 });
 
@@ -74,6 +93,7 @@ function onOver(e: Event) {
 }
 function onOut(e: Event) {
   const a = linkOf(e.target);
+  // Moving between a link's own children is not leaving the link.
   if (!a || a !== pending || a.contains((e as PointerEvent).relatedTarget as Node | null)) return;
   window.clearTimeout(timer); pending = null;
 }
@@ -95,7 +115,7 @@ export function initIntent() {
   // Likely next pages, fetched when the browser is idle, lowest priority.
   const idle = (window as unknown as { requestIdleCallback?: (f: () => void) => void }).requestIdleCallback ?? ((f: () => void) => window.setTimeout(f, 1500));
   idle(() => {
-    document.querySelectorAll<HTMLAnchorElement>(".shell a[href], a.row[href]").forEach((a) => fetchAhead(a.href, 1));
+    document.querySelectorAll<HTMLAnchorElement>(".shell__nav a[href^='/'], [data-next], [data-hero-link]").forEach((a) => fetchAhead(a.href, 1));
   });
 }
 

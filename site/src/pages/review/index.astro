@@ -1,0 +1,63 @@
+---
+import Base from "../../layouts/Base.astro";
+import ModeBlock from "../../components/ModeBlock.astro";
+import { withBase } from "../../lib/text.js";
+const u = (p = "") => withBase(import.meta.env.BASE_URL, p);
+const items = [
+  { n: "01", t: "Homepage, first 20 seconds", href: "", look: "A boot screen sets up your experience of being measured. The masthead prints at 0.4 s. A cookie sheet at 2.6 s offers Accept all and Accept all. Your rank, You: #184 today, appears at 4.5 s. The image develops when you move or consent, and a yellow sticker lands: Free. Limited availability." },
+  { n: "02", t: "Beautiful, then wrong", href: "", look: "Scroll. The still rises, calm and bright, under a feature headline. Then the metrics arrive one at a time. Engagement improved 18 %. People who skip preferred it. Viewers preferred version B, with no visible difference." },
+  { n: "03", t: "One interface joke", href: "feed/", look: "Your taste has 1 update available. Not now sets a reminder. Install shows a progress bar and ends with Installed. No visible difference." },
+  { n: "04", t: "One embarrassment", href: "feed/", look: "Stop moving on the image for seven seconds. The system says: You have been looking for 0:07. That is above average." },
+  { n: "05", t: "One banal object ruining luxury", href: "authenticity/", look: "A gilded certificate turns on a plinth. Then the gift shop arrives in front of it. It brings a crowd barrier, a laminated notice reading PLEASE DO NOT GENERATE, hand sanitizer, and a payment terminal. The terminal says TAP TO APPRECIATE 2.00. A prompt pack costs 14.99." },
+  { n: "06", t: "Software, not a magazine", href: "works/", look: "The archive is an inventory with rank, rating, views, availability and a price sticker. The buy bar adds a prompt pack to a count in this browser, and the receipt itemizes what you appreciated." },
+  { n: "07", t: "The viewer becomes the joke", href: "feed/", look: "Rate this image and the tally reads 4.2 whatever you pick. Choose A or B and see no visible difference. Every action improves your rank in the corner chip." },
+  { n: "08", t: "Mobile interaction", href: "feed/", look: "On a phone, hold the image. A ring fills in 0.9 s. Appreciation registered. Free shipping on redemption. One prompt pack is added." },
+  { n: "09", t: "Reduced motion", href: "?motion=reduce", look: "Boot, delays and staging collapse. Metrics, sticker, shop objects and buy bar sit in their finished state. Nothing moves on its own." },
+  { n: "10", t: "Unexpectedly playful", href: "authenticity/", look: "The gift shop works. The pack adds up, the receipt itemizes, and the reader is thanked for appreciating." },
+];
+---
+<Base title="Review · Slop Editorial" description="An index of the ten behaviours, each a working page, plus the release tracker and the approval queue." page="review">
+  <section class="rv">
+    <p class="sys">Review index · Proof of concept</p>
+    <h1 class="rv__h">Ten behaviours</h1>
+    <p class="rv__lede">Each behaviour is a working page. A still image is no longer evidence. The site may be unstable in tone and must never be unstable in engineering.</p>
+    <ol class="rv__list">
+      {items.map((i) => (
+        <li class="rv__item">
+          <span class="sys">{i.n}</span>
+          <a class="rv__t" href={u(i.href)}>{i.t}</a>
+          <p>{i.look}</p>
+        </li>
+      ))}
+    </ol>
+
+    <h2 class="rv__h2">The human gate</h2>
+    <p class="rv__lede">The release tracker and the approval queue demonstrate human-in-the-loop control. The queue buttons refuse on purpose.</p>
+    <p class="rv__links"><a class="btn" href={u("releases/")}>Release tracker</a> <a class="btn" href={u("queue/")}>Approval queue</a></p>
+
+    <h2 class="rv__h2">One component, five modes</h2>
+    <p class="rv__lede">The same block, reading its container width and re-pointing its own tokens.</p>
+    <div class="modes">
+      <ModeBlock mode="editorial" label="Editorial" note="Paper field, violet rule.">A publication for a more measured world.</ModeBlock>
+      <ModeBlock mode="luxury" label="Luxury" note="Stage black, gold.">Engineered for sincerity.</ModeBlock>
+      <ModeBlock mode="telemetry" label="Telemetry" note="Mono, uppercase, local.">Viewing behaviour: ordinary. Interest: logged.</ModeBlock>
+      <ModeBlock mode="commercial" label="Commercial" note="Soft radius, sticker yellow.">Originality from 0/month.</ModeBlock>
+      <ModeBlock mode="failure" label="Failure" note="Staged, never technical.">Review incomplete.</ModeBlock>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .rv { padding: clamp(40px, 8vh, 96px) var(--gutter) 80px; display: grid; gap: 28px; }
+  .rv__h { font: 800 clamp(44px, 8vw, 120px)/.95 var(--display); letter-spacing: -.045em; color: var(--accent); }
+  .rv__h2 { font: 800 clamp(30px, 4.4vw, 60px)/1 var(--display); letter-spacing: -.035em; margin-top: 40px; }
+  .rv__lede { max-width: 60ch; font-size: 18px; }
+  .rv__list { list-style: none; margin: 0; padding: 0; display: grid; border-top: 1px solid var(--fg); }
+  .rv__item { display: grid; grid-template-columns: 3rem minmax(0, 1fr); gap: 4px 16px; padding: 22px 0; border-bottom: 1px solid var(--line); }
+  .rv__item p { grid-column: 2; max-width: 66ch; }
+  .rv__t { font: 800 clamp(24px, 3.2vw, 44px)/1 var(--display); letter-spacing: -.03em; text-decoration: none; }
+  .rv__t:hover, .rv__t:focus-visible { color: var(--accent); }
+  .rv__links { display: flex; gap: 12px; flex-wrap: wrap; }
+  .rv__links .btn { display: inline-flex; align-items: center; text-decoration: none; }
+  .modes { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 250px), 1fr)); gap: 16px; }
+</style>

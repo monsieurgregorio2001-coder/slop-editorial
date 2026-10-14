@@ -1,0 +1,168 @@
+---
+import Base from "../../layouts/Base.astro";
+import { withBase } from "../../lib/text.js";
+import { wipeIn } from "../../lib/transitions";
+const u = (p = "") => withBase(import.meta.env.BASE_URL, p);
+
+const beats = [
+  { k: "01", h: "The most authentic object yet.", p: "", tiny: true },
+  { k: "02", h: "Engineered for sincerity.", p: "Every surface considered by a model trained to consider it." },
+  { k: "03", h: "Provenance.", p: "Every certificate has a story. This one has a prompt." },
+  { k: "04", h: "Sealed.", p: "Against doubt, scrutiny and reverse image search. Please sanitize before appreciating." },
+  { k: "05", h: "Originality. From 0/month.", p: "Taste sold separately." },
+  { k: "06", h: "The image was generated.", p: "The certificate made it real." },
+];
+---
+<Base title="The Certificate · Slop Editorial" description="A gilded certificate of authenticity on a plinth, and then the gift shop arrives. A satire of synthetic authenticity." mode="luxury" page="authenticity">
+  <div class="page" transition:name="page" transition:animate={wipeIn}>
+    <section class="launch" data-launch aria-label="The Certificate, product launch">
+      <h1 class="vh">The Certificate of Authenticity</h1>
+      <div class="launch__stage" data-stage>
+        <div class="seal" data-seal role="img" aria-label="A gilded certificate of authenticity seal with a raised check mark, turning slowly on a dark plinth. Procedural 3D object.">
+          <div class="seal__poster" data-poster><img data-poster-img src={u("img/seal/seal-00.webp")} alt="" width="640" height="800" fetchpriority="high" decoding="async" /></div>
+        </div>
+
+        <!-- The gift shop. Cheap materials in front of the gold. Each arrives with a beat and
+             ruins the composition a little more. CSS only. -->
+        <div class="shop" aria-hidden="true">
+          <div class="shop__barrier" data-shop="barrier"><i class="post"></i><i class="rope"></i><i class="post"></i></div>
+          <div class="shop__notice" data-shop="notice"><span>PLEASE DO NOT GENERATE</span><span>Photography permitted. Flash prohibited.</span><span>Queue time: 4 min.</span><i class="stand"></i></div>
+          <div class="shop__sani" data-shop="sani"><i class="pump"></i><i class="bottle"><span>SANITIZE<br />BEFORE<br />APPRECIATING</span></i></div>
+          <div class="shop__pay" data-shop="pay"><i class="terminal"><span class="screen">TAP TO<br />APPRECIATE<br /><b>2.00</b></span><i class="keys"></i></i><i class="post post--tall"></i></div>
+          <div class="shop__pack" data-shop="pack"><i class="handle"></i><span class="pk">Prompt pack</span><span class="price">14.99</span></div>
+        </div>
+
+        <div class="beats">
+          {beats.map((b, i) => (
+            <div class={`beat ${b.tiny ? "beat--tiny" : ""}`} data-beat={i}>
+              <span class="sys beat__k">{b.k} / 06</span>
+              <h2 class="display beat__h">{b.h}</h2>
+              {b.p && <p class="beat__p">{b.p}</p>}
+            </div>
+          ))}
+        </div>
+
+        <div class="seal__ctl" data-ctl hidden role="group" aria-label="Object controls">
+          <button type="button" data-rot="-1" aria-label="Rotate left">‹</button>
+          <button type="button" data-rot="1" aria-label="Rotate right">›</button>
+          <button type="button" data-zoom="-1" aria-label="Zoom in">+</button>
+          <button type="button" data-zoom="1" aria-label="Zoom out">−</button>
+        </div>
+      </div>
+      <div class="launch__runway" data-runway aria-hidden="true"></div>
+    </section>
+
+    <section class="spec" aria-label="Notes">
+      <div class="spec__col">
+        <p class="sys">Sample object and copy</p>
+        <p class="note">The object is a procedural placeholder, built from a few lathe profiles and an extruded rosette. No scan, no photograph, no asset.</p>
+        <p class="note">The gift shop is the work. A certificate is cheap to print and expensive to believe, and the shop sells the second part by the pack.</p>
+        <p class="ui">Appreciation is free. The pack is 14.99. Taste is sold separately.</p>
+      </div>
+      <!-- The receipt: what the reader appreciated, itemized. -->
+      <figure class="receipt" data-receipt>
+        <p class="receipt__h">Slop Editorial · Gift shop</p>
+        <dl>
+          <dt>The Still · viewed</dt><dd>0.00</dd>
+          <dt>Engagement · improved 18%</dt><dd>incl.</dd>
+          <dt>Prompt pack × <span data-cart>0</span></dt><dd data-cart-total>0.00</dd>
+          <dt>Appreciation · contactless</dt><dd>2.00</dd>
+          <dt>Taste</dt><dd>sold separately</dd>
+        </dl>
+        <div class="receipt__line"></div>
+        <dl><dt class="tot">Total</dt><dd class="tot" data-total>2.00</dd></dl>
+        <div class="receipt__line"></div>
+        <p class="receipt__h">Thank you for appreciating</p>
+        <p class="ui">No payment is taken. Nothing is sold. Nothing leaves this browser.</p>
+      </figure>
+      <a class="back" href={u("feed/")} data-back><span class="sys">Previous work</span><span class="display back__t">The Still</span></a>
+    </section>
+
+    <div class="buybar" data-buybar><span class="ui">Prompt pack (<span data-cart>0</span>) · Free shipping on redemption</span><button class="btn btn--go" type="button" data-add-cart>Add prompt pack · 14.99</button></div>
+    <p class="tier" data-tier aria-hidden="true"></p>
+  </div>
+
+  <script>
+    import { initAuthenticity } from "../../scripts/authenticity";
+    document.addEventListener("astro:page-load", initAuthenticity);
+  </script>
+</Base>
+
+<style>
+  .launch { position: relative; background: radial-gradient(120% 80% at 50% 38%, #221a44 0%, var(--stage) 62%); color: var(--cream); }
+  .launch__runway { height: 480svh; }
+  .launch__stage { position: sticky; top: 0; height: 100svh; overflow: clip; }
+  .seal { position: absolute; inset: 8svh 0 38svh 0; touch-action: pan-y; cursor: grab; }
+  .seal:active { cursor: grabbing; }
+  .seal:focus-visible { outline: 2px dashed var(--accent); outline-offset: -8px; }
+  .seal__poster { position: absolute; inset: 0; display: grid; place-items: center; }
+  .seal__poster img { height: 100%; width: auto; max-width: 100%; object-fit: contain; filter: brightness(var(--lit, .5)) saturate(calc(.7 + var(--lit, .5) * .5)); }
+
+  .beats { position: absolute; left: 0; right: 0; bottom: clamp(52px, 11svh, 120px); text-align: center; padding: 0 var(--gutter); pointer-events: none; }
+  .beat { position: absolute; left: 0; right: 0; bottom: 0; display: grid; gap: 10px; justify-items: center; opacity: 0; transform: translateY(14px); transition: opacity 600ms var(--ease), transform 600ms var(--ease); }
+  .beat[data-on] { opacity: 1; transform: none; }
+  .beat__k { color: var(--accent); }
+  .beat__h { font-size: clamp(38px, 6.6vw, 100px); color: var(--cream); }
+  .beat--tiny .beat__h { font: 500 clamp(16px, 1.6vw, 21px)/1.3 var(--text); letter-spacing: .01em; color: rgb(246 241 227 / .88); }
+  .beat__p { max-width: 34ch; color: rgb(246 241 227 / .9); font-size: clamp(16px, 1.4vw, 20px); }
+
+  .seal__ctl { position: absolute; right: var(--gutter); bottom: 14px; display: flex; gap: 6px; z-index: 5; }
+  .seal__ctl button { width: 44px; height: 44px; font: 400 22px/1 var(--text); color: var(--cream); background: transparent; border: 1px solid rgb(246 241 227 / .4); border-radius: 50%; cursor: pointer; }
+  .seal__ctl button:hover { border-color: var(--accent); color: var(--accent); }
+
+  .spec { background: var(--stage); color: var(--cream); padding: clamp(60px, 14vh, 160px) var(--gutter); display: grid; gap: clamp(48px, 10vh, 120px); }
+  .receipt { rotate: -1.5deg; }
+  .spec__col { width: min(56ch, 100%); display: grid; gap: 1.2em; }
+  .note { font-size: 18px; }
+  .back { display: grid; gap: 10px; text-decoration: none; }
+  .back__t { font-size: clamp(54px, 12vw, 180px); transition: color 300ms var(--ease); }
+  .back:hover .back__t, .back:focus-visible .back__t { color: var(--accent); }
+  .tier { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
+
+  .buybar { position: fixed; left: 0; right: 0; bottom: 0; z-index: 45; display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; padding: 10px var(--gutter); background: rgb(255 255 255 / .94); backdrop-filter: blur(14px); border-top: 1px solid rgb(0 0 0 / .12); color: #12111A; transform: translateY(100%); transition: transform 700ms var(--ease); }
+  .buybar .ui { color: #4a4860; }
+  .buybar[data-on] { transform: none; }
+
+  /* The gift shop ------------------------------------------------------------ */
+  .shop { position: absolute; left: 0; right: 0; bottom: clamp(150px, 30svh, 300px); height: 0; z-index: 3; pointer-events: none; }
+  @media (min-width: 1200px) { .shop { scale: 1.15; transform-origin: 50% 100%; } }
+  .shop > * { position: absolute; bottom: 0; opacity: 0; translate: 0 10px; transition: opacity 500ms var(--ease), translate 500ms var(--ease); }
+  .shop > [data-on] { opacity: 1; translate: 0 0; }
+  .post { display: block; width: 10px; height: 110px; border-radius: 5px 5px 2px 2px; background: var(--chrome); box-shadow: 0 0 0 1px rgb(0 0 0 / .35), 0 6px 10px rgb(0 0 0 / .4); position: relative; }
+  .post::after { content: ""; position: absolute; left: -12px; bottom: -4px; width: 34px; height: 8px; border-radius: 50%; background: var(--chrome); box-shadow: 0 2px 4px rgb(0 0 0 / .5); }
+  .shop__barrier { left: 50%; translate: -50% 10px; width: min(560px, 80vw); display: flex; justify-content: space-between; align-items: flex-end; }
+  .shop__barrier[data-on] { translate: -50% 0; }
+  .shop__barrier .rope { position: absolute; left: 10px; right: 10px; top: 14px; height: 44px; border-radius: 50% / 100% 100% 0 0; border-bottom: 12px solid #FF4F9A; }
+  .shop__notice { left: 12%; bottom: 0; width: 158px; padding: 12px 12px 14px; background: #fff; color: #1a1a1a; font: 400 10px/1.35 var(--text); display: grid; gap: 4px; border: 1px solid #ccc; box-shadow: 0 8px 18px rgb(0 0 0 / .45), inset 0 0 0 3px rgb(255 255 255 / .6); rotate: -3deg; translate: 0 -20px; }
+  .shop__notice[data-on] { translate: 0 -20px; }
+  .shop__notice span:first-child { font-weight: 800; font-size: 12px; letter-spacing: .02em; }
+  .shop__notice .stand { position: absolute; left: 50%; bottom: -34px; width: 4px; height: 34px; background: var(--chrome); translate: -50% 0; }
+  .shop__sani { left: 24%; width: 34px; height: 76px; }
+  .shop__sani .bottle { position: absolute; inset: 14px 0 0 0; background: linear-gradient(90deg, #f3f3f1, #d8d8d6); border-radius: 4px 4px 6px 6px; display: grid; place-items: center; font: 700 5px/1.25 var(--text); text-align: center; color: #0F7A52; letter-spacing: .04em; }
+  .shop__sani .pump { position: absolute; left: 11px; top: 0; width: 12px; height: 18px; background: #19a36b; border-radius: 3px 3px 0 0; }
+  .shop__sani .pump::after { content: ""; position: absolute; left: 10px; top: 2px; width: 12px; height: 4px; background: #19a36b; border-radius: 2px; }
+  .shop__pay { right: 17%; width: 70px; height: 150px; }
+  .shop__pay .post--tall { position: absolute; left: 30px; bottom: 0; height: 90px; }
+  .shop__pay .terminal { position: absolute; left: 0; top: 0; width: 74px; height: 80px; background: #1b1b1b; border-radius: 10px; box-shadow: 0 6px 14px rgb(0 0 0 / .5), inset 0 1px 0 rgb(255 255 255 / .12); rotate: -8deg; display: grid; grid-template-rows: 1fr auto; padding: 7px; gap: 5px; }
+  .shop__pay .screen { display: grid; place-content: center; background: #4B2BFF; color: #fff; border-radius: 4px; font: 700 7px/1.2 var(--text); text-align: center; letter-spacing: .04em; }
+  .shop__pay .screen b { font-size: 11px; }
+  .shop__pay .keys { height: 14px; background: repeating-linear-gradient(90deg, #3a3a3a 0 7px, #1b1b1b 7px 9px); border-radius: 2px; }
+  .shop__pack { right: 7%; width: 72px; height: 80px; background: var(--sticker); color: #12111A; border-radius: 3px 3px 6px 6px; box-shadow: 0 8px 18px rgb(0 0 0 / .45); display: grid; place-content: center; justify-items: center; gap: 4px; rotate: 4deg; }
+  .shop__pack .handle { position: absolute; left: 22px; top: -16px; width: 28px; height: 22px; border: 3px solid #8a8a86; border-bottom: 0; border-radius: 14px 14px 0 0; }
+  .shop__pack .pk { font: 800 10px/1.1 var(--display); text-align: center; }
+  .shop__pack .price { font: 700 11px/1 var(--text); }
+  html[data-rm] .shop { position: relative; bottom: auto; height: 170px; margin-top: -170px; }
+  html[data-rm] .shop > * { opacity: 1; translate: 0 0; }
+  html[data-rm] .shop__barrier { translate: -50% 0; }
+  @media (max-width: 640px) { .shop { bottom: clamp(130px, 26svh, 220px); } .shop__notice { left: 2%; width: 118px; } .shop__pay { right: 4%; } .shop__pack { display: none; } .shop__sani { left: 36%; } }
+
+  /* Reduced motion: the launch becomes a plain, readable page. */
+  html[data-rm] .launch__runway { display: none; }
+  html[data-rm] .launch__stage { position: relative; height: auto; margin: 0; overflow: visible; display: grid; }
+  html[data-rm] .seal { position: relative; inset: auto; height: 70svh; }
+  html[data-rm] .beats { position: relative; bottom: auto; display: grid; gap: 56px; padding: 40px var(--gutter) 80px; }
+  html[data-rm] .beat { position: relative; opacity: 1; transform: none; }
+  html[data-rm] .seal__ctl { position: relative; justify-content: center; padding-bottom: 12px; right: auto; }
+  html[data-rm] .buybar { position: relative; transform: none; }
+  @media (max-width: 640px) { .seal { inset: 8svh 0 34svh 0; } .beat__h { font-size: clamp(34px, 10vw, 60px); } .seal__ctl { right: 12px; top: 44%; bottom: auto; flex-direction: column; } }
+</style>

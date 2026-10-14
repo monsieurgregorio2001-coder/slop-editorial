@@ -3,20 +3,35 @@ import { ClientRouter } from "astro:transitions";
 import "../styles/global.css";
 import { withBase } from "../lib/text.js";
 import interUrl from "../assets/fonts/inter-latin-wght-normal.woff2?url";
-import frauncesUrl from "../assets/fonts/fraunces-latin-opsz-normal.woff2?url";
+import displayUrl from "../assets/fonts/bricolage-grotesque-latin-wght-normal.woff2?url";
 
-interface Props { title: string; description?: string; page: string; }
-const { title, description = "Slop Editorial: a sample publication about AI-generated content and editorial taste.", page } = Astro.props;
+interface Props {
+  title: string;
+  description?: string;
+  mode?: "product" | "luxury" | "telemetry";
+  page: string;
+}
+const { title, description = "Slop Editorial. Generation is cheap. Taste is not. A satire of AI content and the attention economy.", mode = "product", page } = Astro.props;
 const base = import.meta.env.BASE_URL;
+const u = (p = "") => withBase(base, p);
 const HUB = "https://monsieurgregorio2001-coder.github.io/";
 const REPO = "https://github.com/monsieurgregorio2001-coder/slop-editorial";
-const ogImage = Astro.site ? new URL(withBase(base, "og.png"), Astro.site).href : withBase(base, "og.png");
+const ogImage = Astro.site ? new URL(u("og.png"), Astro.site).href : u("og.png");
+const nav: Array<[string, string, string]> = [
+  ["feed", "Feed", "feed/"],
+  ["authenticity", "Authenticity", "authenticity/"],
+  ["works", "Works", "works/"],
+  ["releases", "Releases", "releases/"],
+  ["queue", "Queue", "queue/"],
+  ["review", "Review", "review/"],
+  ["about", "Method", "about/"],
+];
 ---
 <!doctype html>
-<html lang="en" data-page={page}>
+<html lang="en" data-mode={mode} data-page={page}>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <title>{title}</title>
     <meta name="description" content={description} />
     <meta name="color-scheme" content="light dark" />
@@ -25,10 +40,10 @@ const ogImage = Astro.site ? new URL(withBase(base, "og.png"), Astro.site).href 
     <meta property="og:type" content="website" />
     <meta property="og:image" content={ogImage} />
     <meta name="twitter:card" content="summary_large_image" />
-    <link rel="icon" type="image/svg+xml" href={withBase(base, "favicon.svg")} />
+    <link rel="icon" type="image/svg+xml" href={u("favicon.svg")} />
+    <link rel="preload" href={displayUrl} as="font" type="font/woff2" crossorigin />
     <link rel="preload" href={interUrl} as="font" type="font/woff2" crossorigin />
-    <link rel="preload" href={frauncesUrl} as="font" type="font/woff2" crossorigin />
-    <!-- Motion preference is applied before first paint so a reduced-motion reader never sees a transition. -->
+    <!-- Motion preference is applied before first paint so a reduced-motion reader never sees a staged sequence start. -->
     <script is:inline>
       (function () {
         try {
@@ -36,7 +51,11 @@ const ogImage = Astro.site ? new URL(withBase(base, "og.png"), Astro.site).href 
           var q = new URLSearchParams(location.search).get("motion");
           var s = JSON.parse(localStorage.getItem("slop.session") || "{}");
           var forced = q === "reduce" || (q !== "auto" && s.motion === "reduce");
-          if (forced || matchMedia("(prefers-reduced-motion: reduce)").matches) r.setAttribute("data-rm", "");
+          if (forced) r.dataset.motion = "reduce";
+          var rm = forced || matchMedia("(prefers-reduced-motion: reduce)").matches;
+          if (rm) r.setAttribute("data-rm", "");
+          // A first visit to the cover starts behind the boot screen, so the staged sequence never flashes its finished state.
+          if (!rm && r.dataset.page === "home" && !s.cookies) r.dataset.boot = "on";
         } catch (e) {}
       })();
     </script>
@@ -44,42 +63,64 @@ const ogImage = Astro.site ? new URL(withBase(base, "og.png"), Astro.site).href 
   </head>
   <body>
     <a class="skip" href="#main">Skip to content</a>
-    <header class="shell" transition:persist="shell">
+
+    <header class="shell">
       <div class="shell__in">
         <div class="crumb">
           <a class="crumb__me" href={HUB}>Garfield Lim</a>
           <span class="crumb__slash" aria-hidden="true">/</span>
-          <a class="crumb__proj" href={withBase(base)} aria-label="Slop Editorial, home">
-            <img src={withBase(base, "logo.svg")} width="20" height="20" alt="" />
+          <a class="crumb__proj" href={u()} aria-label="Slop Editorial, home">
+            <img src={u("logo.svg")} width="22" height="22" alt="" />
             <span>Slop Editorial</span>
           </a>
         </div>
-        <nav class="shell__right" aria-label="Primary">
-          <a href={withBase(base, "about/")} aria-current={page === "about" ? "page" : undefined}>Method</a>
+        <nav class="shell__nav" aria-label="Primary">
+          {nav.map(([id, label, href]) => <a href={u(href)} aria-current={page === id ? "page" : undefined}>{label}</a>)}
           <a href={REPO} rel="noopener">Code</a>
         </nav>
       </div>
     </header>
-    <main id="main" tabindex="-1" class="wrap">
+
+    <div class="hud" aria-hidden="true" transition:persist="hud">
+      <span class="hud__line" data-hud-id>You: #184 today</span>
+      <span class="hud__line hud__notice" data-hud-notice></span>
+    </div>
+
+    <!-- The one joke every visitor gets. No cookie is set and both buttons agree. -->
+    <div class="sheet" data-cookies hidden role="dialog" aria-label="Cookies" transition:persist="cookies">
+      <p>Slop Editorial uses cookies to improve your experience of being measured.</p>
+      <small>No cookie is set. The counters live in this browser and never leave it.</small>
+      <div class="sheet__row"><button class="btn" type="button" data-accept>Accept all</button><button class="btn btn--primary" type="button" data-accept>Accept all</button></div>
+    </div>
+    <div data-dialog-host transition:persist="dialog"></div>
+
+    <main id="main" tabindex="-1">
       <slot />
     </main>
+
     <footer class="foot">
       <div class="foot__in">
-        <p>Slop Editorial is a portfolio demo. Every piece is a labelled sample, and the site sets no cookies and runs no analytics.</p>
+        <p>Slop Editorial is a portfolio satire. All imagery is generated in code, with no photographs and no image services. Counters live in this browser only, and nothing leaves this device.</p>
         <p class="foot__links">
           <span>Built by Garfield Greg Lim III</span>
           <a href={HUB}>Portfolio</a>
           <a href="https://github.com/monsieurgregorio2001-coder" rel="noopener">GitHub</a>
           <a href="https://www.linkedin.com/in/garfield-lim-8239242a9" rel="noopener">LinkedIn</a>
           <a href="mailto:lim.ggreg@outlook.com">lim.ggreg@outlook.com</a>
+          <a href={u("OFL.txt")}>Font licenses</a>
         </p>
-        <button type="button" data-motion-toggle aria-pressed="false">Motion: full</button>
+        <div class="foot__row">
+          <button type="button" data-motion-toggle aria-pressed="false">Motion: full</button>
+          <button type="button" data-sound-toggle aria-pressed="false">Sound: off</button>
+        </div>
       </div>
     </footer>
+
     <script>
       import { applyMotionPreference } from "../scripts/system";
+      import "../scripts/sound";
       import { initIntent } from "../scripts/intent";
-      applyMotionPreference(true);
+      applyMotionPreference();
       document.addEventListener("astro:after-swap", () => applyMotionPreference());
       document.addEventListener("astro:page-load", initIntent);
       if (import.meta.env.PROD && "serviceWorker" in navigator) {

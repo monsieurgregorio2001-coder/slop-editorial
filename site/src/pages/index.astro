@@ -1,49 +1,205 @@
 ---
 import Base from "../layouts/Base.astro";
 import { getCollection } from "astro:content";
-import { orderLabel, readingMinutes, withBase } from "../lib/text.js";
-const pieces = (await getCollection("pieces")).sort((a, b) => a.data.order - b.data.order);
-const base = import.meta.env.BASE_URL;
-const REPO = "https://github.com/monsieurgregorio2001-coder/slop-editorial";
+import { withBase } from "../lib/text.js";
+import { hold } from "../lib/transitions";
+const u = (p = "") => withBase(import.meta.env.BASE_URL, p);
+const srcset = [480, 800, 1000].map((w) => `${u(`img/hero-still-${w}.webp`)} ${w}w`).join(", ");
+const releases = (await getCollection("releases")).sort((a, b) => a.data.order - b.data.order).slice(0, 4);
+const status: Record<string, string> = { DRAFT: "Draft", IN_REVIEW: "In review", READY: "Ready for a human", APPROVED: "Approved" };
 ---
-<Base title="Slop Editorial" page="home">
-  <section class="hero">
-    <p class="label">Sample publication and portfolio project</p>
-    <h1>Generation is cheap. Taste is not.</h1>
-    <p class="lede">Slop Editorial pairs a spend-capped AI image pipeline with a static site that refuses to build when its own editorial rules are broken. Read the sample essays, then open the code.</p>
-    <div class="hero__cta">
-      <a class="btn btn--primary" href={withBase(base, `pieces/${pieces[0].id}/`)}>Read a sample piece</a>
-      <a class="btn" href={REPO} rel="noopener">View the code</a>
+<Base title="Slop Editorial" description="Slop Editorial. Generation is cheap. Taste is not. A deadpan satire of AI content and the attention economy." mode="product" page="home">
+  <div class="page" transition:name="page" transition:animate={hold}>
+
+    <!-- First twenty seconds: the device sets itself up. -->
+    <div class="boot" data-boot aria-hidden="true">
+      <span class="boot__mark mark" style={`--src:url(${u("logo.svg")})`}></span>
+      <p class="boot__line" data-boot-line>Setting up your experience of being measured</p>
+      <div class="boot__bar"><i data-boot-bar></i></div>
     </div>
-  </section>
 
-  <section class="case" aria-labelledby="case-h">
-    <h2 id="case-h">About this project</h2>
-    <dl>
-      <dt>Problem</dt>
-      <dd>AI makes images nearly free, so publications drift into content that nobody decided to make.</dd>
-      <dt>Build</dt>
-      <dd>A Python pipeline that estimates, caps, approves, and logs every paid generation, plus an Astro site whose build gates enforce voice, honesty, links, and speed.</dd>
-      <dt>Result</dt>
-      <dd>Lighthouse scores 99 to 100 in all four categories on mobile, with 4.7 KB of gzipped JavaScript and 62 passing unit tests.</dd>
-    </dl>
-  </section>
+    <section class="cover" data-cover aria-label="Cover">
+      <h1 class="vh">Slop Editorial. Generation is cheap. Taste is not.</h1>
+      <div class="cover__mast">
+        <span class="cover__word mark" role="img" aria-label="Slop Editorial" style={`--src:url(${u("wordmark.svg")})`}></span>
+        <p class="display cover__pos">Generation is cheap.<br />Taste is not.</p>
+      </div>
+      <a class="cover__stage" href={u("feed/")} data-hero-link>
+        <div class="cover__img" transition:name="hero-still">
+          <picture>
+            <source srcset={srcset} sizes="100vw" type="image/webp" />
+            <img src={u("img/hero-still-1000.webp")} width="1000" height="1250" alt="A generated sunset over a perfectly mirrored lake, with plastic spheres floating in symmetric pairs and a sign that reads Sunseet Point." decoding="async" fetchpriority="high" />
+          </picture>
+        </div>
+        <span class="sticker cover__sticker" data-sticker>Free.<small>Limited availability.</small></span>
+        <div class="cover__caption">
+          <span class="display cover__title">The Still</span>
+          <span class="cover__sub">Most engaging image yet.</span>
+          <span class="cover__meta">Issue 001 · ★ 4.2 · <span data-viewed="the-still">Viewed 00 times</span></span>
+        </div>
+        <span class="cover__cue" aria-hidden="true">Scroll</span>
+      </a>
+    </section>
 
-  <section class="section" aria-labelledby="pieces-h">
-    <h2 id="pieces-h">Sample pieces</h2>
-    <ol class="list">
-      {pieces.map((p) => (
-        <li>
-          <a class="row" href={withBase(base, `pieces/${p.id}/`)}>
-            <span class="label mono">{orderLabel(p.data.order)}</span>
-            <span>
-              <span class="row__t">{p.data.title}</span>
-              <p class="row__s">{p.data.summary}</p>
-            </span>
-            <span class="row__meta label"><span class="mono">{readingMinutes(p.body)} min</span> <span class="tag">Sample</span></span>
+    <!-- Features. The thesis stays under the floor and the metrics do the talking. -->
+    <section class="rise" data-rise aria-label="Features">
+      <div class="rise__stage" data-stage>
+        <picture class="rise__img" data-rise-img>
+          <source srcset={srcset} sizes="100vw" type="image/webp" />
+          <img src={u("img/hero-still-800.webp")} width="1000" height="1250" alt="" decoding="async" loading="lazy" />
+        </picture>
+        <div class="rise__veil"></div>
+        <div class="feat" data-statement>
+          <h2 class="feat__h">Looks perfect.<br />Even when nobody asked.</h2>
+          <div class="feat__metrics">
+            <div class="metric" data-metric="0"><span class="metric__v"><span data-count="18">18</span> %</span><span class="metric__k">Engagement improved, compared with the previous image.</span></div>
+            <div class="metric" data-metric="1"><span class="metric__v">0.8 s</span><span class="metric__k">Preferred by people who skip.</span></div>
+            <div class="metric" data-metric="2"><span class="metric__v">B</span><span class="metric__k">Viewers preferred version B. No visible difference.</span></div>
+          </div>
+          <p class="feat__fine">Results vary by viewer. Taste not guaranteed.</p>
+        </div>
+        <p class="rise__dwell" data-dwell aria-hidden="true"></p>
+      </div>
+    </section>
+
+    <!-- Recommended for you. The month as inventory. -->
+    <section class="index" aria-labelledby="index-h">
+      <div class="index__head">
+        <h2 id="index-h" class="index__h">Recommended for you</h2>
+        <p class="ui">People like you also scrolled.</p>
+      </div>
+      <ul class="cards">
+        <li class="card">
+          <a class="card__link" href={u("feed/")}>
+            <div class="card__img"><img src={u("img/hero-still-480.webp")} width="480" height="600" alt="" loading="lazy" decoding="async" /><span class="sticker card__sticker">Free</span></div>
+            <div class="card__body">
+              <span class="display card__t">The Still</span>
+              <span class="ui">★ 4.2 · 185 ratings · Published</span>
+              <span class="ui card__price">0.00 · <span data-viewed="the-still">Viewed 00 times</span></span>
+            </div>
           </a>
         </li>
-      ))}
-    </ol>
-  </section>
+        <li class="card">
+          <a class="card__link" href={u("authenticity/")}>
+            <div class="card__img card__img--dark"><img src={u("img/seal-poster-800.webp")} width="800" height="1000" alt="" loading="lazy" decoding="async" /><span class="sticker card__sticker">14.99</span></div>
+            <div class="card__body">
+              <span class="display card__t">The Certificate</span>
+              <span class="ui">★ 4.2 · Prompt pack · Sample</span>
+              <span class="ui card__price">Originality from 0/month · <span data-viewed="the-certificate">Viewed 00 times</span></span>
+            </div>
+          </a>
+        </li>
+      </ul>
+      <h3 class="index__h2"><a href={u("releases/")} class="index__link">Coming this month. Track your release.</a></h3>
+      <ul class="avail">
+        {releases.map((r) => (<li class="avail__row"><span class="avail__t">{r.data.title}</span><span class="ui">{r.data.window}</span><span class="ui avail__s">{status[r.data.state]}</span></li>))}
+      </ul>
+      <p class="ui index__note">Sample slate. Every release waits for a human. The object on the authenticity page is a procedural placeholder.</p>
+    </section>
+    <span hidden data-warm data-srcset={srcset} data-src={u("img/hero-still-800.webp")}></span>
+  </div>
+
+  <script>
+    import { initHome } from "../scripts/home";
+    document.addEventListener("astro:page-load", initHome);
+  </script>
 </Base>
+
+<style>
+  /* Boot ------------------------------------------------------------------- */
+  .boot { position: fixed; inset: 0; z-index: 65; display: none; place-content: center; justify-items: center; gap: 18px; background: #F6F3EC; color: #12111A; text-align: center; padding: 0 var(--gutter); }
+  .boot__mark { width: 28px; height: 28px; color: #4B2BFF; }
+  .boot__line { font: 500 15px/1.4 var(--text); color: #55536a; }
+  .boot__bar { width: min(260px, 70vw); height: 4px; border-radius: 2px; background: #e4e1f0; overflow: hidden; }
+  .boot__bar i { display: block; height: 100%; width: 0; background: #12111A; transition: width 500ms var(--ease); }
+  html[data-page="home"][data-boot="on"] .boot { display: grid; }
+  html[data-page="home"][data-boot="on"] .boot { animation: boot-out 400ms 5s forwards; }
+  @keyframes boot-out { to { opacity: 0; visibility: hidden; } }
+  .boot[data-done] { opacity: 0; transition: opacity 500ms var(--ease); pointer-events: none; }
+
+  /* Cover ------------------------------------------------------------------- */
+  .cover { position: relative; min-height: calc(100svh - var(--shell-h)); display: grid; grid-template-rows: auto 1fr; background: var(--bg); }
+  .cover__mast { position: relative; z-index: 2; display: flex; justify-content: space-between; align-items: flex-end; gap: 24px; padding: clamp(14px, 2vw, 26px) var(--gutter) clamp(12px, 1.6vw, 20px); background: var(--bg); color: var(--fg); }
+  .cover__word { width: clamp(200px, 36vw, 560px); aspect-ratio: 251 / 52; color: var(--fg); }
+  .cover__pos { font-size: clamp(16px, 2.4vw, 40px); line-height: .98; text-align: right; color: var(--accent); }
+  .cover__stage { position: relative; display: block; overflow: clip; min-height: 70svh; text-decoration: none; color: #fff; background: #15124d; }
+  .cover__img { position: absolute; inset: 0; }
+  .cover__img picture, .cover__img img { display: block; width: 100%; height: 100%; }
+  .cover__img img { object-fit: cover; object-position: 50% 62%; }
+  .cover__stage::after { content: ""; position: absolute; inset: 0; background: linear-gradient(to top, rgb(12 8 40 / .72), rgb(12 8 40 / .15) 55%, transparent); pointer-events: none; }
+  .cover__sticker { position: absolute; right: clamp(20px, 6vw, 90px); top: clamp(20px, 5vh, 56px); z-index: 3; font-size: clamp(28px, 4.4vw, 64px); text-align: center; }
+  .cover__sticker small { display: block; font: 700 .3em/1.1 var(--text); text-transform: uppercase; letter-spacing: .06em; margin-top: .25em; }
+  .cover__caption { position: absolute; left: var(--gutter); right: var(--gutter); bottom: clamp(120px, 16vh, 150px); z-index: 2; display: grid; gap: 6px; max-width: 62%; }
+  .cover__title { font-size: clamp(54px, 11vw, 180px); color: #fff; text-shadow: 0 2px 40px rgb(0 0 0 / .35); transition: color 300ms var(--ease); }
+  .cover__stage:hover .cover__title, .cover__stage:focus-visible .cover__title { color: var(--sticker); }
+  .cover__sub { font: 600 clamp(18px, 2vw, 28px)/1.2 var(--text); letter-spacing: -.01em; }
+  .cover__meta { font: 500 14px/1.4 var(--text); color: rgb(255 255 255 / .86); }
+  .cover__cue { position: absolute; left: 50%; bottom: 10px; translate: -50% 0; z-index: 2; font: 500 12px/1 var(--mono); text-transform: uppercase; letter-spacing: .1em; opacity: 0; animation: fade-in 1600ms var(--ease) 14s both; }
+  @keyframes fade-in { to { opacity: 1; } }
+
+  .cover[data-staged] .cover__mast { translate: 0 -100%; transition: translate 700ms var(--ease); }
+  .cover[data-staged][data-mast] .cover__mast { translate: 0 0; }
+  .cover[data-staged] .cover__word { clip-path: inset(0 100% 0 0); transition: clip-path 1000ms cubic-bezier(.6, 0, .2, 1) 450ms; }
+  .cover[data-staged][data-mast] .cover__word { clip-path: inset(0); }
+  .cover[data-staged] .cover__pos { opacity: 0; transition: opacity 700ms var(--ease) 1200ms; }
+  .cover[data-staged][data-mast] .cover__pos { opacity: 1; }
+  .cover[data-staged] .cover__img, .cover[data-staged] .cover__caption { opacity: 0; transition: opacity 1800ms var(--ease); }
+  .cover[data-staged][data-image] .cover__img, .cover[data-staged][data-image] .cover__caption { opacity: 1; }
+  .cover[data-staged] .cover__sticker { opacity: 0; scale: 1.6; rotate: -14deg; transition: opacity 200ms, scale 420ms cubic-bezier(.3, 1.6, .5, 1), rotate 420ms cubic-bezier(.3, 1.6, .5, 1); }
+  .cover[data-staged][data-sticker] .cover__sticker { opacity: 1; scale: 1; rotate: -6deg; }
+
+  /* Features over the still. ------------------------------------------------ */
+  .rise { position: relative; height: 240svh; }
+  .rise__stage { position: sticky; top: 0; height: 100svh; overflow: clip; display: grid; align-items: end; background: #15124d; color: #fff; }
+  .rise__img { position: absolute; inset: 0; }
+  .rise__img img { width: 100%; height: 100%; object-fit: cover; object-position: 50% 60%; scale: 1.25; }
+  .rise__veil { position: absolute; inset: 0; background: linear-gradient(to top, rgb(12 8 40 / .92), rgb(12 8 40 / .3) 55%, transparent); }
+  .feat { position: relative; z-index: 2; padding: 0 var(--gutter) clamp(48px, 9vh, 90px); display: grid; gap: clamp(22px, 4vh, 40px); }
+  .feat__h { font: 800 clamp(34px, 5.6vw, 84px)/1 var(--display); letter-spacing: -.04em; max-width: 14ch; }
+  .feat__metrics { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 250px)); gap: 20px 40px; }
+  .feat__fine { color: rgb(255 255 255 / .8); font: 500 14px/1.4 var(--text); }
+  .feat .metric__v { color: #fff; }
+  .feat .metric__k { color: rgb(255 255 255 / .86); }
+  .rise__dwell { position: absolute; z-index: 3; left: var(--gutter); right: var(--gutter); top: 24px; font: 500 14px/1.4 var(--text); opacity: 0; transition: opacity 500ms var(--ease); }
+  .rise__dwell[data-on] { opacity: 1; }
+  .rise[data-staged] .rise__img { clip-path: inset(100% 0 0 0); }
+  .rise[data-staged] .feat { opacity: 0; }
+  .rise[data-staged] .metric { opacity: 0; translate: 0 8px; transition: opacity 500ms var(--ease), translate 500ms var(--ease); }
+  .rise[data-staged] .metric[data-on] { opacity: 1; translate: 0 0; }
+  html[data-rm] .rise { height: auto; }
+  html[data-rm] .rise__stage { position: relative; height: 100svh; }
+
+  /* Recommended for you. ---------------------------------------------------- */
+  .index { position: relative; z-index: 2; background: var(--bg); color: var(--fg); padding: clamp(56px, 10vh, 110px) var(--gutter) clamp(56px, 10vh, 120px); display: grid; gap: clamp(28px, 5vh, 48px); }
+  .index__head { display: grid; gap: 6px; }
+  .index__h { font: 800 clamp(30px, 3.8vw, 56px)/1.02 var(--display); letter-spacing: -.035em; }
+  .index__h2 { margin: 12px 0 0; font: 700 clamp(20px, 2.2vw, 28px)/1.15 var(--display); letter-spacing: -.02em; }
+  .cards { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 340px), 1fr)); gap: 24px; }
+  .card__link { display: grid; gap: 14px; text-decoration: none; color: inherit; }
+  .card__img { position: relative; aspect-ratio: 4 / 5; overflow: hidden; border-radius: 16px; background: var(--line); }
+  .card__img img { width: 100%; height: 100%; object-fit: cover; transition: scale 600ms var(--ease); }
+  .card__link:hover img { scale: 1.03; }
+  .card__sticker { position: absolute; right: 16px; top: 16px; font-size: clamp(24px, 3vw, 40px); }
+  .card__body { display: grid; gap: 4px; }
+  .card__t { font-size: clamp(34px, 4.6vw, 60px); }
+  .card__price { color: var(--fg); }
+  .avail { list-style: none; margin: 0; padding: 0; display: grid; border-top: 1px solid var(--line); }
+  .avail__row { display: grid; grid-template-columns: 1fr auto auto; gap: 16px; align-items: baseline; padding: 14px 0; border-bottom: 1px solid var(--line); }
+  .avail__t { font: 700 clamp(16px, 1.5vw, 20px)/1.2 var(--display); letter-spacing: -.01em; }
+  .avail__s { color: var(--positive); }
+  .index__note { max-width: 64ch; }
+  .index__link { text-decoration: none; }
+  .index__link:hover { color: var(--accent); }
+  @media (max-width: 640px) {
+    .cover__mast { flex-direction: column; align-items: flex-start; gap: 8px; }
+    .cover__word { width: min(70vw, 280px); }
+    .cover__pos { align-self: flex-end; font-size: 17px; }
+    .cover__stage { min-height: max(520px, calc(100svh - 250px)); }
+    .cover__caption { bottom: 168px; max-width: none; }
+    .cover__sticker { right: 14px; top: 14px; font-size: 30px; }
+    .cover__title { font-size: clamp(56px, 17vw, 84px); }
+    .cover__cue { display: none; }
+    .feat__h { font-size: clamp(30px, 9vw, 42px); }
+    .avail__row { grid-template-columns: 1fr; gap: 2px; }
+  }
+</style>

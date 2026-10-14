@@ -1,57 +1,66 @@
-/* Slop Editorial design tokens, from the shared portfolio design system. */
-@font-face { font-family: "Fraunces"; font-style: normal; font-weight: 100 900; font-display: swap; src: url("../assets/fonts/fraunces-latin-opsz-normal.woff2") format("woff2"); }
+/* Slop Editorial design tokens. Neutral and brand tokens follow the shared portfolio
+   system. The accent is bolder than the hub on purpose: ultraviolet, a sticker yellow and gold. */
+@font-face { font-family: "Bricolage Grotesque"; font-style: normal; font-weight: 200 800; font-display: swap; src: url("../assets/fonts/bricolage-grotesque-latin-wght-normal.woff2") format("woff2"); }
 @font-face { font-family: "Inter"; font-style: normal; font-weight: 100 900; font-display: swap; src: url("../assets/fonts/inter-latin-wght-normal.woff2") format("woff2"); }
 @font-face { font-family: "JetBrains Mono"; font-style: normal; font-weight: 400; font-display: swap; src: url("../assets/fonts/jetbrains-mono-latin-400-normal.woff2") format("woff2"); }
 @font-face { font-family: "JetBrains Mono"; font-style: normal; font-weight: 500; font-display: swap; src: url("../assets/fonts/jetbrains-mono-latin-500-normal.woff2") format("woff2"); }
 
-:root {
-  --paper: #FAF8F4;
-  --surface: #FFFFFF;
-  --ink: #17171B;
-  --muted: #5F5F6B;
-  --rule: #E6E2DA;
-  --accent: #2340B8;
-  --accent-ink: #FFFFFF;
-  --accent-wash: #EEF1FC;
-  --positive: #1E7A4F;
-  --warning: #9A6200;
-  --negative: #B42318;
+@property --bg { syntax: "<color>"; inherits: true; initial-value: #F6F3EC; }
+@property --fg { syntax: "<color>"; inherits: true; initial-value: #12111A; }
+@property --accent { syntax: "<color>"; inherits: true; initial-value: #4B2BFF; }
+@property --muted { syntax: "<color>"; inherits: true; initial-value: #5A586A; }
 
-  --display: "Fraunces", Georgia, "Iowan Old Style", serif;
+:root {
+  --paper: #F6F3EC;
+  --surface: #FFFFFF;
+  --ink: #12111A;
+  --muted-ink: #5A586A;
+  --rule: #DEDACE;
+  --violet: #4B2BFF;
+  --violet-wash: #ECE9FF;
+  --sticker: #FFE14D;
+  --pink: #FF4F9A;
+  --teal: #19D3C5;
+  --positive: #0F7A52;
+  --negative: #B42318;
+  --gold: #E5B13A;
+  --stage: #0E0B1F;
+  --cream: #F6F1E3;
+  --chrome: linear-gradient(180deg, #fbfbfb 0%, #d9d9d9 46%, #a8a8a8 52%, #e9e9e9 100%);
+
+  --display: "Bricolage Grotesque", "Avenir Next", "Helvetica Neue", Arial, sans-serif;
   --text: "Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
   --mono: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
 
-  --gutter: 16px;
-  --measure: 66ch;
-  --radius-card: 10px;
-  --radius-btn: 8px;
+  --gutter: clamp(16px, 4vw, 48px);
   --ease: cubic-bezier(.2, .7, .1, 1);
+  --mode-ease: 700ms var(--ease);
+  --shell-h: 44px;
 
-  /* type scale in rem: 0.8125, 0.875, 1, 1.125, 1.375, 1.75, 2.25, 3 */
-  --step--2: 0.8125rem;
-  --step--1: 0.875rem;
-  --step-0: 1rem;
-  --step-1: 1.125rem;
-  --step-2: 1.375rem;
-  --step-3: 1.75rem;
-  --step-4: 2.25rem;
-  --step-5: 3rem;
+  --bg: var(--paper);
+  --fg: var(--ink);
+  --accent: var(--violet);
+  --muted: var(--muted-ink);
+  --line: var(--rule);
+  --card: var(--surface);
 }
-
-@media (min-width: 720px) { :root { --gutter: 28px; } }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --paper: #0F0F12;
-    --surface: #17171C;
-    --ink: #ECEAE5;
-    --muted: #A3A1AA;
-    --rule: #2A2A31;
-    --accent: #9DB0FF;
-    --accent-ink: #0F0F12;
-    --accent-wash: #1B2140;
+    --paper: #0E0D14;
+    --surface: #17161F;
+    --ink: #F0EEF7;
+    --muted-ink: #A9A6B8;
+    --rule: #2B2A36;
+    --violet: #A99BFF;
+    --violet-wash: #1F1A45;
     --positive: #6FD3A0;
-    --warning: #F2C46B;
     --negative: #FF8A80;
   }
 }
+
+/* Behavioural modes: the same components, a different register. A mode only re-points tokens. */
+html[data-mode="luxury"] { --bg: var(--stage); --fg: var(--cream); --accent: var(--gold); --muted: #BDB293; --line: #3a3354; --card: #1a1530; }
+html[data-mode="telemetry"] { --bg: #0b1020; --fg: #E7ECFF; --accent: var(--teal); --muted: #9FB0D8; --line: #26304f; --card: #121a33; }
+
+html { transition: --bg var(--mode-ease), --fg var(--mode-ease), --accent var(--mode-ease), --muted var(--mode-ease); }

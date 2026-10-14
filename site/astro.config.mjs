@@ -3,9 +3,9 @@ import mdx from "@astrojs/mdx";
 import { readFile, writeFile } from "node:fs/promises";
 import { fileURLToPath } from "node:url";
 
-// Slop Editorial sample site. Static output. SITE_URL and SITE_BASE are set by the
-// Pages workflow so the same build works at a project path such as /slop-editorial/.
-const base = process.env.SITE_BASE || "/";
+// Slop Editorial. Static output at the GitHub Pages project path. SITE_BASE and SITE_URL
+// can be overridden by the Pages workflow, otherwise the defaults below apply.
+const base = (process.env.SITE_BASE || "/slop-editorial/").replace(/\/?$/, "/");
 
 // Stamps the service worker with a build id so a new build replaces the old caches.
 const stampServiceWorker = () => ({
@@ -20,7 +20,7 @@ const stampServiceWorker = () => ({
 });
 
 export default defineConfig({
-  site: process.env.SITE_URL || undefined,
+  site: process.env.SITE_URL || "https://monsieurgregorio2001-coder.github.io",
   base,
   integrations: [mdx(), stampServiceWorker()],
   // Critical CSS is inlined into every HTML response: first paint never waits on a stylesheet.

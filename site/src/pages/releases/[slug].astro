@@ -1,0 +1,58 @@
+---
+import Base from "../../layouts/Base.astro";
+import { getCollection } from "astro:content";
+import { withBase } from "../../lib/text.js";
+export async function getStaticPaths() {
+  const all = await getCollection("releases");
+  const works = await getCollection("works");
+  return all.map((entry) => ({ params: { slug: entry.id }, props: { entry, work: works.find((w) => w.id === entry.data.work)! } }));
+}
+const { entry, work } = Astro.props;
+const u = (p = "") => withBase(import.meta.env.BASE_URL, p);
+const d = entry.data;
+const label: Record<string, string> = { DRAFT: "Draft", IN_REVIEW: "In review", READY: "Ready for a human", APPROVED: "Approved by a human" };
+---
+<Base title={`${d.id} ${d.title} · Releases · Slop Editorial`} description={d.brief} page="releases">
+  <article class="rel">
+    <p class="ui"><a href={u("releases/")}>Releases</a> / {d.id}</p>
+    <h1 class="rel__h">{d.title}</h1>
+    <p class="ui">{d.kind} · {d.window}</p>
+    <div class="rel__grid">
+      <figure class="rel__fig">
+        <img src={u(`img/${work.data.image}-480.webp`)} width="480" height="600" alt={work.data.alt} decoding="async" />
+      </figure>
+      <div class="rel__main">
+        <h2 class="rel__h2">The gate</h2>
+        <dl class="gate">
+          <dt>State</dt><dd><span class="pill">{label[d.state]}</span></dd>
+          <dt>Production</dt><dd>{d.production}</dd>
+          <dt>Spend estimate</dt><dd>{d.estimate}</dd>
+          <dt>Spend cap</dt><dd>{d.cap}</dd>
+          <dt>Approval</dt><dd>{d.approval}</dd>
+          <dt>Destination</dt><dd>{d.destination}</dd>
+        </dl>
+        <h2 class="rel__h2">Caption, as it would post</h2>
+        <p class="cap">{d.caption}</p>
+        <h2 class="rel__h2">Alt text</h2>
+        <p>{work.data.alt}</p>
+        <h2 class="rel__h2">Open before any release</h2>
+        <ul class="open">{d.open.map((o: string) => <li>{o}</li>)}</ul>
+        <p class="ui" data-sample>Sample data. Nothing on this page grants an approval. <a href={u("queue/")}>See the queue</a>.</p>
+      </div>
+    </div>
+  </article>
+</Base>
+
+<style>
+  .rel { padding: clamp(32px, 6vh, 80px) var(--gutter) clamp(60px, 12vh, 120px); display: grid; gap: 12px; }
+  .rel__h { font: 800 clamp(40px, 5.6vw, 84px)/1 var(--display); letter-spacing: -.04em; }
+  .rel__grid { display: grid; grid-template-columns: minmax(0, 320px) minmax(0, 1fr); gap: clamp(24px, 5vw, 72px); margin-top: 20px; align-items: start; }
+  .rel__fig img { width: 100%; height: auto; border-radius: 14px; }
+  .rel__main { display: grid; gap: 14px; max-width: 66ch; }
+  .rel__h2 { font: 700 20px/1.2 var(--display); letter-spacing: -.02em; margin-top: 12px; }
+  .gate { display: grid; grid-template-columns: auto 1fr; gap: 8px 20px; margin: 0; }
+  .gate dt { color: var(--muted); font-size: 14px; } .gate dd { margin: 0; }
+  .cap { font: 600 22px/1.3 var(--display); }
+  .open { margin: 0; padding-left: 1.2em; display: grid; gap: 6px; }
+  @media (max-width: 760px) { .rel__grid { grid-template-columns: 1fr; } .rel__fig { max-width: 320px; } }
+</style>

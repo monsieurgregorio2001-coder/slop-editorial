@@ -1,8 +1,1 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Slop Editorial mark">
-  <title>Slop Editorial</title>
-  <rect width="64" height="64" rx="10" fill="#17171B"/>
-  <rect x="12" y="14" width="40" height="6" rx="2" fill="#FAF8F4"/>
-  <rect x="12" y="26" width="28" height="6" rx="2" fill="#9DB0FF"/>
-  <rect x="12" y="38" width="34" height="6" rx="2" fill="#FAF8F4"/>
-  <rect x="12" y="50" width="16" height="6" rx="2" fill="#C7D2FF"/>
-</svg>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64"><defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#6A3DFF"/><stop offset="1" stop-color="#3B1FD9"/></linearGradient><linearGradient id="b" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FFFFFF"/><stop offset="1" stop-color="#E4DDFF"/></linearGradient></defs><rect width="64" height="64" rx="16" fill="url(#g)"/><path d="M32 12 C42 12 49 20 49 29.5 C49 36.5 45.5 41 41.5 44 C41.5 47 40.5 51 38 53 C35.5 55 31.5 54 31.5 51 C31.5 48.5 31.5 46.5 29.5 44.5 C25 42 15 37.5 15 29.5 C15 20 22 12 32 12 Z" fill="url(#b)"/><ellipse cx="25" cy="21" rx="5.5" ry="3.4" fill="#fff" opacity=".9" transform="rotate(-28 25 21)"/></svg>

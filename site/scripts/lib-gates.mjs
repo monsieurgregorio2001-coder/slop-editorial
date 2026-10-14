@@ -1,7 +1,7 @@
 // Pure gate logic, shared by check.mjs and unit tested in test/gates.test.mjs.
 import path from "node:path";
 
-const ENTITIES = { "&amp;": "&", "&lt;": "<", "&gt;": ">", "&quot;": '"', "&#39;": "'", "&#x27;": "'", "&mdash;": "—", "&#8212;": "—", "&nbsp;": " " };
+const ENTITIES = { "&amp;": "&", "&lt;": "<", "&gt;": ">", "&quot;": '"', "&#39;": "'", "&#x27;": "'", "&mdash;": "\u2014", "&#8212;": "\u2014", "&nbsp;": " " };
 
 /** Text a reader sees: scripts, styles, comments and tags removed, entities decoded. */
 export function visibleText(html) {
@@ -20,11 +20,24 @@ const CONTRACTION = /\b(?:\w+n['’]t|\w+['’](?:re|ve|ll|d|m)|(?:it|that|there
 /** House voice: no em dashes, no semicolons, no contractions. Returns a list of problems. */
 export function voiceViolations(text) {
   const out = [];
-  if (text.includes("—")) out.push("em dash");
+  if (text.includes("\u2014")) out.push("em dash");
   if (text.includes(";")) out.push("semicolon");
   const c = text.match(CONTRACTION);
   if (c) out.push(`contraction "${c[0]}"`);
   return out;
+}
+
+// Words that must never appear in shipped output or source. Built from fragments so this file
+// stays clean under the same search. Case-insensitive.
+const BANNED = [
+  ["vul", "gar"], ["vl", "gr"], ["a51", "025"], ["ant", "on"], ["insta", "gram"], ["je", "sus"], ["rel", "ic"], ["ga", "ze"],
+].map((parts) => parts.join(""));
+const BANNED_RE = new RegExp(`\\b(?:${BANNED.join("|")})\\b|\\bDE` + `C-\\d`, "i");
+
+/** Brand hygiene: the old brand and subject words must not appear anywhere. Returns the first match or null. */
+export function brandViolation(text) {
+  const m = text.match(BANNED_RE);
+  return m ? m[0] : null;
 }
 
 const SECRET = /(api[_-]?key|secret|password|bearer\s+[a-z0-9]{12,}|sk-[a-z0-9]{16,}|ghp_[a-z0-9]{20,}|akia[0-9a-z]{12,}|xox[bap]-)/i;
@@ -82,7 +95,8 @@ const MAX_WORDS = 25;
 /** Text of paragraph-like blocks (p, dd, li), one string per block. */
 export function proseBlocks(html) {
   const blocks = [];
-  for (const m of html.matchAll(/<(p|dd|li)\b[^>]*>([\s\S]*?)<\/\1>/gi)) blocks.push(visibleText(m[2]));
+  // Innermost blocks only: a list item that wraps other blocks is a layout container, not a sentence.
+  for (const m of html.matchAll(/<(p|dd|li)\b[^>]*>((?:(?!<(?:p|dd|li|div|dl|ul|ol|article|section|figure)\b)[\s\S])*?)<\/\1>/gi)) blocks.push(visibleText(m[2]));
   return blocks;
 }
 

@@ -1,0 +1,70 @@
+---
+import Base from "../../layouts/Base.astro";
+import { getCollection } from "astro:content";
+import { withBase } from "../../lib/text.js";
+const u = (p = "") => withBase(import.meta.env.BASE_URL, p);
+const rel = (await getCollection("releases")).sort((a, b) => a.data.order - b.data.order);
+const done = rel.filter((r) => r.data.state === "APPROVED").length;
+const pct = Math.round((done / rel.length) * 100);
+const label: Record<string, string> = { DRAFT: "Draft", IN_REVIEW: "In review", READY: "Ready for a human", APPROVED: "Approved by a human" };
+const waiting = rel.filter((r) => r.data.state === "READY").length;
+---
+<Base title="Releases · Slop Editorial" description="The release tracker: every sample issue and the human gate it waits behind." page="releases">
+  <section class="run">
+    <div class="run__head">
+      <p class="ui">Order tracking · November sample run · A demonstration of human-in-the-loop gates</p>
+      <h1 class="run__h">Your November is {pct} % approved.</h1>
+      <p class="ui">{done} of {rel.length} releases approved. {waiting} ready for a human. Nothing ships on its own.</p>
+      <div class="track" role="img" aria-label={`${pct} percent approved`}><i style={`width:${pct}%`}></i></div>
+    </div>
+
+    <ol class="slots">
+      {rel.map((r) => (
+        <li class="slot" data-tone={r.data.state.toLowerCase()}>
+          <a class="slot__link" href={u(`releases/${r.id}/`)}>
+            <span class="slot__id ui">{r.data.id}</span>
+            <span class="slot__main">
+              <span class="display slot__t">{r.data.title}</span>
+              <span class="ui">{r.data.kind} · {r.data.window}</span>
+            </span>
+            <span class="slot__status"><span class="pill" data-tone={r.data.state.toLowerCase()}>{label[r.data.state]}</span><span class="ui">{r.data.production}</span></span>
+            <span class="slot__price"><span class="sticker">{r.data.price}</span></span>
+          </a>
+        </li>
+      ))}
+    </ol>
+
+    <aside class="blocker" aria-label="Needs a human">
+      <span class="pill" data-tone="approved">Spend is capped</span>
+      <p class="ui">Every release shows an estimate, a cap and an approval reference. The pipeline refuses to spend without all three. All figures on this page are sample data from the free mock provider.</p>
+    </aside>
+
+    <div class="run__foot">
+      <a class="btn btn--primary" href={u("queue/")}>Review the approval queue</a>
+      <p class="ui">States and windows are planning, not publication. Prices are the work.</p>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .run { padding: clamp(40px, 8vh, 96px) var(--gutter) clamp(60px, 12vh, 120px); display: grid; gap: 28px; min-height: 80svh; align-content: start; }
+  .run__head { display: grid; gap: 10px; max-width: 70ch; }
+  .run__h { font: 800 clamp(38px, 5.6vw, 80px)/1 var(--display); letter-spacing: -.04em; }
+  .track { height: 8px; background: var(--line); border-radius: 4px; overflow: hidden; max-width: 420px; }
+  .track i { display: block; height: 100%; background: var(--positive); }
+  .slots { list-style: none; margin: 0; padding: 0; display: grid; border-top: 1px solid var(--line); }
+  .slot__link { display: grid; grid-template-columns: 3rem minmax(0, 1.4fr) minmax(0, 1fr) auto; gap: 16px 24px; align-items: center; padding: 20px 0; border-bottom: 1px solid var(--line); text-decoration: none; transition: background 300ms var(--ease); }
+  .slot__link:hover, .slot__link:focus-visible { background: var(--card); }
+  .slot__main, .slot__status { display: grid; gap: 6px; justify-items: start; }
+  .slot__t { font-size: clamp(24px, 3.4vw, 44px); }
+  .slot__link:hover .slot__t { color: var(--accent); }
+  .pill[data-tone="approved"] { background: var(--positive); color: var(--bg); }
+  .pill[data-tone="ready"] { background: var(--sticker); color: #12111A; }
+  .pill[data-tone="in_review"] { background: var(--accent); color: var(--bg); }
+  .slot__price .sticker { font-size: 18px; padding: 6px 10px; }
+  .blocker { display: grid; gap: 8px; justify-items: start; padding: 18px 20px; background: var(--card); border: 1px solid var(--fg); border-radius: 14px; max-width: 70ch; }
+  .run__foot { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; margin-top: 12px; }
+  .run__foot .ui { flex-basis: 100%; max-width: 70ch; }
+  .run__foot .btn { display: inline-flex; align-items: center; text-decoration: none; }
+  @media (max-width: 720px) { .slot__link { grid-template-columns: 2.4rem 1fr auto; } .slot__status { grid-column: 2; } .slot__price { grid-column: 3; grid-row: 1; } }
+</style>

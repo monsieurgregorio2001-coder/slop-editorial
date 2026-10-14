@@ -1,0 +1,85 @@
+---
+import Base from "../../layouts/Base.astro";
+import { getCollection } from "astro:content";
+import { withBase } from "../../lib/text.js";
+const u = (p = "") => withBase(import.meta.env.BASE_URL, p);
+const all = (await getCollection("releases")).sort((a, b) => a.data.order - b.data.order);
+const queue = all.filter((r) => r.data.state !== "APPROVED");
+const ready = queue.filter((r) => r.data.state === "READY");
+const label: Record<string, string> = { DRAFT: "Draft", IN_REVIEW: "In review", READY: "Ready for a human", APPROVED: "Approved" };
+---
+<Base title="Approval queue · Slop Editorial" description="The approval queue: every release waits for a human, and the buttons refuse on purpose." page="queue">
+  <section class="go">
+    <div class="go__head">
+      <p class="ui">Checkout · {queue.length} items in calendar order · {ready.length} ready · nothing sent, posted or scheduled</p>
+      <h1 class="go__h">Nothing ships without a person.</h1>
+      <p class="ui">Every release waits here with its exact asset, text and destination. Approval is given by a named human with a reference. The buttons on this page refuse, on purpose.</p>
+      <p class="status" role="status" aria-live="polite" data-queue-status>No decision recorded.</p>
+    </div>
+
+    <ol class="items">
+      {queue.map((r) => (
+        <li class="item" data-ready={r.data.state === "READY" ? "" : undefined}>
+          <div class="item__main">
+            <span class="ui">{r.data.id} · {r.data.window}</span>
+            <a class="display item__t" href={u(`releases/${r.id}/`)}>{r.data.title}</a>
+            <span class="ui">{r.data.kind}</span>
+            <dl class="item__dl">
+              <dt>Asset</dt><dd>{r.data.production}</dd>
+              <dt>Text</dt><dd>{r.data.caption}</dd>
+              <dt>Destination</dt><dd>{r.data.destination}</dd>
+              <dt>Estimate</dt><dd>{r.data.estimate}, cap {r.data.cap}</dd>
+              <dt>Blocking</dt><dd>{r.data.open[0] ?? "Production"}</dd>
+            </dl>
+          </div>
+          <div class="item__side">
+            <span class="pill" data-tone={r.data.state.toLowerCase()}>{label[r.data.state]}</span>
+            <button class="btn btn--go" type="button" data-refuse={r.data.id}>Approve</button>
+            <button class="btn" type="button" data-later={r.data.id}>Not now</button>
+          </div>
+        </li>
+      ))}
+    </ol>
+
+    <figure class="receipt">
+      <p class="receipt__h">Slop Editorial · November · Order summary</p>
+      <dl>
+        {all.map((r) => (<><dt>{r.data.id} {r.data.title}</dt><dd>{r.data.state === "APPROVED" ? "approved" : r.data.state === "READY" ? "awaiting a human" : r.data.state === "IN_REVIEW" ? "in review" : "draft"}</dd></>))}
+      </dl>
+      <div class="receipt__line"></div>
+      <dl><dt class="tot">Approved</dt><dd class="tot">{all.filter((r) => r.data.state === "APPROVED").length} of {all.length}</dd></dl>
+      <div class="receipt__line"></div>
+      <p class="receipt__h">Thank you for not deciding yet</p>
+      <p class="ui">No scheduler. No automation. Spend, selection and approval stay with a person.</p>
+    </figure>
+  </section>
+
+  <script>
+    import { notice } from "../../scripts/system";
+    document.addEventListener("astro:page-load", () => {
+      const out = document.querySelector<HTMLElement>("[data-queue-status]");
+      const say = (t: string) => { if (out) out.textContent = t; notice(t); };
+      document.querySelectorAll<HTMLButtonElement>("[data-refuse]").forEach((b) => b.addEventListener("click", () => say("Approval happens with a human, not a button.")));
+      document.querySelectorAll<HTMLButtonElement>("[data-later]").forEach((b) => b.addEventListener("click", () => say("Reminder set for when you are back.")));
+    });
+  </script>
+</Base>
+
+<style>
+  .go { padding: clamp(40px, 8vh, 96px) var(--gutter) clamp(60px, 12vh, 120px); display: grid; gap: 32px; min-height: 80svh; align-content: start; }
+  .go__head { display: grid; gap: 10px; max-width: 70ch; }
+  .go__h { font: 800 clamp(38px, 5.6vw, 80px)/1 var(--display); letter-spacing: -.04em; }
+  .status { font: 600 16px/1.4 var(--text); padding: 10px 14px; border-radius: 10px; background: var(--violet-wash); color: var(--fg); width: fit-content; }
+  .items { list-style: none; margin: 0; padding: 0; display: grid; gap: 14px; }
+  .item { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 20px; padding: 22px; background: var(--card); border: 1px solid var(--line); border-radius: 16px; }
+  .item[data-ready] { border-color: var(--fg); }
+  .item__main { display: grid; gap: 6px; }
+  .item__t { font-size: clamp(28px, 3.6vw, 48px); text-decoration: none; }
+  .item__t:hover { color: var(--accent); }
+  .item__dl { margin: 8px 0 0; display: grid; grid-template-columns: auto 1fr; gap: 4px 16px; font-size: 15px; line-height: 1.45; }
+  .item__dl dt { color: var(--muted); } .item__dl dd { margin: 0; }
+  .item__side { display: grid; gap: 8px; align-content: start; justify-items: end; }
+  .pill[data-tone="ready"] { background: var(--sticker); color: #12111A; }
+  .receipt { rotate: -1deg; }
+  @media (max-width: 640px) { .item { grid-template-columns: 1fr; } .item__side { justify-items: start; grid-auto-flow: column; justify-content: start; } }
+</style>

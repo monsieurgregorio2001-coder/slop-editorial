@@ -1,26 +1,37 @@
 # Slop Editorial
 
-An AI-native editorial studio toolkit: a multi-provider image pipeline with spend caps, approval gates, and provenance, plus a static site with automated quality gates.
+A deadpan satire of AI content and the attention economy, built as software: a staged, scroll-driven site with a real 3D object, backed by an image pipeline that keeps a human in the loop.
 
-[![Slop Editorial home page, light theme](docs/hero.png)](https://monsieurgregorio2001-coder.github.io/slop-editorial/)
+[![Slop Editorial home page, developed cover with the Free sticker](docs/hero.png)](https://monsieurgregorio2001-coder.github.io/slop-editorial/)
 
 ## In 30 seconds
 
 - **Problem.** AI makes images nearly free, so publications drift into content that nobody decided to make.
-- **Build.** A Python pipeline that estimates, caps, approves, and logs every paid generation. An Astro site whose build gates enforce voice, honesty, links, and speed.
-- **Result.** Lighthouse scores 99 to 100 in all four categories on mobile, with 4.7 KB of gzipped JavaScript and 62 passing unit tests.
+- **Build.** An Astro site that behaves like the platforms it mocks (boot screen, cookie sheet, rank, ratings that always read 4.2, a gift shop that arrives in front of the gold). Beside it, a Python pipeline that estimates, caps, approves, and logs every paid generation.
+- **Result.** Lighthouse mobile scores 94 performance and 100 in the other three categories on both the home page and the 3D page, with 0.002 layout shift, 0 ms blocking time, 143 real-browser checks, 146 build gates, and 66 unit tests passing.
 
 **Live demo:** https://monsieurgregorio2001-coder.github.io/slop-editorial/ (published by the Pages workflow once the repository is public).
 
-All sample content in this repository is original and labelled as sample. The pipeline runs offline by default with a free mock provider, so nothing here needs an account, a key, or a network connection.
+The thesis is one line: **Generation is cheap. Taste is not.** The target is platforms, metrics, incentives, AI, and the reader. Every image is drawn in code, with no photographs and no image generation service. The pipeline runs offline by default with a free mock provider, so nothing here needs an account, a key, or a network connection.
 
-## What it demonstrates
+## The ten behaviours
 
-**Taste.** Prompt packs carry a shared restraint block. Every candidate is reviewed in a contact sheet with written rejection criteria. The site voice is enforced mechanically. Taste is treated as a filter with a memory, not a mood.
+Open `/review/` on the running site for the same list with links. Metrics, ratings, ranks, and prices are staged and live in the browser only.
 
-**Editorial judgment.** The pipeline never picks for you. A person selects a candidate per prompt, and later prompts that depend on that choice regenerate while everything else stays cached. Rejections are part of the record.
+| # | Behaviour | Where | What happens |
+| --- | --- | --- | --- |
+| 1 | Homepage, first 20 seconds | `/` | A boot screen sets up your experience of being measured. The masthead prints at 0.4 s. A cookie sheet at 2.6 s offers Accept all and Accept all. The rank chip reads You: #184 today. The still develops when you move or consent, then a sticker lands: Free. Limited availability. |
+| 2 | Beautiful, then wrong | `/` scroll | The still rises under a feature headline. Then the metrics: engagement improved 18 %, preferred by people who skip, viewers preferred version B with no visible difference. |
+| 3 | One interface joke | `/feed/` | Your taste has 1 update available. Not now sets a reminder. Install runs a progress bar and ends: Installed. No visible difference. |
+| 4 | One embarrassment | `/feed/`, `/` | Stop on the image for 7 s: You have been looking for 0:07. That is above average. |
+| 5 | One banal object ruining luxury | `/authenticity/` | A gilded certificate of authenticity turns on a plinth in Three.js. The gift shop arrives in front of it: crowd barrier, a laminated PLEASE DO NOT GENERATE, sanitizer, a terminal reading TAP TO APPRECIATE 2.00, and a prompt pack at 14.99. Originality. From 0/month. |
+| 6 | Software, not a magazine | `/works/`, `/authenticity/` | The archive is an inventory with rank, rating, views, availability, a price sticker, and people like you also scrolled. The buy bar adds prompt packs and the receipt itemizes what you appreciated. |
+| 7 | The viewer becomes the joke | `/feed/` | Rate this image: the tally reads 4.2 whatever you pick. Choose A or B: no visible difference. Every action improves your rank. |
+| 8 | Mobile interaction | `/feed/` on a phone | Hold the image. A ring fills in 0.9 s: Appreciation registered. Free shipping on redemption. |
+| 9 | Reduced motion | `/?motion=reduce` | Boot, delays, and staging collapse. Metrics, sticker, shop, and buy bar sit in their finished state. |
+| 10 | Unexpectedly playful | `/authenticity/` | The gift shop works. The pack adds up, the receipt itemizes, and you are thanked for appreciating. |
 
-**Critical thinking.** Every paid action is estimated, capped, approved, and logged. Unclear outcomes block resubmission instead of risking a double charge. The site refuses to build if its own rules are broken.
+Two more pages demonstrate human-in-the-loop gates. `/releases/` tracks six sample releases like an order, each with a spend estimate, a cap, and an approval reference. `/queue/` is the approval queue, and its buttons refuse on purpose: *Approval happens with a human, not a button.*
 
 ## Architecture
 
@@ -37,17 +48,25 @@ flowchart LR
     H --> I[Human selection]
     I -->|stale downstream jobs| C
     I --> J[Review deck<br/>PPTX and PDF]
-    K[Sample pieces<br/>MDX] --> L[Astro static build]
-    L --> M[Build gates<br/>voice, links, leaks, budgets]
+    K[Works and releases<br/>MDX] --> L[Astro static build]
+    L --> M[Build gates<br/>brand, voice, links, leaks, budgets]
     M --> N[GitHub Pages workflow]
 ```
-
-Two independent parts live in one repository.
 
 | Part | Folder | Stack |
 | --- | --- | --- |
 | Generation pipeline `slopgen` | `pipeline/` | Python 3.10 or later, requests, Pillow, python-pptx, reportlab, PyYAML |
-| Publication site | `site/` | Astro 7, MDX, TypeScript, Node 22.12 or later |
+| Publication site | `site/` | Astro 7, MDX, TypeScript, GSAP ScrollTrigger, motion, Three.js, Node 22.12 or later |
+
+### Site features
+
+- Static output at the `/slop-editorial/` base, critical CSS inlined, no third-party hosts, no analytics, and no cookies.
+- View Transitions with a shared element between the cover and the feed. Scroll sequences are scrubbed by GSAP ScrollTrigger with no pinning tricks, no wheel capture, and no scroll hijack.
+- A 3D object with three tiers: WebGPU when available (guarded, with a timeout), then WebGL, then an 18-frame poster sequence for touch devices and data saver. Rotate by drag, buttons, or arrow keys.
+- Fetch-ahead on hover or touch with a priority queue and hard limits, plus a build-stamped service worker for repeat visits.
+- Reduced motion applied before first paint, from the OS setting, the footer toggle, or `?motion=reduce`. Light and dark schemes from design tokens.
+- Every image is generated in code (`scripts/make-art.mjs`, `scripts/render-poster.mjs`) and shipped as WebP. The wordmark is outlined from the font by `scripts/make-logo.py`. Fonts are self-hosted under the SIL Open Font License (`public/OFL.txt`).
+- Build gates that fail on the old brand, external requests, em dashes, semicolons, contractions, long sentences, broken links, leaks, and blown budgets. A real-browser suite drives headless Chrome through Playwright.
 
 ### Pipeline features
 
@@ -61,15 +80,6 @@ Two independent parts live in one repository.
 
 The fal and Replicate adapters follow the public API documentation and are tested against scripted fakes only. They have not been run against the live services.
 
-### Site features
-
-- Static output with critical CSS inlined, no third-party hosts, no analytics and no cookies.
-- A build gate script that fails the build on voice violations, a missing sample notice, or broken internal links. It also catches leaked credentials, missing page structure, and blown size budgets.
-- Hover-intent fetch-ahead with a priority queue and hard limits, plus a build-stamped service worker for repeat visits.
-- Reduced motion applied before first paint, with an explicit toggle and a `?motion=reduce` switch.
-- Design tokens with a dark scheme, and one component that changes mode through container queries.
-- A real-browser verification script that drives Chrome through Playwright.
-
 ## Human-in-the-loop approval gates
 
 The same pattern appears in both halves of the project. Automation proposes, a named person disposes, and the decision is written down.
@@ -82,7 +92,7 @@ A small generic example:
 4. The ledger records the approval reference next to every request. Months later, anyone can answer who allowed the spend.
 5. The editor picks one candidate with `slopgen select`. Only prompts that used the old pick regenerate, and only after another approved run.
 
-The site follows the same rule at publish time: the gate script is the approver, and a deploy job runs only from the default branch.
+The site demonstrates the same rule in its `/releases/` tracker and `/queue/` approval queue. Every sample release shows an estimate, a cap and an approval reference, and the Approve button refuses: approval happens with a human, not a button.
 
 ## How to run
 
@@ -107,13 +117,17 @@ To use a real provider, export `FAL_KEY` or `REPLICATE_API_TOKEN` and pass `--pr
 ```bash
 cd site
 npm ci
-npm run dev                # http://localhost:4321
+npm run dev                # http://localhost:4321/slop-editorial/
 npm run build
 npm run check              # build gates over dist/
 npm test                   # unit tests for the gate logic and helpers
-CHROMIUM_PATH=/path/to/chrome npm run verify   # real-browser checks
-CHROMIUM_PATH=/path/to/chrome node scripts/screenshots.mjs docs   # regenerate screenshots
+npm run verify             # real-browser checks in headless Chrome, axe in light and dark
+npm run poster             # re-render the 3D poster frames from the live scene
+npm run art                # re-render the generated images
+npm run screenshots        # review screenshots, README hero, card, and Open Graph image
 ```
+
+`verify`, `poster`, `art`, and `screenshots` use Google Chrome. They look for it at the macOS default path and honour `CHROMIUM_PATH`.
 
 ## Deploying the site
 
@@ -121,28 +135,32 @@ The workflow in `.github/workflows/site.yml` builds the site with the repository
 
 ## Tests and measured results
 
-Measured on 14 October 2026 on one laptop. Treat these as a snapshot, not a benchmark.
+Measured on 14 October 2026 on one laptop, with headless Google Chrome. Treat these as a snapshot, not a benchmark.
 
 | Check | Result |
 | --- | --- |
 | Python unit tests (`pipeline/`) | 49 pass |
-| Node unit tests for gate logic and helpers (`site/`) | 13 pass |
-| Real-browser checks in Chrome (`npm run verify`) | 11 pass |
-| Site build gates (`npm run check`) | all pass, including voice, sample labelling, links, leaks, and budgets |
-| Lighthouse, mobile preset, home page | 100 performance, 100 accessibility, 100 best practices, 100 SEO |
-| Lighthouse, mobile preset, piece page | 99 performance, 100 accessibility, 100 best practices, 100 SEO |
-| Largest contentful paint, home page | 1.8 s, with 0 layout shift and 0 ms blocking time |
-| JavaScript shipped | 4.7 KB gzipped |
-| Mock pipeline, 8 candidates plus review sheet plus deck | 1.2 s cold, 0.23 s when fully cached |
+| Node unit tests for gate logic and helpers (`site/`) | 17 pass |
+| Real-browser checks in Chrome (`npm run verify`) | 143 pass, 0 fail |
+| Axe accessibility, 10 page types in light and dark | 20 runs, 0 violations (WCAG 2.1 A and AA plus best practice) |
+| Site build gates (`npm run check`) | 146 checks pass |
+| Lighthouse, mobile preset, home page | 94 performance, 100 accessibility, 100 best practices, 100 SEO |
+| Lighthouse, mobile preset, `/authenticity/` | 94 performance, 100 accessibility, 100 best practices, 100 SEO |
+| Largest contentful paint, home and 3D page | 3.0 s and 2.9 s under simulated slow 4G, 0.002 layout shift, 0 ms blocking time |
+| JavaScript shipped | 81 KB gzipped shared, 379 KB gzipped for the lazy 3D chunk, loaded only on `/authenticity/` |
+| Horizontal scroll at 360 px | none on all 10 page types |
+| Mock pipeline, 8 candidates plus review sheet plus deck | 1.3 s cold, 0.4 s when fully cached |
 
 ## Credits
 
-- Fonts: Fraunces, Inter, and JetBrains Mono, self-hosted as latin subsets under the SIL Open Font License 1.1.
+- Fonts: Bricolage Grotesque, Inter, and JetBrains Mono, self-hosted as latin subsets under the SIL Open Font License 1.1.
 - Built by Garfield Greg Lim III.
 
 ## Limits and honesty
 
-- The sample essays are short and exist to exercise the site, not to make claims about the industry.
+- The works are short original satire written to exercise the site, not to make claims about the industry.
+- Release figures on `/releases/` and `/queue/` are sample data from the free mock provider.
+- The 3D object is a procedural placeholder. The WebGPU path is guarded but was not run on real WebGPU hardware. WebGL, the poster tier, and the fallbacks were verified.
 - The mock provider draws abstract placeholder frames. They prove the plumbing, not image quality.
 - Live provider behavior, prices and model names change. Treat the price tables as planning figures.
 

@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { PUBLIC_CONTACT, hrefToFile, internalHrefs, leakViolations, longSentences, remoteResources, structureViolations, visibleText, voiceViolations } from "../scripts/lib-gates.mjs";
+import { brandViolation, PUBLIC_CONTACT, hrefToFile, internalHrefs, leakViolations, longSentences, remoteResources, structureViolations, visibleText, voiceViolations } from "../scripts/lib-gates.mjs";
 
 test("visibleText drops scripts, styles, comments and decodes entities", () => {
   const html = "<style>a{}</style><p>Tom &amp; Jo</p><!-- hidden --><script>var x = 1;</script>";
@@ -9,7 +9,7 @@ test("visibleText drops scripts, styles, comments and decodes entities", () => {
 
 test("voice gate flags em dash, semicolon and contractions", () => {
   assert.deepEqual(voiceViolations("A plain sentence, with a colon: fine."), []);
-  assert.ok(voiceViolations("One — two").includes("em dash"));
+  assert.ok(voiceViolations("One \u2014 two").includes("em dash"));
   assert.ok(voiceViolations("One; two").includes("semicolon"));
   for (const bad of ["it's", "don't", "we’re", "they'll", "I'm", "let's"]) {
     assert.ok(voiceViolations(`say ${bad} here`).some((v) => v.startsWith("contraction")), bad);
@@ -64,4 +64,17 @@ test("longSentences flags prose over 25 words only", () => {
 test("remoteResources finds external loads but not plain links", () => {
   const html = '<a href="https://example.org/">x</a><link rel="stylesheet" href="https://fonts.example/a.css"><script src="https://cdn.example/a.js"></script><img src="/a.png">';
   assert.deepEqual(remoteResources(html), ["https://cdn.example/a.js", "https://fonts.example/a.css"]);
+});
+
+test("brand gate flags the old brand and banned subject words but not look-alikes", () => {
+  for (const bad of ["vul" + "gar", "VL" + "GR", "A51" + "025", "Ant" + "on", "insta" + "gram", "DE" + "C-112", "je" + "sus", "rel" + "ic", "ga" + "ze"]) {
+    assert.ok(brandViolation(`say ${bad} here`), bad);
+  }
+  assert.equal(brandViolation("Banter and a decimal"), null);
+  assert.equal(brandViolation("Slop Editorial. Generation is cheap."), null);
+});
+
+test("longSentences ignores layout list items that wrap other blocks", () => {
+  const wrapper = `<li><div>${"word ".repeat(40)}</div><dl><dd>Short.</dd></dl></li>`;
+  assert.deepEqual(longSentences(wrapper), []);
 });

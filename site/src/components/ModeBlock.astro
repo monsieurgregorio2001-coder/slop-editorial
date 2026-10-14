@@ -1,0 +1,27 @@
+---
+// One component, five behavioural modes. The block reads its own container width and re-points
+// its own tokens, so the same grammar can be editorial, luxury, telemetry, commercial or failing.
+interface Props { mode: "editorial" | "luxury" | "telemetry" | "commercial" | "failure"; label: string; note?: string; }
+const { mode, label, note } = Astro.props;
+---
+<figure class="block" data-mode={mode}>
+  <figcaption class="sys block__label">{label}</figcaption>
+  <div class="block__body"><slot /></div>
+  {note && <p class="sys block__note">{note}</p>}
+</figure>
+
+<style>
+  .block { container-type: inline-size; margin: 0; padding: clamp(14px, 3cqi, 28px); background: var(--b); color: var(--f); --muted: var(--m); border-top: 3px solid var(--a); display: grid; gap: 12px; border-radius: 4px; }
+  .block[data-mode="editorial"] { --b: #F6F3EC; --f: #12111A; --a: #4B2BFF; --m: #5A586A; }
+  .block[data-mode="luxury"] { --b: #0E0B1F; --f: #F6F1E3; --a: #E5B13A; --m: #BDB293; }
+  .block[data-mode="telemetry"] { --b: #0b1020; --f: #E7ECFF; --a: #19D3C5; --m: #9FB0D8; }
+  .block[data-mode="commercial"] { --b: #FFE14D; --f: #12111A; --a: #12111A; --m: #3d3a1a; border-radius: 18px; border-top-width: 0; }
+  .block[data-mode="failure"] { --b: #4B2BFF; --f: #FFFFFF; --a: #FFE14D; --m: #E3DDFF; }
+  .block__label { color: var(--a); }
+  .block[data-mode="commercial"] .block__label { color: var(--f); }
+  .block__body { font-size: clamp(18px, 5.2cqi, 24px); line-height: 1.3; font-weight: 600; }
+  .block[data-mode="luxury"] .block__body { font-family: var(--display); font-weight: 800; font-size: clamp(24px, 8cqi, 40px); letter-spacing: -.02em; line-height: 1; }
+  .block[data-mode="telemetry"] .block__body { font-family: var(--mono); font-weight: 500; font-size: clamp(13px, 3.8cqi, 16px); letter-spacing: .04em; text-transform: uppercase; }
+  .block[data-mode="failure"] .block__body { font-family: var(--display); font-weight: 800; font-size: clamp(28px, 10cqi, 52px); line-height: .95; }
+  .block__note { margin: 0; }
+</style>
