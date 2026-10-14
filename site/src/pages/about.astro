@@ -1,0 +1,20 @@
+---
+import Base from "../layouts/Base.astro";
+---
+<Base title="Method | Slop Editorial" description="How the sample site is built and what its automated gates check." page="about">
+  <article class="piece">
+    <p class="label">Method</p>
+    <h1>What the build refuses to ship</h1>
+    <div class="body">
+      <p>This site is a static build. Before it can be deployed, a gate script reads every generated page and fails the build on any violation.</p>
+      <h2>Voice</h2>
+      <p>No em dashes, no semicolons, and no contractions in visible prose. The rule is mechanical so that it never depends on a reviewer being tired.</p>
+      <h2>Honesty</h2>
+      <p>Every piece page must carry the sample notice. A page that loses it fails the build.</p>
+      <h2>Speed</h2>
+      <p>Critical CSS is inlined, no third-party host is contacted, and the JavaScript budget is small. A service worker caches repeat visits. A hover-intent queue fetches the next page before the click.</p>
+      <h2>Care</h2>
+      <p>Reduced motion is applied before first paint. Every image has alt text. Every internal link must resolve to a built file.</p>
+    </div>
+  </article>
+</Base>

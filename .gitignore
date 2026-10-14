@@ -1,0 +1,12 @@
+.DS_Store
+__pycache__/
+*.pyc
+*.egg-info/
+.venv/
+pipeline/runs/
+site/node_modules/
+site/dist/
+site/.astro/
+site/test-output/
+.env
+.env.*

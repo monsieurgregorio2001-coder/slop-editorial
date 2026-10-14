@@ -1,0 +1,49 @@
+---
+import Base from "../layouts/Base.astro";
+import { getCollection } from "astro:content";
+import { orderLabel, readingMinutes, withBase } from "../lib/text.js";
+const pieces = (await getCollection("pieces")).sort((a, b) => a.data.order - b.data.order);
+const base = import.meta.env.BASE_URL;
+const REPO = "https://github.com/monsieurgregorio2001-coder/slop-editorial";
+---
+<Base title="Slop Editorial" page="home">
+  <section class="hero">
+    <p class="label">Sample publication and portfolio project</p>
+    <h1>Generation is cheap. Taste is not.</h1>
+    <p class="lede">Slop Editorial pairs a spend-capped AI image pipeline with a static site that refuses to build when its own editorial rules are broken. Read the sample essays, then open the code.</p>
+    <div class="hero__cta">
+      <a class="btn btn--primary" href={withBase(base, `pieces/${pieces[0].id}/`)}>Read a sample piece</a>
+      <a class="btn" href={REPO} rel="noopener">View the code</a>
+    </div>
+  </section>
+
+  <section class="case" aria-labelledby="case-h">
+    <h2 id="case-h">About this project</h2>
+    <dl>
+      <dt>Problem</dt>
+      <dd>AI makes images nearly free, so publications drift into content that nobody decided to make.</dd>
+      <dt>Build</dt>
+      <dd>A Python pipeline that estimates, caps, approves, and logs every paid generation, plus an Astro site whose build gates enforce voice, honesty, links, and speed.</dd>
+      <dt>Result</dt>
+      <dd>Lighthouse scores 99 to 100 in all four categories on mobile, with 4.7 KB of gzipped JavaScript and 62 passing unit tests.</dd>
+    </dl>
+  </section>
+
+  <section class="section" aria-labelledby="pieces-h">
+    <h2 id="pieces-h">Sample pieces</h2>
+    <ol class="list">
+      {pieces.map((p) => (
+        <li>
+          <a class="row" href={withBase(base, `pieces/${p.id}/`)}>
+            <span class="label mono">{orderLabel(p.data.order)}</span>
+            <span>
+              <span class="row__t">{p.data.title}</span>
+              <p class="row__s">{p.data.summary}</p>
+            </span>
+            <span class="row__meta label"><span class="mono">{readingMinutes(p.body)} min</span> <span class="tag">Sample</span></span>
+          </a>
+        </li>
+      ))}
+    </ol>
+  </section>
+</Base>

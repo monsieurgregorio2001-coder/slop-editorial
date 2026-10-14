@@ -1,0 +1,29 @@
+name: ai-and-taste
+size: [1024, 1280]
+seed: 11
+candidates: 2
+
+sources:
+  pack: prompts/ai-and-taste.md
+
+blocks:
+  RESTRAINT: {source: pack, after: "Restraint block"}
+
+prompts:
+  - {id: P1, source: pack, heading: "Prompt 1"}
+  - id: P2
+    source: pack
+    heading: "Prompt 2"
+    refs: [{file: references/style-reference.png}, {chain: P1}]
+  - id: P3
+    source: pack
+    heading: "Prompt 3"
+    refs: [{chain: P1}, {chain: P2}]
+  - {id: P4, source: pack, heading: "Prompt 4"}
+  - {id: P5, source: pack, heading: "Prompt 5", optional: true}
+
+deck:
+  source: pack
+  heading: "Deck:"
+  images: {2: P1, 3: P2, 4: P3}
+  placeholder_slides: [2, 3, 4]

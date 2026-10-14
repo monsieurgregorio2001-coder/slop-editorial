@@ -1,0 +1,25 @@
+{
+  "name": "slop-editorial-site",
+  "private": true,
+  "type": "module",
+  "version": "0.1.0",
+  "license": "MIT",
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "check": "node scripts/check.mjs",
+    "test": "node --test test/",
+    "verify": "node scripts/verify.mjs"
+  },
+  "dependencies": {
+    "@astrojs/mdx": "^8.0.3",
+    "astro": "^7.3.7"
+  },
+  "devDependencies": {
+    "playwright-core": "^1.64.0"
+  },
+  "engines": {
+    "node": ">=22.12.0"
+  }
+}

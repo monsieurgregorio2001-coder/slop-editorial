@@ -1,0 +1,11 @@
+---
+import Base from "../layouts/Base.astro";
+import { withBase } from "../lib/text.js";
+---
+<Base title="Not found | Slop Editorial" page="404">
+  <section class="hero">
+    <p class="label">404</p>
+    <h1>This page was not generated.</h1>
+    <p><a href={withBase(import.meta.env.BASE_URL)}>Back to the pieces</a></p>
+  </section>
+</Base>
