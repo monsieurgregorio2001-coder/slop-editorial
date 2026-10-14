@@ -9,22 +9,21 @@ const ready = queue.filter((r) => r.data.state === "READY");
 const label: Record<string, string> = { DRAFT: "Draft", IN_REVIEW: "In review", READY: "Ready for a human", APPROVED: "Approved" };
 ---
 <Base title="Approval queue · Slop Editorial" description="The approval queue: every release waits for a human, and the buttons refuse on purpose." page="queue">
-  <section class="go">
-    <div class="go__head">
-      <p class="ui">Checkout · {queue.length} items in calendar order · {ready.length} ready · nothing sent, posted or scheduled</p>
-      <h1 class="go__h">Nothing ships without a person.</h1>
-      <p class="ui">Every release waits here with its exact asset, text and destination. Approval is given by a named human with a reference. The buttons on this page refuse, on purpose.</p>
-      <p class="status" role="status" aria-live="polite" data-queue-status>No decision recorded.</p>
+  <section class="wrap section go">
+    <div class="head">
+      <p class="sys">Approval queue · {queue.length} items in calendar order · {ready.length} ready · nothing sent, posted or scheduled</p>
+      <h1 class="h1">Nothing ships without a person.</h1>
+      <p class="lede">Every release waits here with its exact asset, text and destination. Approval is given by a named human with a reference. The buttons on this page refuse, on purpose.</p>
+      <p class="status mono" role="status" aria-live="polite" data-queue-status>No decision recorded.</p>
     </div>
 
     <ol class="items">
       {queue.map((r) => (
         <li class="item" data-ready={r.data.state === "READY" ? "" : undefined}>
           <div class="item__main">
-            <span class="ui">{r.data.id} · {r.data.window}</span>
-            <a class="display item__t" href={u(`releases/${r.id}/`)}>{r.data.title}</a>
-            <span class="ui">{r.data.kind}</span>
-            <dl class="item__dl">
+            <span class="mono">{r.data.id} · {r.data.window} · {r.data.kind}</span>
+            <a class="item__t" href={u(`releases/${r.id}/`)}>{r.data.title}</a>
+            <dl class="label__dl item__dl">
               <dt>Asset</dt><dd>{r.data.production}</dd>
               <dt>Text</dt><dd>{r.data.caption}</dd>
               <dt>Destination</dt><dd>{r.data.destination}</dd>
@@ -43,7 +42,7 @@ const label: Record<string, string> = { DRAFT: "Draft", IN_REVIEW: "In review", 
 
     <aside class="help">
       <p class="help__h">Need help?</p>
-      <p>I understand your frustration. Would you like to speak to an agent? I am the agent.</p>
+      <p class="label__note">I understand your frustration. Would you like to speak to an agent? I am the agent.</p>
     </aside>
 
     <figure class="receipt">
@@ -71,22 +70,18 @@ const label: Record<string, string> = { DRAFT: "Draft", IN_REVIEW: "In review", 
 </Base>
 
 <style>
-  .go { padding: clamp(40px, 8vh, 96px) var(--gutter) clamp(60px, 12vh, 120px); display: grid; gap: 32px; min-height: 80svh; align-content: start; }
-  .go__head { display: grid; gap: 10px; max-width: 70ch; }
-  .go__h { font: 800 clamp(38px, 5.6vw, 80px)/1 var(--display); letter-spacing: -.04em; }
-  .status { font: 600 16px/1.4 var(--text); padding: 10px 14px; border-radius: 10px; background: var(--violet-wash); color: var(--fg); width: fit-content; }
-  .items { list-style: none; margin: 0; padding: 0; display: grid; gap: 14px; }
-  .item { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 20px; padding: 22px; background: var(--card); border: 1px solid var(--line); border-radius: 16px; }
-  .item[data-ready] { border-color: var(--fg); }
+  .go { display: grid; gap: 32px; min-height: 70svh; align-content: start; }
+  .status { color: var(--fg); padding: 8px 12px; border: 1px solid var(--line); border-radius: 8px; width: fit-content; margin-top: 8px; }
+  .items { list-style: none; margin: 0; padding: 0; display: grid; border-top: 1px solid var(--line); }
+  .item { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 20px; padding: 22px 0; border-bottom: 1px solid var(--line); }
+  .item[data-ready] { border-left: 2px solid var(--gold); padding-left: 16px; }
   .item__main { display: grid; gap: 6px; }
-  .item__t { font-size: clamp(28px, 3.6vw, 48px); text-decoration: none; }
+  .item__t { font: 600 clamp(20px, 2vw, 26px)/1.2 var(--display); letter-spacing: -.02em; text-decoration: none; }
   .item__t:hover { color: var(--accent); }
-  .item__dl { margin: 8px 0 0; display: grid; grid-template-columns: auto 1fr; gap: 4px 16px; font-size: 15px; line-height: 1.45; }
-  .item__dl dt { color: var(--muted); } .item__dl dd { margin: 0; }
+  .item__dl { margin-top: 8px; }
   .item__side { display: grid; gap: 8px; align-content: start; justify-items: end; }
-  .pill[data-tone="ready"] { background: var(--sticker); color: #12111A; }
   .receipt { rotate: -1deg; }
-  .help { max-width: 52ch; padding: 16px 18px; border: 1px dashed var(--muted); border-radius: 14px; display: grid; gap: 4px; }
-  .help__h { font: 700 18px/1.3 var(--display); }
+  .help { max-width: 52ch; padding: 16px 18px; border: 1px dashed var(--muted); border-radius: 10px; display: grid; gap: 4px; }
+  .help__h { font: 600 17px/1.3 var(--display); }
   @media (max-width: 640px) { .item { grid-template-columns: 1fr; } .item__side { justify-items: start; grid-auto-flow: column; justify-content: start; } }
 </style>

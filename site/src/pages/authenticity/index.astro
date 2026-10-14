@@ -56,7 +56,7 @@ const beats = [
     <section class="spec" aria-label="Notes">
       <div class="spec__col">
         <p class="sys">Sample object and copy</p>
-        <p class="note">The object is a procedural placeholder, built from a few lathe profiles and an extruded rosette. No scan, no photograph, no asset.</p>
+        <p class="note">The object is procedural 3D, built from a few lathe profiles and an extruded rosette. The framed certificate on the works page is its generated portrait.</p>
         <p class="note">The gift shop is the work. A certificate is cheap to print and expensive to believe. The shop sells extra fingers to make up the difference.</p>
         <p class="ui">Appreciation is free. The pack is 14.99. The extra finger is 2.99. Taste is sold separately.</p>
       </div>
@@ -79,7 +79,7 @@ const beats = [
         <p class="receipt__h">Thank you for appreciating</p>
         <p class="ui">No payment is taken. Nothing is sold. Nothing leaves this browser.</p>
       </figure>
-      <a class="back" href={u("feed/")} data-back><span class="sys">Previous work</span><span class="display back__t">The Still</span></a>
+      <a class="back" href={u("works/")} data-back><span class="sys">Back to the exhibition</span><span class="display back__t">All nine works</span></a>
     </section>
 
     <div class="buybar" data-buybar><span class="ui">Prompt pack (<span data-cart>0</span>) · Free shipping on redemption</span><button class="btn btn--go" type="button" data-add-cart>Add prompt pack · 14.99</button></div>
@@ -106,7 +106,7 @@ const beats = [
   .beat { position: absolute; left: 0; right: 0; bottom: 0; display: grid; gap: 10px; justify-items: center; opacity: 0; transform: translateY(14px); transition: opacity 600ms var(--ease), transform 600ms var(--ease); }
   .beat[data-on] { opacity: 1; transform: none; }
   .beat__k { color: var(--accent); }
-  .beat__h { font-size: clamp(38px, 6.6vw, 100px); color: var(--cream); }
+  .beat__h { font-size: clamp(30px, 5vw, 72px); color: var(--cream); }
   .beat--tiny .beat__h { font: 500 clamp(16px, 1.6vw, 21px)/1.3 var(--text); letter-spacing: .01em; color: rgb(246 241 227 / .88); }
   .beat__p { max-width: 34ch; color: rgb(246 241 227 / .9); font-size: clamp(16px, 1.4vw, 20px); }
 
@@ -119,7 +119,7 @@ const beats = [
   .spec__col { width: min(56ch, 100%); display: grid; gap: 1.2em; }
   .note { font-size: 18px; }
   .back { display: grid; gap: 10px; text-decoration: none; }
-  .back__t { font-size: clamp(54px, 12vw, 180px); transition: color 300ms var(--ease); }
+  .back__t { font-size: clamp(32px, 5vw, 64px); transition: color 300ms var(--ease); }
   .back:hover .back__t, .back:focus-visible .back__t { color: var(--accent); }
   .tier { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
 

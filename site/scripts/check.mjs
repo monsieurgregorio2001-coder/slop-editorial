@@ -52,7 +52,7 @@ for (const f of workPages) (await readFile(f, "utf8")).includes("data-sample") ?
 
 // 3. Brand tokens, logo, old-brand scan and leaks.
 const cssAll = (await Promise.all(files.filter((f) => /\.(css|html)$/.test(f)).map((f) => readFile(f, "utf8")))).join("\n").toLowerCase();
-for (const [n, v] of [["ink", "#12111a"], ["paper", "#f6f3ec"], ["violet", "#4b2bff"], ["stage", "#0e0b1f"], ["dark paper", "#0e0d14"]]) cssAll.includes(v) ? pass(`brand: ${n} ${v} present`) : fail(`brand: ${n} ${v} missing`);
+for (const [n, v] of [["ink", "#17171b"], ["paper", "#faf8f4"], ["violet", "#4b2bff"], ["stage", "#0e0b1f"], ["graphite", "#141316"]]) cssAll.includes(v) ? pass(`brand: ${n} ${v} present`) : fail(`brand: ${n} ${v} missing`);
 for (const name of ["logo.svg", "wordmark.svg", "favicon.svg"]) files.some((f) => f.endsWith(name)) ? pass(`brand: ${name} shipped`) : fail(`brand: ${name} missing`);
 const textFiles = files.filter((x) => /\.(html|js|css|json|svg|txt|webmanifest)$/.test(x));
 const srcFiles = (await walk(path.resolve("src"))).concat((await walk(path.resolve("scripts"))), (await walk(path.resolve("test")))).filter((f) => /\.(astro|ts|js|mjs|mdx|css|py)$/.test(f));

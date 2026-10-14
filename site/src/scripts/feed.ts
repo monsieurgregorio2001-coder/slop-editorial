@@ -1,7 +1,7 @@
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { animate } from "motion";
-import { notice, view, bindViewed, reducedMotion, dialog, rate, rated, score, cart } from "./system";
+import { notice, view, bindViewed, reducedMotion, dialog, score, cart } from "./system";
 import { watchReader } from "./behaviour";
 import { play } from "./sound";
 
@@ -46,26 +46,6 @@ export function initFeed() {
   stage.addEventListener("pointerdown", holdStartFn); stage.addEventListener("pointerup", holdEnd); stage.addEventListener("pointercancel", holdEnd);
   off.push(() => { stage.removeEventListener("pointerdown", holdStartFn); stage.removeEventListener("pointerup", holdEnd); stage.removeEventListener("pointercancel", holdEnd); holdEnd(); });
 
-  // --- Product controls: A and B that are identical, stars that always agree. ---
-  const ab = (e: Event) => {
-    const b = (e.target as HTMLElement).closest<HTMLButtonElement>("[data-ab]"); if (!b) return;
-    document.querySelectorAll<HTMLButtonElement>("[data-ab]").forEach((x) => { const on = x === b; x.classList.toggle("btn--primary", on); x.setAttribute("aria-pressed", String(on)); });
-    notice(`Version ${b.dataset.ab} selected. No visible difference.`); play("card"); score(10);
-  };
-  document.querySelector(".ab")?.addEventListener("click", ab);
-  const stars = document.querySelector<HTMLElement>("[data-stars]");
-  const out = document.querySelector<HTMLElement>("[data-rate-out]");
-  const lit = (n: number) => stars?.querySelectorAll<HTMLElement>("[data-star]").forEach((s) => s.toggleAttribute("data-lit", Number(s.dataset.star) <= n));
-  lit(rated());
-  const onStar = (e: Event) => {
-    const s = (e.target as HTMLElement).closest<HTMLElement>("[data-star]"); if (!s) return;
-    const n = Number(s.dataset.star); lit(n);
-    const r = rate(n); if (out) out.textContent = `${r.avg} · ${r.n} ratings · Preferred by people who skip`;
-    notice(n >= 4 ? "Thank you. Your taste has been updated." : "Thank you. Your taste has been noted."); play("confirm"); score(20);
-  };
-  stars?.addEventListener("click", onStar);
-  off.push(() => { document.querySelector(".ab")?.removeEventListener("click", ab); stars?.removeEventListener("click", onStar); });
-
   // --- The dialog addresses the reader's own taste. Once per session. ---
   const askUpdate = async () => {
     try { if (sessionStorage.getItem("slop.update") === "1") return; sessionStorage.setItem("slop.update", "1"); } catch { /* ignore */ }
@@ -81,8 +61,8 @@ export function initFeed() {
   let gx = 0, gy = 0, cur: { stop: () => void } | null = null;
   let closer = 0; // 0..1, driven by scroll: the image keeps getting closer
   const paint = () => {
-    const s = 1 + closer * 0.4;
-    img.style.transform = `translate3d(${gx * -2}%, ${gy * -2}%, 0) scale(${s})`;
+    const s = 1 + closer * 0.08;
+    img.style.transform = `translate3d(${gx * -1}%, ${gy * -1}%, 0) scale(${s})`;
   };
   paint();
   if (!rm) {
@@ -109,7 +89,7 @@ export function initFeed() {
   const mc = document.querySelector<HTMLElement>("[data-m-count]");
   if (mc) {
     if (rm) mc.textContent = mc.dataset.mCount ?? "18";
-    else ScrollTrigger.create({ trigger: mc, start: "top 80%", once: true, onEnter: () => { gsap.fromTo(mc, { textContent: 0 }, { textContent: Number(mc.dataset.mCount), duration: 1.2, snap: { textContent: 1 }, ease: "power2.out" }); score(20); } });
+    else ScrollTrigger.create({ trigger: mc, start: "top 80%", once: true, onEnter: () => { gsap.fromTo(mc, { textContent: 0 }, { textContent: Number(mc.dataset.mCount), duration: 1.2, snap: { textContent: 1 }, ease: "power2.out" }); score(20); notice("This image performed well.", { once: "beauty" }); } });
   }
 
   // Typography that behaves like software: the caption is read first without its one

@@ -5,34 +5,33 @@ const u = (p = "") => withBase(import.meta.env.BASE_URL, p);
 const REPO = "https://github.com/monsieurgregorio2001-coder/slop-editorial";
 ---
 <Base title="Method · Slop Editorial" description="How Slop Editorial is made: a satire built as software, with a pipeline that keeps a human in the loop." page="about">
-  <article class="about">
-    <p class="sys">Method</p>
-    <h1 class="about__h">Generation is cheap. Taste is not.</h1>
-    <p class="lede">Slop Editorial is a deadpan satire of AI slop and the attention economy. It targets platforms, metrics, incentives, and the output, never people.</p>
-
-    <h2>Problem</h2>
-    <p>AI makes images nearly free, so feeds fill with content nobody decided to make. Hands get six fingers, signs say Sunseet, and every comment says Amazing.</p>
-    <h2>Build</h2>
-    <p>A static Astro site with scroll-driven staging, a real 3D object with three render tiers, and build gates that enforce voice and speed. Beside it sits a Python pipeline that estimates, caps, approves, and logs every generation.</p>
-    <h2>Result</h2>
-    <p>The release tracker and the approval queue show the point of the whole thing. Approval happens with a human, not a button.</p>
-
-    <h2>Honesty notes</h2>
-    <ul>
-      <li>Every image is drawn in code. There are no photographs and no image generation services.</li>
-      <li>Ratings, ranks, views, and prices are staged and live in this browser only.</li>
-      <li>The site sets no cookies and runs no analytics. The cookie sheet is the joke.</li>
-      <li>Fonts are self-hosted under the SIL Open Font License. <a href={u("OFL.txt")}>Read the license</a>.</li>
-    </ul>
-    <p><a class="btn" href={REPO} rel="noopener">Read the code</a></p>
+  <article class="wrap section about">
+    <div class="head">
+      <p class="sys">Method</p>
+      <h1 class="h1">Generation is cheap. Taste is not.</h1>
+      <p class="lede">Slop Editorial is a deadpan satire of AI slop and the attention economy. It hangs the output like an exhibition and labels it with the metrics that made it. It targets platforms, incentives and the output, never people.</p>
+    </div>
+    <div class="prose">
+      <h2 class="h2">Problem</h2>
+      <p>AI makes images nearly free, so feeds fill with content nobody decided to make. Hands get six fingers, signs say Sunseet, and every comment says Amazing.</p>
+      <h2 class="h2">Build</h2>
+      <p>A static Astro site with a real 3D object in three render tiers, and build gates that enforce voice, structure and speed. Nine images were generated from written briefs with an image model, then checked by a person against each brief: six digits, three suns, readable text. Beside the site sits a Python pipeline that estimates, caps, approves, and logs every generation.</p>
+      <h2 class="h2">Result</h2>
+      <p>The release tracker and the approval queue show the point of the whole thing. Approval happens with a human, not a button.</p>
+      <h2 class="h2">Honesty notes</h2>
+      <ul>
+        <li>Every image was generated from a written brief with an image model. The briefs, the checks and the rejects are in the repository.</li>
+        <li>The certificate object on the certificate page is procedural 3D, drawn in code.</li>
+        <li>Ratings, ranks, views, and prices are staged and live in this browser only.</li>
+        <li>The site sets no cookies and runs no analytics. The cookie sheet is the joke.</li>
+        <li>Fonts are self-hosted under the SIL Open Font License. <a href={u("OFL.txt")}>Read the license</a>.</li>
+      </ul>
+      <p><a class="btn" href={REPO} rel="noopener">Read the code</a></p>
+    </div>
   </article>
 </Base>
-
 <style>
-  .about { max-width: 68ch; margin: 0 auto; padding: clamp(40px, 8vh, 96px) var(--gutter) 96px; display: grid; gap: 16px; }
-  .about__h { font: 800 clamp(40px, 6vw, 80px)/1 var(--display); letter-spacing: -.04em; }
-  .lede { font-size: 20px; }
-  h2 { font: 700 22px/1.2 var(--display); letter-spacing: -.02em; margin-top: 20px; }
+  .about { max-width: calc(68ch + 2 * var(--gutter)); margin-inline: auto; }
+  .prose .h2 { margin-top: 12px; }
   ul { margin: 0; padding-left: 1.2em; display: grid; gap: 8px; }
-  .btn { display: inline-flex; align-items: center; text-decoration: none; margin-top: 12px; }
 </style>

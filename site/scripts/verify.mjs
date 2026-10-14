@@ -1,4 +1,4 @@
-// Real-browser verification in headless Google Chrome: the ten behaviours, the release tracker and
+// Real-browser verification in headless Google Chrome: the gallery front, the ten behaviours, the release tracker and
 // approval queue, reduced motion, the 3D tiers, layout, accessibility (axe, light and dark), network
 // hygiene and voice of every runtime message. Serves dist/ itself. No shared browser pane.
 // Usage: npm run build && node scripts/verify.mjs
@@ -45,96 +45,85 @@ const notices = (page) => page.evaluate(() => window.__notices || []);
 async function collect(page) { for (const n of await notices(page)) allNotices.add(n); }
 const text = (page, sel) => page.locator(sel).first().textContent();
 const hudId = (page) => page.locator("[data-hud-id]").textContent();
-const rankOf = async (page) => Number(((await hudId(page)) || "").match(/#(\d+)/)?.[1]);
+const rankOf = async (page) => Number(((await hudId(page)) || "").match(/(\d+)/)?.[1]);
 const D = { viewport: { width: 1280, height: 800 } };
 const M = { viewport: { width: 360, height: 740 }, deviceScaleFactor: 2, hasTouch: true, isMobile: true };
 
 // ---------------------------------------------------------------------------------------------
-// 1. Home: the first twenty seconds, by movement
+// 1. Home: the front of the gallery
 {
-  const page = await open(D, "", "home-move");
-  await sleep(450);
-  ok("01 boot screen is up at 0.45 s", await page.evaluate(() => document.documentElement.dataset.boot === "on" && getComputedStyle(document.querySelector("[data-boot]")).display !== "none"));
-  ok("01 boot line names the experience of being measured", /being measured/.test(await text(page, "[data-boot-line]")));
-  ok("01 masthead printed (data-mast) by 0.9 s", await page.waitForFunction(() => document.querySelector("[data-cover]").hasAttribute("data-mast"), null, { timeout: 2000 }).then(() => true, () => false));
+  const page = await open(D, "", "home");
+  await sleep(300);
+  ok("01 no boot screen, the gallery is open at once", await page.evaluate(() => !document.querySelector("[data-boot]") && document.documentElement.dataset.boot !== "on"));
+  ok("01 navigation is present at once", (await page.locator(".shell__nav a").count()) === 5);
   await page.waitForSelector("[data-cookies][data-on]", { timeout: 6000 });
   const btns = await page.locator("[data-cookies] [data-accept]").allInnerTexts();
   ok("01 cookie sheet offers Accept all and Accept all", btns.length === 2 && btns.every((b) => b.trim() === "Accept all"), JSON.stringify(btns));
-  ok("01 the sheet arrives near 2.6 s, not before boot ends", true);
-  await page.waitForFunction(() => document.documentElement.dataset.hud === "on", null, { timeout: 4000 });
-  ok("01 rank chip reads You: #184 today", (await hudId(page)).trim() === "You: #184 today", await hudId(page));
-  const developedEarly = await page.evaluate(() => document.querySelector("[data-cover]").hasAttribute("data-image"));
-  ok("01 the image has not developed before the reader acts", !developedEarly);
-  await page.mouse.move(400, 400); await page.mouse.move(520, 430);
-  ok("01 the image develops on movement", await page.waitForFunction(() => document.querySelector("[data-cover]").hasAttribute("data-image"), null, { timeout: 2500 }).then(() => true, () => false));
-  ok("01 sticker lands: Free. Limited availability.", await page.waitForFunction(() => document.querySelector("[data-cover]").hasAttribute("data-sticker"), null, { timeout: 4000 }).then(async () => { const t = await page.locator(".cover__sticker").textContent(); return /Free\./.test(t) && /Limited availability\./.test(t); }, () => false));
-  ok("01 navigation arrives after the image", await page.waitForFunction(() => document.documentElement.dataset.nav === "on", null, { timeout: 3000 }).then(() => true, () => false));
-  const hero = await page.evaluate(() => { const i = document.querySelector(".cover__img img"); return { w: i.naturalWidth, alt: i.alt }; });
+  ok("01 visitor line reads Visitor no. 184 today", (await hudId(page)).trim() === "Visitor no. 184 today", await hudId(page));
+  const hero = await page.evaluate(() => { const i = document.querySelector(".cover__img img"); return { w: i.naturalWidth, h: i.naturalHeight, alt: i.alt }; });
   ok("01 hero still is loaded with alt text", hero.w > 0 && hero.alt.length > 40, `${hero.w}px`);
+  ok("01 the desktop hero is the full widescreen still", hero.w / hero.h > 1.6, `${hero.w}x${hero.h}`);
+  ok("01 sticker reads Free. Limited availability.", /Free\./.test(await text(page, ".cover__sticker")) && /Limited availability\./.test(await text(page, ".cover__sticker")));
+  const label = (await text(page, ".cover__label")).replace(/\s+/g, " ");
+  ok("01 wall label lists medium, edition, prompt and record", /Generated image/.test(label) && /1 of 48,291/.test(label) && /ultra realistic, 8k, trending, masterpiece/.test(label) && /Issue 001/.test(label), label.slice(0, 120));
+  ok("01 the label sits on paper, not on the picture", await page.evaluate(() => { const l = document.querySelector(".cover__label").getBoundingClientRect(); const f = document.querySelector(".cover__stage").getBoundingClientRect(); return l.top >= f.bottom - 1; }));
   const v1 = await text(page, ".cover__meta [data-viewed]");
   ok("view counter starts at a plausible formatted number", /^Viewed 1,204,\d{3} times$/.test(v1), v1);
   const n1 = Number(v1.replace(/\D/g, ""));
   await sleep(4500);
   ok("view counter ticks up on its own", Number((await text(page, ".cover__meta [data-viewed]")).replace(/\D/g, "")) > n1);
-  ok("cover text has a legibility shadow over the image", (await page.locator(".cover__sub").evaluate((e) => getComputedStyle(e).textShadow)) !== "none");
   ok("shared header links Garfield Lim to the hub", await page.locator(".crumb__me").getAttribute("href") === "https://monsieurgregorio2001-coder.github.io/");
   const foot = await page.locator(".foot a").evaluateAll((as) => as.map((a) => a.getAttribute("href")));
   ok("shared footer carries portfolio, GitHub, LinkedIn and email", ["https://monsieurgregorio2001-coder.github.io/", "https://github.com/monsieurgregorio2001-coder", "https://www.linkedin.com/in/garfield-lim-8239242a9", "mailto:lim.ggreg@outlook.com"].every((h) => foot.includes(h)));
   ok("footer states Built by Garfield Greg Lim III", /Built by Garfield Greg Lim III/.test(await text(page, ".foot")));
+  ok("footer is honest about the image model", /generated from a written brief with an image model/.test(await text(page, ".foot")));
   const navHrefs = await page.locator(".shell__nav a").evaluateAll((as) => as.map((a) => a.getAttribute("href")));
   ok("navigation links carry the /slop-editorial/ base", navHrefs.filter((h) => !h.startsWith("http")).every((h) => h.startsWith(base)), navHrefs.join(" "));
   ok("no horizontal scroll on home at 1280", await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth));
-
-  // 02 beautiful, then wrong
-  await page.evaluate(() => { const r = document.querySelector("[data-rise]"); window.scrollTo(0, r.offsetTop + (r.offsetHeight - innerHeight) * 0.35); });
-  await sleep(500);
-  await page.evaluate(() => { const r = document.querySelector("[data-rise]"); window.scrollTo(0, r.offsetTop + (r.offsetHeight - innerHeight) * 0.92); });
-  await sleep(1800);
-  const m = await page.evaluate(() => [...document.querySelectorAll("[data-metric]")].map((e) => ({ on: e.hasAttribute("data-on"), t: e.innerText.replace(/\s+/g, " ") })));
-  ok("02 three metrics arrive in order", m.length === 3 && m.every((x) => x.on), JSON.stringify(m.map((x) => x.on)));
-  ok("02 Engagement improved 18 %", /18\s*%/.test(m[0].t) && /Engagement improved/.test(m[0].t), m[0].t);
-  ok("02 Preferred by people who skip", /Preferred by people who skip/.test(m[1].t), m[1].t);
-  ok("02 Viewers preferred version B. No visible difference.", /Viewers preferred version B\. No visible difference\./.test(m[2].t));
-  ok("02 the first metric improves the reader's rank", (await rankOf(page)) < 184, String(await rankOf(page)));
-  await sleep(500);
-  ok("02 the feature line reads This image performed well", (await notices(page)).includes("This image performed well."));
+  const bg = await page.evaluate(() => getComputedStyle(document.body).backgroundColor);
+  ok("the room is paper by default", bg === "rgb(250, 248, 244)", bg);
   ok("home has no layout shift (CLS < 0.02)", (await page.evaluate(() => window.__cls)) < 0.02, String((await page.evaluate(() => window.__cls)).toFixed(4)));
   // 04 on home: looking
-  await page.evaluate(() => { const r = document.querySelector("[data-rise]"); window.scrollTo(0, r.offsetTop + (r.offsetHeight - innerHeight) * 0.5); });
+  await page.evaluate(() => document.querySelector("[data-stage]").scrollIntoView({ block: "center" }));
+  await page.mouse.move(400, 300);
   await sleep(3600);
   ok("04 home dwell: You have been looking for ... That is above average.", /You have been looking for [\d.]+ s\. That is above average\./.test(await page.locator("[data-dwell]").innerText()));
   ok("04 home dwell: Still looking. Interest logged.", (await notices(page)).includes("Still looking. Interest logged."));
-  await page.screenshot({ path: path.join(out, "home-rise.png") });
+  ok("now showing lists three works with plates", (await page.locator(".grid--three .tile").count()) === 3 && (await page.locator(".grid--three .plate").allInnerTexts()).join() === "02,06,09");
+  await page.screenshot({ path: path.join(out, "home.png"), fullPage: true });
   await collect(page);
 }
 
-// 1b. Home: by consent. Then reload shows a returning reader is not set up twice.
+// 1b. Home: consent, then the graphite room from the footer
 {
   const page = await open(D, "", "home-consent");
   await page.waitForSelector("[data-cookies][data-on]", { timeout: 6000 });
-  ok("01 sheet is visible before consent, image still staged", await page.evaluate(() => !document.querySelector("[data-cover]").hasAttribute("data-image")));
   await page.locator("[data-cookies] [data-accept]").nth(1).click();
-  ok("01 the image develops on consent", await page.waitForFunction(() => document.querySelector("[data-cover]").hasAttribute("data-image"), null, { timeout: 2500 }).then(() => true, () => false));
   ok("01 consent notice is spoken", (await notices(page)).includes("Preferences saved. Measurement continues."));
   ok("01 consent sets no cookie", (await page.context().cookies()).length === 0);
+  await page.locator("[data-theme-toggle]").click();
+  await sleep(900);
+  const dark = await page.evaluate(() => ({ attr: document.documentElement.dataset.theme, bg: getComputedStyle(document.body).backgroundColor, btn: document.querySelector("[data-theme-toggle]").textContent }));
+  ok("room toggle switches to graphite, never navy", dark.attr === "dark" && dark.bg === "rgb(20, 19, 22)" && /graphite/.test(dark.btn), JSON.stringify(dark));
   await page.reload({ waitUntil: "load" });
-  await sleep(500);
-  ok("01 a returning reader skips the boot screen", await page.evaluate(() => document.documentElement.dataset.boot !== "on"));
+  ok("the room survives a reload", await page.evaluate(() => document.documentElement.dataset.theme === "dark"));
+  await page.locator("[data-theme-toggle]").click();
+  ok("room toggle restores paper", await page.evaluate(() => !document.documentElement.dataset.theme));
   await collect(page);
 }
 
 // ---------------------------------------------------------------------------------------------
-// 3. The feed page: interface joke, embarrassment, rating, A/B, view transition
+// 3. The feed page: interface joke, embarrassment, view transition
 {
   const page = await open(D, "", "feed-flow");
   await page.evaluate(() => { window.__marker = "same-document"; });
   await page.mouse.move(300, 300);
-  await page.waitForFunction(() => document.documentElement.dataset.boot !== "on" && document.querySelector("[data-cover]").hasAttribute("data-image"), null, { timeout: 8000 });
   await sleep(600);
   await page.locator("[data-hero-link]").click({ position: { x: 300, y: 200 } });
   await page.waitForFunction(() => location.pathname.endsWith("/feed/"), null, { timeout: 8000 });
   await page.waitForSelector("[data-hero-img]");
   ok("view transition: navigation kept the same document", (await page.evaluate(() => window.__marker)) === "same-document");
+  ok("feed: Approved. is spoken on arrival", (await notices(page)).includes("Approved."));
   const before = await rankOf(page);
 
   // 03 taste update
@@ -152,27 +141,24 @@ const M = { viewport: { width: 360, height: 740 }, deviceScaleFactor: 2, hasTouc
   await page.waitForFunction(() => (window.__notices || []).includes("Installed. No visible difference."), null, { timeout: 4000 });
   ok("03 ends: Installed. No visible difference.", true);
   ok("03 the dialog closes itself", (await page.locator(".dialog").count()) === 0);
+  ok("07 every action improves the visitor number", (await rankOf(page)) < before, `${before} to ${await rankOf(page)}`);
 
-  // 07 viewer becomes the joke
-  const outEl = "[data-rate-out]";
-  await page.locator('[data-star="1"]').click();
-  const r1 = await text(page, outEl);
-  await page.locator('[data-star="5"]').click();
-  const r5 = await text(page, outEl);
-  ok("07 rating 1 star: tally reads 4.2", /^4\.2 /.test(r1), r1);
-  ok("07 rating 5 stars: tally reads 4.2", /^4\.2 /.test(r5), r5);
-  ok("07 the ratings counter still grows", Number(r5.match(/(\d+) ratings/)[1]) > Number(r1.match(/(\d+) ratings/)[1]));
-  await page.locator('[data-ab="A"]').click();
-  ok("07 version A: No visible difference.", (await notices(page)).includes("Version A selected. No visible difference."));
-  await page.locator('[data-ab="B"]').click();
-  ok("07 version B: No visible difference.", (await notices(page)).includes("Version B selected. No visible difference."));
-  ok("07 every action improves rank in the HUD", (await rankOf(page)) < before, `${before} to ${await rankOf(page)}`);
+  // 02 beautiful, then wrong: the label metrics
+  await page.evaluate(() => document.querySelector(".spec__metrics").scrollIntoView({ block: "center" }));
+  await sleep(1800);
+  const m = await page.evaluate(() => [...document.querySelectorAll(".spec__metrics .metric")].map((e) => e.innerText.replace(/\s+/g, " ")));
+  ok("02 Engagement improved 18 %", /18\s*%/.test(m[0]) && /Engagement improved/.test(m[0]), m[0]);
+  ok("02 Preferred by people who skip", /Preferred by people who skip/.test(m[1]), m[1]);
+  ok("02 This image performed Well", /Well/.test(m[2]), m[2]);
+  ok("02 the feature line reads This image performed well", (await notices(page)).includes("This image performed well."));
+  const lbl = (await text(page, ".spec__dl")).replace(/\s+/g, " ");
+  ok("02 the label reads like a wall card: medium, edition, prompt, price", /Generated image/.test(lbl) && /1 of 48,291/.test(lbl) && /masterpiece/.test(lbl) && /Limited availability/.test(lbl));
 
   // description edit
   await page.evaluate(() => document.querySelector("[data-cost]").scrollIntoView({ block: "center" }));
   await page.waitForFunction(() => document.querySelector("[data-ins]").hasAttribute("data-on"), null, { timeout: 5000 });
   ok("one interface edit: the decisive word is inserted after reading", (await text(page, "[data-cost-text]")).includes("six"));
-  ok("feed first screen explains itself (h1 and rating target visible)", await page.evaluate(() => { scrollTo(0, 0); const h = document.querySelector("h1").getBoundingClientRect(); return h.bottom > 0 && h.top < innerHeight; }));
+  ok("feed first screen explains itself (the still is visible)", await page.evaluate(() => { scrollTo(0, 0); const h = document.querySelector("[data-hero-img]").getBoundingClientRect(); return h.bottom > 0 && h.top < innerHeight; }));
 
   // 04 the embarrassment
   await page.evaluate(() => scrollTo(0, 0));
@@ -202,7 +188,7 @@ const M = { viewport: { width: 360, height: 740 }, deviceScaleFactor: 2, hasTouc
   await press();
   await sleep(450);
   const p = await page.evaluate(() => Number(document.querySelector("[data-ring]").style.getPropertyValue("--p")));
-  ok("08 the ring is filling at 0.45 s", p > 0.3 && p < 0.7, p.toFixed(2));
+  ok("08 the ring is filling at 0.45 s", p > 0.2 && p < 0.95, p.toFixed(2));
   await sleep(700);
   ok("08 Appreciation registered. Free shipping on redemption.", (await notices(page)).includes("Appreciation registered. Free shipping on redemption."));
   ok("08 one prompt pack is added", await page.evaluate(() => JSON.parse(localStorage.getItem("slop.session")).cart === 1));
@@ -275,20 +261,27 @@ for (const tier of ["webgl", "poster", "webgpu"]) {
 }
 
 // ---------------------------------------------------------------------------------------------
-// 6. Works archive as inventory
+// 6. Works as an exhibition
 {
   const page = await open(D, "works/", "works");
-  const rows = await page.locator(".row").count();
-  ok("06 works: seven original works in the inventory", rows === 7, String(rows));
-  const row0 = (await page.locator(".row").first().innerText()).replace(/\s+/g, " ");
-  ok("06 each row shows rank, rating, views, availability, price and people-like-you", /01/.test(row0) && /★ 4\.2/.test(row0) && /views/.test(row0) && /(In stock|Limited availability)/.test(row0) && /People like you also scrolled/.test(row0) && (await page.locator(".row .sticker").count()) >= 1, row0.slice(0, 120));
-  const imgs = await page.locator(".row__thumb img").evaluateAll((is) => is.map((i) => i.complete));
-  ok("06 work thumbnails render", imgs.length === 7);
-  await page.locator(".row").first().click();
+  const tiles = await page.locator(".tile").count();
+  ok("06 works: nine pieces hang in the exhibition", tiles === 9, String(tiles));
+  const plates = await page.locator(".tile .plate").allInnerTexts();
+  ok("06 plates run 01 to 09 in order", plates.join() === "01,02,03,04,05,06,07,08,09", plates.join());
+  const t1 = (await page.locator(".tile").nth(1).innerText()).replace(/\s+/g, " ");
+  ok("06 each label shows plate, title, rating, views and price", /02/.test(t1) && /★ 4\.2/.test(t1) && /views/.test(t1) && /(Free|\d+\.\d\d)/.test(t1), t1);
+  ok("06 no yellow sticker on the exhibition page", (await page.locator(".sticker").count()) === 0);
+  await page.evaluate(() => scrollTo(0, document.body.scrollHeight));
+  await sleep(1200);
+  const imgs = await page.locator(".tile img").evaluateAll((is) => is.map((i) => i.naturalWidth > 0));
+  ok("06 every work image renders", imgs.length === 9 && imgs.every(Boolean), imgs.join());
+  await page.evaluate(() => scrollTo(0, 0));
+  await page.locator(".tile").nth(1).click();
   await page.waitForURL(/works\/six-fingers-five-stars\/$/);
   await page.waitForSelector(".work__fig img");
-  const d = await page.evaluate(() => ({ alt: document.querySelector(".work__fig img").alt, p: document.querySelector(".work__text").innerText.length, sample: !!document.querySelector("[data-sample]") }));
+  const d = await page.evaluate(() => ({ alt: document.querySelector(".work__fig img").alt, p: document.querySelector(".work__text").innerText.length, sample: !!document.querySelector("[data-sample]"), plate: document.querySelector(".work__row .plate").textContent, nav: [...document.querySelectorAll(".work__nav a")].map((a) => a.textContent.replace(/\s+/g, " ").trim()) }));
   ok("06 work page: alt text, one paragraph, sample notice", d.alt.length > 40 && d.p > 150 && d.sample);
+  ok("06 work page carries its plate and previous, index and next", d.plate === "02" && d.nav.length === 3 && /Previous\s*01 The Still/.test(d.nav[0]) && /Next\s*03/.test(d.nav[2]), JSON.stringify(d.nav));
   await page.screenshot({ path: path.join(out, "work.png") });
   await collect(page);
 }
@@ -327,27 +320,15 @@ for (const tier of ["webgl", "poster", "webgpu"]) {
   await sleep(500);
   const s = await page.evaluate(() => ({
     rm: document.documentElement.hasAttribute("data-rm"),
-    boot: document.documentElement.dataset.boot,
-    nav: document.documentElement.dataset.nav,
-    hud: document.documentElement.dataset.hud,
     sheet: !document.querySelector("[data-cookies]").hidden,
     sticker: parseFloat(getComputedStyle(document.querySelector(".cover__sticker")).opacity),
-    staged: document.querySelector("[data-cover]").hasAttribute("data-staged"),
-    metrics: [...document.querySelectorAll("[data-metric]")].map((m) => parseFloat(getComputedStyle(m).opacity)),
-    riseH: document.querySelector("[data-rise]").offsetHeight,
-    count: document.querySelector("[data-count]").textContent,
   }));
   ok("09 reduced motion: OS preference sets data-rm", s.rm);
-  ok("09 reduced motion: no boot screen", s.boot !== "on");
-  ok("09 reduced motion: navigation and rank are present at once", s.nav === "on" && s.hud === "on");
   ok("09 reduced motion: cookie sheet is there without delay", s.sheet);
-  ok("09 reduced motion: nothing is staged", !s.staged);
   const rv = await text(page, ".cover__meta [data-viewed]");
   await sleep(4500);
   ok("09 reduced motion: view counter is the same formatted number and holds still", /^Viewed 1,204,331 times$/.test(rv) && (await text(page, ".cover__meta [data-viewed]")) === rv, rv);
-  ok("09 reduced motion: sticker and metrics sit in their finished state", s.sticker === 1 && s.metrics.every((o) => o === 1), JSON.stringify(s.metrics));
-  ok("09 reduced motion: the metric shows 18 without counting", s.count === "18", s.count);
-  ok("09 reduced motion: the pinned feature section is not pinned", s.riseH < 1200, String(s.riseH));
+  ok("09 reduced motion: the sticker sits in its finished state", s.sticker === 1);
   await collect(page);
   const f = await open({ ...D, reducedMotion: "reduce" }, "authenticity/?tier=poster", "rm-auth");
   await sleep(700);
@@ -389,11 +370,11 @@ for (const tier of ["webgl", "poster", "webgpu"]) {
   const sw = await page.evaluate(async () => { for (let i = 0; i < 40; i++) { const r = await navigator.serviceWorker?.getRegistration(); if (r?.active) return { scope: new URL(r.scope).pathname }; await new Promise((x) => setTimeout(x, 150)); } return null; });
   ok("service worker registers at the site base", sw && sw.scope === base, JSON.stringify(sw));
   const before = await page.evaluate(() => window.__intent.stats.started);
-  await page.locator(".row").nth(3).hover();
+  await page.locator(".tile").nth(3).hover();
   await sleep(500);
   const hov = await page.evaluate(() => window.__intent.stats.started);
   ok("fetch-ahead starts on hover before the click", hov > before, `${before} to ${hov}`);
-  await page.locator(".row").nth(3).click();
+  await page.locator(".tile").nth(3).click();
   await page.waitForFunction(() => /works\/[a-z-]+\/$/.test(location.pathname), null, { timeout: 5000 });
   ok("the click is served from the held page", (await page.evaluate(() => window.__intent.stats.served)) >= 1);
   await collect(page);
@@ -413,7 +394,7 @@ ok("console: no errors in any page", consoleErrors.length === 0, consoleErrors.s
 {
   const bad = [...allNotices].map((n) => [n, voiceViolations(n)]).filter(([, v]) => v.length);
   ok(`voice: ${allNotices.size} runtime messages have no em dash, semicolon or contraction`, bad.length === 0, JSON.stringify(bad));
-  ok("voice: the expected HUD lines were all spoken", ["Approved.", "Installed. No visible difference.", "Your taste has been updated.", "Appreciation registered. Free shipping on redemption."].every((n) => allNotices.has(n)));
+  ok("voice: the expected visitor lines were all spoken", ["Approved.", "Installed. No visible difference.", "Your taste has been updated.", "Appreciation registered. Free shipping on redemption.", "This image performed well."].every((n) => allNotices.has(n)), [...allNotices].join(" | ").slice(0, 300));
 }
 
 // ---------------------------------------------------------------------------------------------

@@ -4,7 +4,6 @@ import "../styles/global.css";
 import { withBase } from "../lib/text.js";
 import interUrl from "../assets/fonts/inter-latin-wght-normal.woff2?url";
 import displayUrl from "../assets/fonts/bricolage-grotesque-latin-wght-normal.woff2?url";
-
 interface Props {
   title: string;
   description?: string;
@@ -18,12 +17,9 @@ const HUB = "https://monsieurgregorio2001-coder.github.io/";
 const REPO = "https://github.com/monsieurgregorio2001-coder/slop-editorial";
 const ogImage = Astro.site ? new URL(u("og.png"), Astro.site).href : u("og.png");
 const nav: Array<[string, string, string]> = [
-  ["feed", "Feed", "feed/"],
-  ["authenticity", "Authenticity", "authenticity/"],
   ["works", "Works", "works/"],
+  ["authenticity", "Certificate", "authenticity/"],
   ["releases", "Releases", "releases/"],
-  ["queue", "Queue", "queue/"],
-  ["review", "Review", "review/"],
   ["about", "Method", "about/"],
 ];
 ---
@@ -43,7 +39,7 @@ const nav: Array<[string, string, string]> = [
     <link rel="icon" type="image/svg+xml" href={u("favicon.svg")} />
     <link rel="preload" href={displayUrl} as="font" type="font/woff2" crossorigin />
     <link rel="preload" href={interUrl} as="font" type="font/woff2" crossorigin />
-    <!-- Motion preference is applied before first paint so a reduced-motion reader never sees a staged sequence start. -->
+    <!-- Motion and room preferences are applied before first paint. -->
     <script is:inline>
       (function () {
         try {
@@ -54,8 +50,7 @@ const nav: Array<[string, string, string]> = [
           if (forced) r.dataset.motion = "reduce";
           var rm = forced || matchMedia("(prefers-reduced-motion: reduce)").matches;
           if (rm) r.setAttribute("data-rm", "");
-          // A first visit to the cover starts behind the boot screen, so the staged sequence never flashes its finished state.
-          if (!rm && r.dataset.page === "home" && !s.cookies) r.dataset.boot = "on";
+          if (s.theme === "dark") r.dataset.theme = "dark";
         } catch (e) {}
       })();
     </script>
@@ -63,7 +58,6 @@ const nav: Array<[string, string, string]> = [
   </head>
   <body>
     <a class="skip" href="#main">Skip to content</a>
-
     <header class="shell">
       <div class="shell__in">
         <div class="crumb">
@@ -80,27 +74,20 @@ const nav: Array<[string, string, string]> = [
         </nav>
       </div>
     </header>
-
-    <div class="hud" aria-hidden="true" transition:persist="hud">
-      <span class="hud__line" data-hud-id>You: #184 today</span>
-      <span class="hud__line hud__notice" data-hud-notice></span>
-    </div>
-
+    <!-- The visitor line: staged measurement in one quiet row. Local only, hidden from assistive tech because it is theatre. -->
+    <p class="visitor" aria-hidden="true" transition:persist="hud"><span data-hud-id>Visitor no. 184 today</span><span class="visitor__notice" data-hud-notice></span></p>
     <!-- The one joke every visitor gets. No cookie is set and both buttons agree. -->
     <div class="sheet" data-cookies hidden role="dialog" aria-label="Cookies" transition:persist="cookies">
-      <p>Slop Editorial uses cookies to improve your experience of being measured.</p>
-      <small>No cookie is set. The counters live in this browser and never leave it.</small>
+      <p>Slop Editorial uses cookies to improve your experience of being measured. <small>No cookie is set. The counters live in this browser and never leave it.</small></p>
       <div class="sheet__row"><button class="btn" type="button" data-accept>Accept all</button><button class="btn btn--primary" type="button" data-accept>Accept all</button></div>
     </div>
     <div data-dialog-host transition:persist="dialog"></div>
-
     <main id="main" tabindex="-1">
       <slot />
     </main>
-
     <footer class="foot">
       <div class="foot__in">
-        <p>Slop Editorial is a portfolio satire. All imagery is generated in code, with no photographs and no image services. Counters live in this browser only, and nothing leaves this device.</p>
+        <p>Slop Editorial is a portfolio satire. Every image was generated from a written brief with an image model, then checked by a person against that brief. Counters live in this browser only, and nothing leaves this device.</p>
         <p class="foot__links">
           <span>Built by Garfield Greg Lim III</span>
           <a href={HUB}>Portfolio</a>
@@ -110,12 +97,12 @@ const nav: Array<[string, string, string]> = [
           <a href={u("OFL.txt")}>Font licenses</a>
         </p>
         <div class="foot__row">
+          <button type="button" data-theme-toggle aria-pressed="false">Room: paper</button>
           <button type="button" data-motion-toggle aria-pressed="false">Motion: full</button>
           <button type="button" data-sound-toggle aria-pressed="false">Sound: off</button>
         </div>
       </div>
     </footer>
-
     <script>
       import { applyMotionPreference } from "../scripts/system";
       import "../scripts/sound";

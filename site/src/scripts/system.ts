@@ -5,7 +5,7 @@ import { rankFor, stagedAverage } from "../lib/text.js";
 const KEY = "slop.session";
 const BASE_SESSION = 184;
 
-type Store = { visits: number; viewed: Record<string, number>; motion?: "reduce" | "auto"; sound?: boolean; cookies?: boolean; cart?: number; rated?: number; ratings?: number; score?: number };
+type Store = { visits: number; viewed: Record<string, number>; motion?: "reduce" | "auto"; theme?: "dark" | "paper"; sound?: boolean; cookies?: boolean; cart?: number; rated?: number; ratings?: number; score?: number };
 
 function read(): Store {
   try {
@@ -57,6 +57,25 @@ export function applyMotionPreference() {
   });
 }
 
+/** The room: warm paper by default, a graphite room on request. Never follows the OS on its own. */
+export function applyTheme() {
+  const root = document.documentElement;
+  store = read();
+  if (store.theme === "dark") root.dataset.theme = "dark"; else delete root.dataset.theme;
+  document.querySelectorAll<HTMLButtonElement>("[data-theme-toggle]").forEach((b) => {
+    const dark = store.theme === "dark";
+    b.setAttribute("aria-pressed", String(dark));
+    b.textContent = dark ? "Room: graphite" : "Room: paper";
+  });
+}
+export function toggleTheme() {
+  store = read();
+  store.theme = store.theme === "dark" ? "paper" : "dark";
+  write(store);
+  applyTheme();
+  notice(store.theme === "dark" ? "Lights dimmed." : "Lights restored.");
+}
+
 export function toggleMotion() {
   store = read();
   store.motion = store.motion === "reduce" ? "auto" : "reduce";
@@ -75,7 +94,7 @@ export function score(delta = 0): number {
 export function rank(): number { store = read(); return rankFor(store.visits, score(), BASE_SESSION); }
 function refreshId() {
   const id = document.querySelector<HTMLElement>("[data-hud-id]");
-  if (id) id.textContent = `You: #${rank()} today`;
+  if (id) id.textContent = `Visitor no. ${rank()} today`;
 }
 
 /** The prompt pack cart. A number in this browser, nothing is sold. */
@@ -184,7 +203,13 @@ export function bindShell() {
     b.dataset.bound = "1";
     b.addEventListener("click", toggleMotion);
   });
+  document.querySelectorAll<HTMLElement>("[data-theme-toggle]").forEach((b) => {
+    if (b.dataset.bound) return;
+    b.dataset.bound = "1";
+    b.addEventListener("click", toggleTheme);
+  });
   applyMotionPreference();
+  applyTheme();
 }
 
 countVisit();

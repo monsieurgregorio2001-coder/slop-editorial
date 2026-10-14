@@ -26,7 +26,7 @@ export function watchReader(opts: Opts = {}) {
         dwellStart = dwellStart || lastMove;
         dwellShown = true;
         const secs = ((performance.now() - dwellStart) / 1000).toFixed(1);
-        const out = dwellEl.querySelector<HTMLElement>("[data-dwell]");
+        const out = dwellEl.querySelector<HTMLElement>("[data-dwell]") ?? document.querySelector<HTMLElement>("[data-dwell]");
         if (out) { out.textContent = `You have been looking for ${secs} s. That is above average.`; out.dataset.on = ""; }
         notice("Still looking. Interest logged.", { once: "dwell" });
       } else if (!inView) { dwellStart = 0; }

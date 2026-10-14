@@ -2,6 +2,7 @@
 import Base from "../../layouts/Base.astro";
 import { getCollection, render } from "astro:content";
 import { withBase } from "../../lib/text.js";
+import { catalogue, plateFor } from "../../lib/catalogue";
 export async function getStaticPaths() {
   const all = await getCollection("works");
   return all.map((entry) => ({ params: { slug: entry.id }, props: { entry } }));
@@ -11,29 +12,39 @@ const { Content } = await render(entry);
 const u = (p = "") => withBase(import.meta.env.BASE_URL, p);
 const d = entry.data;
 const srcset = [480, 800, 1000].map((w) => `${u(`img/${d.image}-${w}.webp`)} ${w}w`).join(", ");
+const pieces = await catalogue();
+const n = plateFor(d.order);
+const i = pieces.findIndex((p) => p.n === n);
+const prev = pieces[i - 1];
+const next = pieces[i + 1];
 ---
 <Base title={`${d.title} · Slop Editorial`} description={d.kicker} page="works">
-  <article class="work" data-work={entry.id}>
-    <figure class="work__fig">
+  <article class="wrap section work" data-work={entry.id}>
+    <figure class="work__fig frame frame--portrait">
       <picture>
-        <source srcset={srcset} sizes="(max-width: 900px) 100vw, 520px" type="image/webp" />
+        <source srcset={srcset} sizes="(max-width: 860px) 100vw, 560px" type="image/webp" />
         <img src={u(`img/${d.image}-800.webp`)} width="1000" height="1250" alt={d.alt} fetchpriority="high" decoding="async" />
       </picture>
     </figure>
-    <div class="work__body">
-      <p class="sys">{d.topic} · No {String(d.rank).padStart(2, "0")}</p>
-      <h1 class="work__h">{d.title}</h1>
-      <p class="work__k">{d.kicker}</p>
-      <div class="work__text"><Content /></div>
-      <dl class="work__meta">
-        <div><dt>Rating</dt><dd>★ {d.rating} · {d.ratings} ratings</dd></div>
-        <div><dt>Views</dt><dd>{d.views}</dd></div>
-        <div><dt>Availability</dt><dd>{d.availability}</dd></div>
-        <div><dt>Price</dt><dd><span class="sticker">{d.price}</span></dd></div>
+    <div class="work__body label">
+      <div class="work__row"><span class="plate">{n}</span><span class="sys">{d.topic}</span></div>
+      <h1 class="label__t work__h">{d.title}</h1>
+      <p class="label__k">{d.kicker}</p>
+      <div class="work__text prose"><Content /></div>
+      <dl class="label__dl">
+        <dt>Medium</dt><dd>Generated image, 1122 × 1402 px, 2026</dd>
+        <dt>Rating</dt><dd>★ {d.rating} · {d.ratings} ratings</dd>
+        <dt>Views</dt><dd>{d.views}</dd>
+        <dt>Status</dt><dd>{d.availability}</dd>
+        <dt>Price</dt><dd>{d.price === "0.00" ? "Free" : d.price}</dd>
       </dl>
-      <p class="ui">People like you also scrolled: {d.also}.</p>
-      <p class="ui" data-sample>Sample work. Original image generated in code, original text, no photographs.</p>
-      <p><a class="btn" href={u("works/")}>Back to inventory</a></p>
+      <p class="label__note">People like you also scrolled: {d.also}.</p>
+      <p class="label__note" data-sample>Sample work. Image generated from a written brief with an image model, then checked by a person against that brief. Original text.</p>
+      <nav class="work__nav" aria-label="Exhibition order">
+        {prev ? <a href={u(prev.href)}><span class="sys">Previous</span><span>{prev.n} {prev.title}</span></a> : <span></span>}
+        <a href={u("works/")}><span class="sys">Index</span><span>All works</span></a>
+        {next ? <a href={u(next.href)}><span class="sys">Next</span><span>{next.n} {next.title}</span></a> : <span></span>}
+      </nav>
     </div>
   </article>
   <script>
@@ -46,16 +57,16 @@ const srcset = [480, 800, 1000].map((w) => `${u(`img/${d.image}-${w}.webp`)} ${w
 </Base>
 
 <style>
-  .work { display: grid; grid-template-columns: minmax(0, 520px) minmax(0, 1fr); gap: clamp(28px, 5vw, 80px); padding: clamp(32px, 6vh, 80px) var(--gutter) clamp(60px, 12vh, 120px); align-items: start; }
-  .work__fig { border-radius: 16px; overflow: hidden; aspect-ratio: 4 / 5; background: var(--line); }
-  .work__fig img { width: 100%; height: 100%; object-fit: cover; }
-  .work__body { display: grid; gap: 18px; max-width: 62ch; }
-  .work__h { font: 800 clamp(40px, 5.4vw, 80px)/.98 var(--display); letter-spacing: -.04em; }
-  .work__k { font: 600 clamp(18px, 1.8vw, 24px)/1.3 var(--display); color: var(--accent); }
-  .work__text { font-size: 18px; line-height: 1.6; }
-  .work__meta { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px 24px; margin: 8px 0; }
-  .work__meta dt { font: 500 12px/1.4 var(--mono); letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
-  .work__meta dd { margin: 2px 0 0; font-weight: 600; }
-  .work__meta .sticker { font-size: 20px; }
-  @media (max-width: 860px) { .work { grid-template-columns: 1fr; } .work__fig { max-width: 520px; } }
+  .work { display: grid; grid-template-columns: minmax(0, 560px) minmax(0, 1fr); gap: clamp(28px, 5vw, 72px); align-items: start; }
+  .work__fig { margin: 0; }
+  .work__body { gap: 14px; max-width: 60ch; }
+  .work__row { display: flex; align-items: center; gap: 12px; }
+  .work__h { font-size: clamp(28px, 3.2vw, 44px); }
+  .work__text { font-size: 16px; }
+  .work__nav { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--line); }
+  .work__nav a { display: grid; gap: 2px; text-decoration: none; font: 500 14px/1.35 var(--text); }
+  .work__nav a:hover { color: var(--accent); }
+  .work__nav a:nth-child(2) { text-align: center; }
+  .work__nav a:nth-child(3) { text-align: right; }
+  @media (max-width: 860px) { .work { grid-template-columns: 1fr; } .work__fig { max-width: 560px; } }
 </style>

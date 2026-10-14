@@ -22,8 +22,8 @@ async function developedHome(viewport, dsf = 1) {
   await page.goto(url, { waitUntil: "load" });
   await page.waitForSelector("[data-cookies][data-on]", { timeout: 8000 });
   await page.locator("[data-cookies] [data-accept]").nth(1).click();
-  await page.waitForFunction(() => document.querySelector("[data-cover]").hasAttribute("data-sticker") && document.documentElement.dataset.nav === "on", null, { timeout: 9000 });
-  await sleep(1500);
+  await page.waitForFunction(() => document.querySelector(".cover__img img").complete, null, { timeout: 9000 });
+  await sleep(900);
   return { ctx, page };
 }
 

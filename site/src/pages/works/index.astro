@@ -1,57 +1,39 @@
 ---
 import Base from "../../layouts/Base.astro";
-import { getCollection } from "astro:content";
-import { withBase } from "../../lib/text.js";
+import { withBase, VIEW_BASE, formatCount } from "../../lib/text.js";
+import { catalogue } from "../../lib/catalogue";
 const u = (p = "") => withBase(import.meta.env.BASE_URL, p);
-const works = (await getCollection("works")).sort((a, b) => a.data.order - b.data.order);
+const pieces = await catalogue();
 ---
-<Base title="Inventory · Slop Editorial" description="The archive as software inventory: rank, rating, views, availability and a price sticker for each sample work." page="works">
-  <section class="inv">
-    <div class="inv__head">
-      <h1 class="inv__h">Inventory</h1>
-      <p class="ui">{works.length} items · Sorted by engagement · Prices in this browser only</p>
+<Base title="Works · Slop Editorial" description="The exhibition: nine generated works hung with wall labels, each with a plate number, a rating, a view count and a price." page="works">
+  <section class="wrap section ex">
+    <div class="head">
+      <p class="sys">Exhibition · {pieces.length} works · Hung in order</p>
+      <h1 class="h1">Works</h1>
+      <p class="lede">Nine pictures nobody decided to make, each labelled as though someone had. Ratings and views live in this browser only.</p>
     </div>
-    <div class="inv__filters ui" aria-hidden="true"><span class="chip chip--on">Recommended for you</span><span class="chip">Preferred by people who skip</span><span class="chip">Hot right now</span><span class="chip">Approved</span></div>
-    <ul class="inv__list">
-      {works.map((w) => (
+    <ul class="grid">
+      {pieces.map((p) => (
         <li>
-          <a href={u(`works/${w.id}/`)} class="row">
-            <span class="ui row__n">{String(w.data.rank).padStart(2, "0")}</span>
-            <span class="row__thumb"><img src={u(`img/${w.data.image}-480.webp`)} width="480" height="600" alt="" loading="lazy" decoding="async" /></span>
-            <span class="row__main">
-              <span class="display row__t">{w.data.title}</span>
-              <span class="ui row__also">People like you also scrolled: {w.data.also}</span>
+          <a class="tile" href={u(p.href)} data-piece={p.n}>
+            <span class={`frame ${p.image === "seal-poster" ? "frame--portrait" : "frame--portrait"}`}><img src={u(`img/${p.image}-800.webp`)} width="800" height="1000" alt={p.alt} loading={Number(p.n) <= 3 ? "eager" : "lazy"} decoding="async" /></span>
+            <span class="tile__cap">
+              <span class="plate">{p.n}</span>
+              <span class="tile__t">{p.title}</span>
+              <span class="tile__m">{p.viewed ? <><span>★ 4.2 · </span><span data-viewed={p.viewed} data-base={VIEW_BASE[p.viewed]}>Viewed {formatCount(VIEW_BASE[p.viewed])} times</span><span> · {p.n === "01" ? "Free" : "14.99"}</span></> : p.meta}</span>
             </span>
-            <span class="ui row__meta">
-              <span>★ {w.data.rating} · {w.data.ratings} ratings</span>
-              <span>{w.data.views} views</span>
-              <span>{w.data.availability}</span>
-            </span>
-            <span class="row__price"><span class="sticker">{w.data.price}</span></span>
           </a>
         </li>
       ))}
     </ul>
-    <p class="ui inv__note">Every work is a labelled sample. Nothing here is for sale, the prices are the joke, and ratings and views live in this browser only.</p>
+    <p class="label__note ex__note">Every work is a labelled sample. Nothing is for sale. The prices are the joke.</p>
   </section>
 </Base>
 
 <style>
-  .inv { padding: clamp(40px, 8vh, 96px) var(--gutter) clamp(60px, 12vh, 120px); display: grid; gap: 28px; min-height: 80svh; align-content: start; }
-  .inv__head { display: grid; gap: 8px; }
-  .inv__h { font: 800 clamp(40px, 6vw, 84px)/1 var(--display); letter-spacing: -.04em; }
-  .inv__filters { display: flex; gap: 8px; flex-wrap: wrap; }
-  .chip { padding: 7px 12px; border-radius: 999px; border: 1px solid var(--line); background: var(--card); color: var(--muted); }
-  .chip--on { background: var(--fg); color: var(--bg); border-color: var(--fg); }
-  .inv__list { list-style: none; margin: 0; padding: 0; display: grid; border-top: 1px solid var(--line); }
-  .row { display: grid; grid-template-columns: 2.2rem 88px minmax(0, 1fr) auto auto; gap: 16px 24px; align-items: center; padding: 18px 0; border-bottom: 1px solid var(--line); text-decoration: none; transition: background 300ms var(--ease); }
-  .row:hover, .row:focus-visible { background: var(--card); }
-  .row__thumb img { width: 88px; height: 110px; object-fit: cover; border-radius: 10px; }
-  .row__main { display: grid; gap: 6px; }
-  .row__t { font-size: clamp(24px, 3.4vw, 46px); }
-  .row:hover .row__t { color: var(--accent); }
-  .row__meta { display: grid; gap: 4px; text-align: right; }
-  .row__price .sticker { font-size: 22px; padding: 6px 12px; }
-  .inv__note { max-width: 60ch; }
-  @media (max-width: 720px) { .row { grid-template-columns: 2rem 72px 1fr; } .row__thumb img { width: 72px; height: 90px; } .row__meta { grid-column: 1 / -1; text-align: left; } .row__price { grid-column: 3; grid-row: 1; justify-self: end; } .row__main { grid-column: 3; grid-row: 1; } .row__price { display: none; } }
+  .ex { display: grid; gap: 8px; min-height: 70svh; align-content: start; }
+  .ex .grid { grid-template-columns: repeat(3, minmax(0, 1fr)); margin-top: 8px; }
+  .ex__note { margin-top: clamp(24px, 4vh, 40px); }
+  @media (max-width: 760px) { .ex .grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+  @media (max-width: 480px) { .ex .grid { grid-template-columns: 1fr; } }
 </style>

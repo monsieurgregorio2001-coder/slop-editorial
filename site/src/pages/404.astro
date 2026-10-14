@@ -4,14 +4,13 @@ import { withBase } from "../lib/text.js";
 const u = (p = "") => withBase(import.meta.env.BASE_URL, p);
 ---
 <Base title="Not found · Slop Editorial" description="This page was not found." page="404">
-  <section class="nf">
-    <h1>Page not found.</h1>
-    <p>I am sorry, but I cannot fulfill this request. Certainly! Here is a link home.</p>
-    <p><a class="btn" href={u()}>Back to the cover</a></p>
+  <section class="wrap section nf">
+    <p class="sys">404</p>
+    <h1 class="h1">Page not found.</h1>
+    <p class="lede">I am sorry, but I cannot fulfill this request. Certainly! Here is a link home.</p>
+    <p><a class="btn" href={u()}>Back to the front</a></p>
   </section>
 </Base>
 <style>
-  .nf { padding: 12vh var(--gutter); display: grid; gap: 16px; justify-items: start; min-height: 60svh; align-content: start; }
-  h1 { font: 800 clamp(40px, 7vw, 96px)/1 var(--display); letter-spacing: -.04em; }
-  .btn { display: inline-flex; align-items: center; text-decoration: none; }
+  .nf { display: grid; gap: 16px; justify-items: start; min-height: 60svh; align-content: start; }
 </style>

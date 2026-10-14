@@ -3,68 +3,65 @@ import Base from "../../layouts/Base.astro";
 import { withBase, VIEW_BASE, formatCount } from "../../lib/text.js";
 import { hold } from "../../lib/transitions";
 const u = (p = "") => withBase(import.meta.env.BASE_URL, p);
-const srcset = [480, 800, 1000].map((w) => `${u(`img/hero-still-${w}.webp`)} ${w}w`).join(", ");
-const alt = "A neon sunset over violet peaks and a mirrored lake. A floodlit wooden sign in the foreground reads Sunseet Point, Open 24 hours of hours.";
+const wide = [800, 1200, 1600].map((w) => `${u(`img/hero-wide-${w}.webp`)} ${w}w`).join(", ");
+const tall = [480, 800, 1000].map((w) => `${u(`img/hero-still-${w}.webp`)} ${w}w`).join(", ");
+const alt = "A neon sunset over violet peaks and a mirrored lake. Two chrome spheres float over the water. A floodlit wooden sign reads Sunseet Point, Open 24 hours of hours.";
 ---
-<Base title="The Still · Slop Editorial" description="The Still is the first image in the feed. Rate it, choose a version, and watch your rank improve." mode="product" page="feed">
+<Base title="The Still · Slop Editorial" description="The Still is the first work in the exhibition. Stand in front of it, hold it, and watch your visitor number improve." mode="product" page="feed">
   <div class="page" transition:name="page" transition:animate={hold}>
-    <section class="still" data-stage aria-label="The Still">
-      <div class="still__frame" transition:name="hero-still">
+    <section class="wrap still" data-stage aria-label="The Still, framed">
+      <div class="still__frame frame frame--wide" transition:name="hero-still">
         <picture>
-          <source srcset={srcset} sizes="100vw" type="image/webp" />
-          <img data-hero-img src={u("img/hero-still-1000.webp")} width="1000" height="1250" alt={alt} decoding="sync" fetchpriority="high" />
+          <source media="(max-width: 640px)" srcset={tall} sizes="100vw" type="image/webp" />
+          <source srcset={wide} sizes="(max-width: 1200px) 100vw, 1120px" type="image/webp" />
+          <img data-hero-img src={u("img/hero-wide-1200.webp")} width="1600" height="900" alt={alt} decoding="sync" fetchpriority="high" />
         </picture>
+        <span class="ring" data-ring aria-hidden="true"></span>
       </div>
-      <span class="ring" data-ring aria-hidden="true"></span>
-      <p class="still__reg" aria-hidden="true">Approved · <span data-viewed="the-still" data-base={VIEW_BASE["the-still"]}>Viewed {formatCount(VIEW_BASE["the-still"])} times</span></p>
-      <p class="still__hold" data-hold-hint aria-hidden="true">Hold to appreciate</p>
-      <h1 class="display still__title">The Still</h1>
+      <p class="still__line mono">
+        <span class="still__reg" aria-hidden="true">Approved · <span data-viewed="the-still" data-base={VIEW_BASE["the-still"]}>Viewed {formatCount(VIEW_BASE["the-still"])} times</span></span>
+        <span class="still__hold" data-hold-hint aria-hidden="true">Hold to appreciate</span>
+      </p>
     </section>
 
-    <section class="spec" data-read aria-labelledby="spec-h">
-      <div class="spec__main">
-        <h2 id="spec-h" class="spec__h">Looks real.<br />Count the fingers.</h2>
+    <section class="wrap spec" data-read aria-labelledby="spec-h">
+      <div class="spec__label label">
+        <div class="spec__row"><span class="plate">01</span><span class="sys">Landscape · Issue 001</span></div>
+        <h1 id="spec-h" class="label__t spec__h">The Still</h1>
+        <p class="label__k">Looks real. Count the fingers.</p>
+        <p class="desc" data-cost>
+          <span class="vh">I made this with my own hands. The hand has six fingers.</span>
+          <span aria-hidden="true" data-cost-text>I made this with my own hands. The hand has <span class="ins" data-ins>six</span> fingers.</span>
+        </p>
+        <div class="prose spec__body">
+          <p>This image took four seconds to generate and eleven minutes to approve. Nobody counted the fingers, the sign, or the spheres.</p>
+          <p>The sign reads Sunseet Point and is open 24 hours of hours. The prompt is still printed at the bottom. Everyone said Amazing.</p>
+        </div>
+        <p class="label__note">The cost of being <span class="redact">[redacted]</span>. Taste not guaranteed.</p>
+      </div>
+
+      <div class="spec__side">
+        <dl class="label__dl spec__dl">
+          <dt>Medium</dt><dd>Generated image, 1672 × 941 px, 2026</dd>
+          <dt>Edition</dt><dd>100% original · 1 of 48,291</dd>
+          <dt>Prompt</dt><dd>ultra realistic, 8k, trending, masterpiece</dd>
+          <dt>Price</dt><dd>Free · Limited availability</dd>
+        </dl>
         <div class="spec__metrics">
           <div class="metric"><span class="metric__v"><span data-m-count="18">18</span> %</span><span class="metric__k">Engagement improved</span></div>
           <div class="metric"><span class="metric__v">0.8 s</span><span class="metric__k">Preferred by people who skip</span></div>
           <div class="metric"><span class="metric__v">Well</span><span class="metric__k">This image performed</span></div>
           <div class="metric"><span class="metric__v" data-views>184</span><span class="metric__k">Most viewed image, this week</span></div>
         </div>
-        <div class="ab" role="group" aria-label="Version">
-          <span class="ui">Viewers preferred version B</span>
-          <div class="ab__row"><button class="btn" type="button" data-ab="A" aria-pressed="false">A</button><button class="btn btn--primary" type="button" data-ab="B" aria-pressed="true">B</button></div>
-        </div>
-        <div class="rate">
-          <span class="ui" id="rate-l">Rate this image</span>
-          <div class="stars" data-stars role="group" aria-labelledby="rate-l">
-            <button type="button" data-star="1" aria-label="1 star">★</button><button type="button" data-star="2" aria-label="2 stars">★</button><button type="button" data-star="3" aria-label="3 stars">★</button><button type="button" data-star="4" aria-label="4 stars">★</button><button type="button" data-star="5" aria-label="5 stars">★</button>
-          </div>
-          <span class="ui" data-rate-out>4.2 · 184 ratings · Preferred by people who skip</span>
-        </div>
-        <div class="post">
-          <p class="post__q">Why do pictures like this never trend?</p>
-          <ul class="comments"><li>Amazing</li><li>Beautiful work</li><li>Amazing</li><li>Wow</li><li>Amazing</li></ul>
-        </div>
-      </div>
-
-      <div class="spec__desc">
-        <p class="ui">Description</p>
-        <p class="desc" data-cost>
-          <span class="vh">I made this with my own hands. The hand has six fingers.</span>
-          <span aria-hidden="true" data-cost-text>I made this with my own hands. The hand has <span class="ins" data-ins>six</span> fingers.</span>
-        </p>
-        <div class="desc__body">
-          <p>This image took four seconds to generate and eleven minutes to approve. Nobody counted the fingers, the sign, or the spheres.</p>
-          <p>The sign reads Sunseet Point and is open 24 hours of hours. The prompt is still printed at the bottom. Everyone said Amazing.</p>
-        </div>
-        <p class="ui">The cost of being <span class="redact">[redacted]</span>. Taste not guaranteed.</p>
       </div>
     </section>
 
-    <section class="next" aria-label="You may also want">
+    <hr class="rule wrap" />
+
+    <section class="wrap section--tight next" aria-label="Next work">
       <a class="next__link" href={u("authenticity/")} data-next>
-        <span class="ui">You may also want · 14.99 · Free shipping on redemption</span>
-        <span class="display next__title">Certificate of Human Touch</span>
+        <span class="sys">Next · 09 · 14.99 · Free shipping on redemption</span>
+        <span class="h2 next__title">Certificate of Human Touch</span>
       </a>
     </section>
   </div>
@@ -76,49 +73,30 @@ const alt = "A neon sunset over violet peaks and a mirrored lake. A floodlit woo
 </Base>
 
 <style>
-  .still { position: relative; height: calc(100svh - var(--shell-h)); min-height: 520px; overflow: clip; background: #15124d; touch-action: pan-y; color: #fff; }
-  .still__frame { position: absolute; inset: 0; overflow: clip; }
-  .still__frame picture, .still__frame img { display: block; width: 100%; height: 100%; }
-  .still__frame img { object-fit: cover; object-position: 50% 60%; will-change: transform; }
-  .still::after { content: ""; position: absolute; inset: 0; background: linear-gradient(to top, rgb(12 8 40 / .7), transparent 50%); pointer-events: none; }
-  .still__reg { position: absolute; right: var(--gutter); bottom: 14px; z-index: 3; margin: 0; font: 500 13px/1.4 var(--text); color: #fff; background: rgb(18 17 26 / .7); padding: 6px 10px; border-radius: 8px; }
-  .still__hold { position: absolute; left: 50%; bottom: 14px; translate: -50% 0; z-index: 3; margin: 0; font: 500 13px/1.4 var(--text); color: #fff; background: rgb(18 17 26 / .7); padding: 6px 10px; border-radius: 8px; display: none; }
-  @media (hover: none) and (min-width: 641px) { .still__hold { display: block; } .still__reg { bottom: 48px; } }
-  .still__title { position: absolute; left: var(--gutter); bottom: clamp(40px, 7vh, 80px); z-index: 3; font-size: clamp(56px, 13vw, 200px); color: #fff; text-shadow: 0 2px 40px rgb(0 0 0 / .35); }
-  .ring { left: 50%; top: 34%; translate: -50% -50%; z-index: 4; }
+  .still { position: relative; display: grid; gap: 10px; padding-top: clamp(20px, 3vh, 32px); touch-action: pan-y; }
+  .still__frame { overflow: clip; }
+  .still__frame picture, .still__frame img { display: block; width: 100%; }
+  .still__frame img { object-fit: cover; will-change: transform; }
+  .ring { left: 50%; top: 50%; translate: -50% -50%; z-index: 4; }
+  .still__line { display: flex; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
+  .still__hold { display: none; }
+  @media (hover: none) { .still__hold { display: inline; } }
 
-  .spec { position: relative; z-index: 2; background: var(--bg); color: var(--fg); padding: clamp(56px, 10vh, 120px) var(--gutter); display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr); gap: clamp(36px, 6vw, 96px); align-items: start; }
-  .spec__main { display: grid; gap: clamp(28px, 4vh, 44px); }
-  .spec__h { font: 800 clamp(36px, 5vw, 72px)/1 var(--display); letter-spacing: -.04em; max-width: 14ch; }
-  .spec__metrics { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px 32px; }
-  .ab, .rate { display: grid; gap: 6px; justify-items: start; }
-  .ab__row { display: flex; gap: 8px; }
-  .post { display: grid; gap: 8px; padding: 14px 16px; border: 1px solid var(--line); border-radius: 14px; background: var(--card); width: min(100%, 420px); }
-  .post__q { font: 700 18px/1.3 var(--display); }
-  .comments { list-style: none; margin: 0; padding: 0; display: grid; gap: 4px; font-size: 15px; }
-  .comments li::before { content: ""; display: inline-block; width: 12px; height: 12px; border-radius: 50%; background: var(--accent); margin-right: 8px; }
-  .spec__desc { display: grid; gap: 16px; padding-top: 8px; }
-  .desc { font: 600 clamp(20px, 1.7vw, 26px)/1.4 var(--display); letter-spacing: -.015em; }
+  .spec { padding-block: clamp(32px, 6vh, 64px); display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr); gap: clamp(32px, 6vw, 96px); align-items: start; }
+  .spec__row { display: flex; align-items: center; gap: 12px; }
+  .spec__h { font-size: clamp(30px, 3.6vw, 48px); }
+  .desc { font: 500 clamp(18px, 1.5vw, 22px)/1.4 var(--display); letter-spacing: -.015em; }
   .desc .ins { display: inline-block; background: var(--accent); color: var(--bg); padding: 0 .22em; line-height: 1.2; }
   .desc .ins[data-off] { display: none; }
   .desc .ins[data-on] { animation: ins 500ms var(--ease) both; }
   @keyframes ins { from { clip-path: inset(0 100% 0 0); } to { clip-path: inset(0); } }
-  .desc__body { font-size: 16px; line-height: 1.55; color: var(--muted); display: grid; gap: .9em; }
+  .spec__body { font-size: 16px; color: var(--muted); }
   .redact { display: inline-block; background: var(--fg); color: var(--bg); padding: 0 .3em; }
+  .spec__side { display: grid; gap: 28px; padding-top: 6px; }
+  .spec__metrics { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px 24px; padding-top: 20px; border-top: 1px solid var(--line); }
 
-  .next { padding: clamp(60px, 14vh, 160px) var(--gutter); background: var(--violet-wash); color: var(--fg); }
-  .next__link { display: grid; gap: 12px; text-decoration: none; }
-  .next__title { font-size: clamp(54px, 11vw, 180px); transition: color 300ms var(--ease); }
+  .next__link { display: grid; gap: 8px; text-decoration: none; }
   .next__link:hover .next__title, .next__link:focus-visible .next__title { color: var(--accent); }
   @media (max-width: 900px) { .spec { grid-template-columns: 1fr; } }
-  @media (max-width: 640px) {
-    .still { height: auto; min-height: 0; display: flex; flex-direction: column; background: var(--bg); color: var(--fg); }
-    .still::after { display: none; }
-    .still__frame { position: relative; inset: auto; aspect-ratio: 4 / 5; width: 100%; }
-    .still__title { position: relative; left: auto; bottom: auto; padding: 16px var(--gutter) 8px; font-size: clamp(56px, 17vw, 84px); line-height: .9; text-shadow: none; color: var(--fg); order: 1; }
-    .still__reg, .still__hold { position: relative; inset: auto; translate: none; margin: 0 var(--gutter) 10px; width: max-content; background: var(--line); color: var(--fg); }
-    .still__hold { display: block; order: 3; }
-    .still__reg { order: 2; }
-    .ring { top: 30%; }
-  }
+  @media (max-width: 640px) { .still__frame img { aspect-ratio: 4 / 5; } .ring { top: 40%; } }
 </style>
