@@ -30,3 +30,11 @@ test("money rounds to two decimals", () => {
   assert.equal(money(14.99 * 3 + 2), "46.97");
   assert.equal(money(0), "0.00");
 });
+
+test("staged view counts are plausible and formatted with commas", async () => {
+  const { VIEW_BASE, formatCount } = await import("../src/lib/text.js");
+  assert.equal(formatCount(1204331), "1,204,331");
+  assert.equal(formatCount(999), "999");
+  assert.equal(formatCount(1000), "1,000");
+  assert.ok(VIEW_BASE["the-still"] > 1_000_000);
+});

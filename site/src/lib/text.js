@@ -25,3 +25,11 @@ export function stagedAverage() {
 export function money(n) {
   return (Math.round(n * 100) / 100).toFixed(2);
 }
+
+/** Staged starting view counts. Plausible, formatted, and the same on the server, with JavaScript off, and under reduced motion. */
+export const VIEW_BASE = { "the-still": 1204331, "the-certificate": 388902 };
+
+/** Thousands separators, fixed to en-US so output never depends on the reader's locale. */
+export function formatCount(n) {
+  return String(Math.round(n)).replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+}

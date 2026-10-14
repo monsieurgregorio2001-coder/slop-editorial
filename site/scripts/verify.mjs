@@ -71,6 +71,12 @@ const M = { viewport: { width: 360, height: 740 }, deviceScaleFactor: 2, hasTouc
   ok("01 navigation arrives after the image", await page.waitForFunction(() => document.documentElement.dataset.nav === "on", null, { timeout: 3000 }).then(() => true, () => false));
   const hero = await page.evaluate(() => { const i = document.querySelector(".cover__img img"); return { w: i.naturalWidth, alt: i.alt }; });
   ok("01 hero still is loaded with alt text", hero.w > 0 && hero.alt.length > 40, `${hero.w}px`);
+  const v1 = await text(page, ".cover__meta [data-viewed]");
+  ok("view counter starts at a plausible formatted number", /^Viewed 1,204,\d{3} times$/.test(v1), v1);
+  const n1 = Number(v1.replace(/\D/g, ""));
+  await sleep(4500);
+  ok("view counter ticks up on its own", Number((await text(page, ".cover__meta [data-viewed]")).replace(/\D/g, "")) > n1);
+  ok("cover text has a legibility shadow over the image", (await page.locator(".cover__sub").evaluate((e) => getComputedStyle(e).textShadow)) !== "none");
   ok("shared header links Garfield Lim to the hub", await page.locator(".crumb__me").getAttribute("href") === "https://monsieurgregorio2001-coder.github.io/");
   const foot = await page.locator(".foot a").evaluateAll((as) => as.map((a) => a.getAttribute("href")));
   ok("shared footer carries portfolio, GitHub, LinkedIn and email", ["https://monsieurgregorio2001-coder.github.io/", "https://github.com/monsieurgregorio2001-coder", "https://www.linkedin.com/in/garfield-lim-8239242a9", "mailto:lim.ggreg@outlook.com"].every((h) => foot.includes(h)));
@@ -333,6 +339,9 @@ for (const tier of ["webgl", "poster", "webgpu"]) {
   ok("09 reduced motion: navigation and rank are present at once", s.nav === "on" && s.hud === "on");
   ok("09 reduced motion: cookie sheet is there without delay", s.sheet);
   ok("09 reduced motion: nothing is staged", !s.staged);
+  const rv = await text(page, ".cover__meta [data-viewed]");
+  await sleep(4500);
+  ok("09 reduced motion: view counter is the same formatted number and holds still", /^Viewed 1,204,331 times$/.test(rv) && (await text(page, ".cover__meta [data-viewed]")) === rv, rv);
   ok("09 reduced motion: sticker and metrics sit in their finished state", s.sticker === 1 && s.metrics.every((o) => o === 1), JSON.stringify(s.metrics));
   ok("09 reduced motion: the metric shows 18 without counting", s.count === "18", s.count);
   ok("09 reduced motion: the pinned feature section is not pinned", s.riseH < 1200, String(s.riseH));

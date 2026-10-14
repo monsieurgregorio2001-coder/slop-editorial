@@ -154,14 +154,28 @@ export function view(workId: string): number {
 }
 export function viewedCount(workId: string): number { return read().viewed[workId] ?? 0; }
 
+let tick = 0;
+const fmt = (n: number) => String(Math.round(n)).replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+/** Shows each staged view counter as its base plus this reader's own views plus the slow tick. */
 export function bindViewed() {
   document.querySelectorAll<HTMLElement>("[data-viewed]").forEach((el) => {
-    const n = viewedCount(el.dataset.viewed!);
-    el.textContent = `Viewed ${pad(n)} ${n === 1 ? "time" : "times"}`;
+    const base = Number(el.dataset.base ?? 0);
+    el.textContent = `Viewed ${fmt(base + viewedCount(el.dataset.viewed!) + tick)} times`;
   });
+}
+// The counters tick up on their own, slowly, unless motion is reduced.
+let ticking = false;
+function startTick() {
+  if (ticking) return;
+  ticking = true;
+  const go = () => {
+    window.setTimeout(() => { if (!reducedMotion() && !document.hidden) { tick += 1 + Math.floor(Math.random() * 4); bindViewed(); } go(); }, 1800 + Math.random() * 1800);
+  };
+  go();
 }
 
 export function bindShell() {
+  startTick();
   refreshId();
   bindViewed();
   cart();

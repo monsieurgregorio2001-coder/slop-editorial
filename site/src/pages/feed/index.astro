@@ -1,6 +1,6 @@
 ---
 import Base from "../../layouts/Base.astro";
-import { withBase } from "../../lib/text.js";
+import { withBase, VIEW_BASE, formatCount } from "../../lib/text.js";
 import { hold } from "../../lib/transitions";
 const u = (p = "") => withBase(import.meta.env.BASE_URL, p);
 const srcset = [480, 800, 1000].map((w) => `${u(`img/hero-still-${w}.webp`)} ${w}w`).join(", ");
@@ -16,7 +16,7 @@ const alt = "A generated sunset over a perfectly mirrored lake, with plastic sph
         </picture>
       </div>
       <span class="ring" data-ring aria-hidden="true"></span>
-      <p class="still__reg" aria-hidden="true">Approved · <span data-viewed="the-still">Viewed 00 times</span></p>
+      <p class="still__reg" aria-hidden="true">Approved · <span data-viewed="the-still" data-base={VIEW_BASE["the-still"]}>Viewed {formatCount(VIEW_BASE["the-still"])} times</span></p>
       <p class="still__hold" data-hold-hint aria-hidden="true">Hold to appreciate</p>
       <h1 class="display still__title">The Still</h1>
     </section>

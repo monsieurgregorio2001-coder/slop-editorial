@@ -1,7 +1,7 @@
 ---
 import Base from "../layouts/Base.astro";
 import { getCollection } from "astro:content";
-import { withBase } from "../lib/text.js";
+import { withBase, VIEW_BASE, formatCount } from "../lib/text.js";
 import { hold } from "../lib/transitions";
 const u = (p = "") => withBase(import.meta.env.BASE_URL, p);
 const srcset = [480, 800, 1000].map((w) => `${u(`img/hero-still-${w}.webp`)} ${w}w`).join(", ");
@@ -35,7 +35,7 @@ const status: Record<string, string> = { DRAFT: "Draft", IN_REVIEW: "In review",
         <div class="cover__caption">
           <span class="display cover__title">The Still</span>
           <span class="cover__sub">Most engaging image yet.</span>
-          <span class="cover__meta">Issue 001 · ★ 4.2 · <span data-viewed="the-still">Viewed 00 times</span></span>
+          <span class="cover__meta">Issue 001 · ★ 4.2 · <span data-viewed="the-still" data-base={VIEW_BASE["the-still"]}>Viewed {formatCount(VIEW_BASE["the-still"])} times</span></span>
         </div>
         <span class="cover__cue" aria-hidden="true">Scroll</span>
       </a>
@@ -75,7 +75,7 @@ const status: Record<string, string> = { DRAFT: "Draft", IN_REVIEW: "In review",
             <div class="card__body">
               <span class="display card__t">The Still</span>
               <span class="ui">★ 4.2 · 185 ratings · Published</span>
-              <span class="ui card__price">0.00 · <span data-viewed="the-still">Viewed 00 times</span></span>
+              <span class="ui card__price">0.00 · <span data-viewed="the-still" data-base={VIEW_BASE["the-still"]}>Viewed {formatCount(VIEW_BASE["the-still"])} times</span></span>
             </div>
           </a>
         </li>
@@ -85,7 +85,7 @@ const status: Record<string, string> = { DRAFT: "Draft", IN_REVIEW: "In review",
             <div class="card__body">
               <span class="display card__t">The Certificate</span>
               <span class="ui">★ 4.2 · Prompt pack · Sample</span>
-              <span class="ui card__price">Originality from 0/month · <span data-viewed="the-certificate">Viewed 00 times</span></span>
+              <span class="ui card__price">Originality from 0/month · <span data-viewed="the-certificate" data-base={VIEW_BASE["the-certificate"]}>Viewed {formatCount(VIEW_BASE["the-certificate"])} times</span></span>
             </div>
           </a>
         </li>
@@ -126,14 +126,14 @@ const status: Record<string, string> = { DRAFT: "Draft", IN_REVIEW: "In review",
   .cover__img { position: absolute; inset: 0; }
   .cover__img picture, .cover__img img { display: block; width: 100%; height: 100%; }
   .cover__img img { object-fit: cover; object-position: 50% 62%; }
-  .cover__stage::after { content: ""; position: absolute; inset: 0; background: linear-gradient(to top, rgb(12 8 40 / .72), rgb(12 8 40 / .15) 55%, transparent); pointer-events: none; }
+  .cover__stage::after { content: ""; position: absolute; inset: 0; background: linear-gradient(to top, rgb(12 8 40 / .8), rgb(12 8 40 / .3) 45%, transparent 75%); pointer-events: none; }
   .cover__sticker { position: absolute; right: clamp(20px, 6vw, 90px); top: clamp(20px, 5vh, 56px); z-index: 3; font-size: clamp(28px, 4.4vw, 64px); text-align: center; }
   .cover__sticker small { display: block; font: 700 .3em/1.1 var(--text); text-transform: uppercase; letter-spacing: .06em; margin-top: .25em; }
   .cover__caption { position: absolute; left: var(--gutter); right: var(--gutter); bottom: clamp(120px, 16vh, 150px); z-index: 2; display: grid; gap: 6px; max-width: 62%; }
   .cover__title { font-size: clamp(54px, 11vw, 180px); color: #fff; text-shadow: 0 2px 40px rgb(0 0 0 / .35); transition: color 300ms var(--ease); }
   .cover__stage:hover .cover__title, .cover__stage:focus-visible .cover__title { color: var(--sticker); }
-  .cover__sub { font: 600 clamp(18px, 2vw, 28px)/1.2 var(--text); letter-spacing: -.01em; }
-  .cover__meta { font: 500 14px/1.4 var(--text); color: rgb(255 255 255 / .86); }
+  .cover__sub { font: 600 clamp(18px, 2vw, 28px)/1.2 var(--text); letter-spacing: -.01em; text-shadow: 0 1px 2px rgb(10 6 40 / .6), 0 2px 18px rgb(10 6 40 / .7); }
+  .cover__meta { font: 500 14px/1.4 var(--text); color: #fff; text-shadow: 0 1px 2px rgb(10 6 40 / .6), 0 2px 14px rgb(10 6 40 / .7); font-variant-numeric: tabular-nums; }
   .cover__cue { position: absolute; left: 50%; bottom: 10px; translate: -50% 0; z-index: 2; font: 500 12px/1 var(--mono); text-transform: uppercase; letter-spacing: .1em; opacity: 0; animation: fade-in 1600ms var(--ease) 14s both; }
   @keyframes fade-in { to { opacity: 1; } }
 

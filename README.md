@@ -8,7 +8,7 @@ A deadpan satire of AI content and the attention economy, built as software: a s
 
 - **Problem.** AI makes images nearly free, so publications drift into content that nobody decided to make.
 - **Build.** An Astro site that behaves like the platforms it mocks (boot screen, cookie sheet, rank, ratings that always read 4.2, a gift shop that arrives in front of the gold). Beside it, a Python pipeline that estimates, caps, approves, and logs every paid generation.
-- **Result.** Lighthouse mobile scores 94 performance and 100 in the other three categories on both the home page and the 3D page, with 0.002 layout shift, 0 ms blocking time, 143 real-browser checks, 146 build gates, and 66 unit tests passing.
+- **Result.** Lighthouse mobile scores 91 and 92 performance and 100 in the other three categories on the home page and the 3D page, with 0.002 layout shift, 0 ms blocking time, 147 real-browser checks, 146 build gates, and 67 unit tests passing.
 
 **Live demo:** https://monsieurgregorio2001-coder.github.io/slop-editorial/ (published by the Pages workflow once the repository is public).
 
@@ -140,12 +140,12 @@ Measured on 14 October 2026 on one laptop, with headless Google Chrome. Treat th
 | Check | Result |
 | --- | --- |
 | Python unit tests (`pipeline/`) | 49 pass |
-| Node unit tests for gate logic and helpers (`site/`) | 17 pass |
-| Real-browser checks in Chrome (`npm run verify`) | 143 pass, 0 fail |
+| Node unit tests for gate logic and helpers (`site/`) | 18 pass |
+| Real-browser checks in Chrome (`npm run verify`) | 147 pass, 0 fail |
 | Axe accessibility, 10 page types in light and dark | 20 runs, 0 violations (WCAG 2.1 A and AA plus best practice) |
 | Site build gates (`npm run check`) | 146 checks pass |
-| Lighthouse, mobile preset, home page | 94 performance, 100 accessibility, 100 best practices, 100 SEO |
-| Lighthouse, mobile preset, `/authenticity/` | 94 performance, 100 accessibility, 100 best practices, 100 SEO |
+| Lighthouse, mobile preset, home page | 91 performance, 100 accessibility, 100 best practices, 100 SEO |
+| Lighthouse, mobile preset, `/authenticity/` | 92 performance, 100 accessibility, 100 best practices, 100 SEO |
 | Largest contentful paint, home and 3D page | 3.0 s and 2.9 s under simulated slow 4G, 0.002 layout shift, 0 ms blocking time |
 | JavaScript shipped | 81 KB gzipped shared, 379 KB gzipped for the lazy 3D chunk, loaded only on `/authenticity/` |
 | Horizontal scroll at 360 px | none on all 10 page types |

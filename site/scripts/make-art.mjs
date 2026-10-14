@@ -74,7 +74,7 @@ function hero() {
 <rect y="${hz}" width="${W}" height="${H - hz}" fill="url(#lake)" opacity=".35"/>
 ${Array.from({ length: 16 }, (_, i) => `<rect x="${120 + (i % 2) * 40}" y="${hz + 30 + i * 32}" width="${760 - (i % 2) * 80}" height="2" fill="#fff" opacity="${0.18 - i * 0.008}" rx="1"/>`).join("")}
 ${birds}
-<g transform="translate(150 ${hz + 120})"><rect x="-4" y="0" width="8" height="120" fill="#2a1a78"/><rect x="-86" y="-8" width="172" height="58" rx="10" fill="#fff4dc" stroke="#2a1a78" stroke-width="4"/>
+<g transform="translate(842 ${hz + 24}) scale(.9)"><rect x="-4" y="0" width="8" height="120" fill="#2a1a78"/><rect x="-86" y="-8" width="172" height="58" rx="10" fill="#fff4dc" stroke="#2a1a78" stroke-width="4"/>
 <text x="0" y="22" text-anchor="middle" font-family="Bricolage, sans-serif" font-weight="800" font-size="20" fill="#2a1a78">SUNSEET POINT</text><text x="0" y="42" text-anchor="middle" font-family="Bricolage, sans-serif" font-weight="600" font-size="12" fill="#2a1a78">OPEN 24 HOURS OF HOURS</text></g>
 ${sphere(250, 930, 58, "#b8fff0", "#19d3c5")}${sphere(750, 930, 58, "#b8fff0", "#19d3c5")}
 ${sphere(380, 1070, 34, "#ffd1ea", "#ff4f9a")}${sphere(620, 1070, 34, "#ffd1ea", "#ff4f9a")}

@@ -24,7 +24,7 @@ const works = (await getCollection("works")).sort((a, b) => a.data.order - b.dat
             </span>
             <span class="ui row__meta">
               <span>★ {w.data.rating} · {w.data.ratings} ratings</span>
-              <span>{w.data.views} views · <span data-viewed={w.id}>Viewed 00 times</span></span>
+              <span>{w.data.views} views</span>
               <span>{w.data.availability}</span>
             </span>
             <span class="row__price"><span class="sticker">{w.data.price}</span></span>

@@ -32,15 +32,15 @@ const srcset = [480, 800, 1000].map((w) => `${u(`img/${d.image}-${w}.webp`)} ${w
         <div><dt>Price</dt><dd><span class="sticker">{d.price}</span></dd></div>
       </dl>
       <p class="ui">People like you also scrolled: {d.also}.</p>
-      <p class="ui" data-sample>Sample work. Original image generated in code, original text, no photographs. <span data-viewed={entry.id}>Viewed 00 times</span></p>
+      <p class="ui" data-sample>Sample work. Original image generated in code, original text, no photographs.</p>
       <p><a class="btn" href={u("works/")}>Back to inventory</a></p>
     </div>
   </article>
   <script>
-    import { view, bindViewed } from "../../scripts/system";
+    import { view } from "../../scripts/system";
     document.addEventListener("astro:page-load", () => {
       const id = document.querySelector<HTMLElement>("[data-work]")?.dataset.work;
-      if (id) { view(id); bindViewed(); }
+      if (id) view(id);
     });
   </script>
 </Base>
