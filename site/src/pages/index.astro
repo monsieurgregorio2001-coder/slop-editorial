@@ -28,13 +28,13 @@ const status: Record<string, string> = { DRAFT: "Draft", IN_REVIEW: "In review",
         <div class="cover__img" transition:name="hero-still">
           <picture>
             <source srcset={srcset} sizes="100vw" type="image/webp" />
-            <img src={u("img/hero-still-1000.webp")} width="1000" height="1250" alt="A generated sunset over a perfectly mirrored lake, with plastic spheres floating in symmetric pairs and a sign that reads Sunseet Point." decoding="async" fetchpriority="high" />
+            <img src={u("img/hero-still-1000.webp")} width="1000" height="1250" alt="A generated sunset over a mirrored lake. A sticker offers a free extra finger, a sign reads Sunseet Point, and the prompt ultra realistic, 8k, trending, masterpiece is printed along the bottom." decoding="async" fetchpriority="high" />
           </picture>
         </div>
         <span class="sticker cover__sticker" data-sticker>Free.<small>Limited availability.</small></span>
         <div class="cover__caption">
           <span class="display cover__title">The Still</span>
-          <span class="cover__sub">Most engaging image yet.</span>
+          <span class="cover__sub">ultra realistic, 8k, trending, masterpiece</span>
           <span class="cover__meta">Issue 001 · ★ 4.2 · <span data-viewed="the-still" data-base={VIEW_BASE["the-still"]}>Viewed {formatCount(VIEW_BASE["the-still"])} times</span></span>
         </div>
         <span class="cover__cue" aria-hidden="true">Scroll</span>
@@ -50,13 +50,13 @@ const status: Record<string, string> = { DRAFT: "Draft", IN_REVIEW: "In review",
         </picture>
         <div class="rise__veil"></div>
         <div class="feat" data-statement>
-          <h2 class="feat__h">Looks perfect.<br />Even when nobody asked.</h2>
+          <h2 class="feat__h">Looks real.<br />Count the fingers.</h2>
           <div class="feat__metrics">
             <div class="metric" data-metric="0"><span class="metric__v"><span data-count="18">18</span> %</span><span class="metric__k">Engagement improved, compared with the previous image.</span></div>
             <div class="metric" data-metric="1"><span class="metric__v">0.8 s</span><span class="metric__k">Preferred by people who skip.</span></div>
             <div class="metric" data-metric="2"><span class="metric__v">B</span><span class="metric__k">Viewers preferred version B. No visible difference.</span></div>
           </div>
-          <p class="feat__fine">Results vary by viewer. Taste not guaranteed.</p>
+          <p class="feat__fine">Results vary by viewer. Taste not guaranteed. Fingers may vary.</p>
         </div>
         <p class="rise__dwell" data-dwell aria-hidden="true"></p>
       </div>
@@ -66,7 +66,7 @@ const status: Record<string, string> = { DRAFT: "Draft", IN_REVIEW: "In review",
     <section class="index" aria-labelledby="index-h">
       <div class="index__head">
         <h2 id="index-h" class="index__h">Recommended for you</h2>
-        <p class="ui">People like you also scrolled.</p>
+        <p class="ui">People like you also scrolled. Amazing.</p>
       </div>
       <ul class="cards">
         <li class="card">
@@ -83,8 +83,8 @@ const status: Record<string, string> = { DRAFT: "Draft", IN_REVIEW: "In review",
           <a class="card__link" href={u("authenticity/")}>
             <div class="card__img card__img--dark"><img src={u("img/seal-poster-800.webp")} width="800" height="1000" alt="" loading="lazy" decoding="async" /><span class="sticker card__sticker">14.99</span></div>
             <div class="card__body">
-              <span class="display card__t">The Certificate</span>
-              <span class="ui">★ 4.2 · Prompt pack · Sample</span>
+              <span class="display card__t">Certificate of Human Touch</span>
+              <span class="ui">★ 4.2 · Prompt pack · Extra finger 2.99</span>
               <span class="ui card__price">Originality from 0/month · <span data-viewed="the-certificate" data-base={VIEW_BASE["the-certificate"]}>Viewed {formatCount(VIEW_BASE["the-certificate"])} times</span></span>
             </div>
           </a>
@@ -94,7 +94,7 @@ const status: Record<string, string> = { DRAFT: "Draft", IN_REVIEW: "In review",
       <ul class="avail">
         {releases.map((r) => (<li class="avail__row"><span class="avail__t">{r.data.title}</span><span class="ui">{r.data.window}</span><span class="ui avail__s">{status[r.data.state]}</span></li>))}
       </ul>
-      <p class="ui index__note">Sample slate. Every release waits for a human. The object on the authenticity page is a procedural placeholder.</p>
+      <p class="ui index__note">Sample slate. Every release waits for a human, who counts the fingers. The object on the authenticity page is a procedural placeholder.</p>
     </section>
     <span hidden data-warm data-srcset={srcset} data-src={u("img/hero-still-800.webp")}></span>
   </div>

@@ -42,7 +42,7 @@ export function watchReader(opts: Opts = {}) {
     if (y / max > 0.08) notice("Reading experience optimized.", { once: "ordinary" });
     if (y / max > 0.5) notice("Your taste has been updated.", { once: "taste" });
     if (y > peak) peak = y;
-    if (peak - y > 320 && y < lastY) notice("Try again.", { once: "hesitated" });
+    if (peak - y > 320 && y < lastY) notice("Regenerate response.", { once: "hesitated" });
     lastY = y;
   }, { passive: true });
   on(window, "pointermove", () => { lastMove = performance.now(); }, { passive: true });

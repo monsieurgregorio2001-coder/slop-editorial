@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 1250" width="1000" height="1250">
+<defs>
+<radialGradient id="sph" cx=".34" cy=".3" r=".8"><stop offset="0" stop-color="#fff" stop-opacity=".95"/><stop offset=".18" stop-color="#fff" stop-opacity=".25"/><stop offset=".6" stop-color="#000" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity=".35"/></radialGradient>
+<filter id="blur8"><feGaussianBlur stdDeviation="8"/></filter>
+<filter id="blur20"><feGaussianBlur stdDeviation="20"/></filter>
+<filter id="blur3"><feGaussianBlur stdDeviation="3"/></filter><linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ff9a6a"/><stop offset="1" stop-color="#ff4f9a"/></linearGradient>
+<linearGradient id="sheen" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#fff" stop-opacity=".22"/><stop offset=".45" stop-color="#fff" stop-opacity="0"/></linearGradient></defs>
+<rect width="1000" height="1250" fill="url(#bg)"/><rect x="60" y="60" width="880" height="1130" rx="30" fill="#fff"/>
+<rect x="100" y="100" width="800" height="560" rx="20" fill="#eceaf7"/>
+<path d="M330 260 H620 L600 560 q-8 40 -48 40 H398 q-40 0 -48 -40 Z" fill="#fff" stroke="#c9c4e8" stroke-width="6"/><path d="M620 320 q90 0 80 80 q-10 70 -100 56" fill="none" stroke="#fff" stroke-width="26"/><path d="M620 320 q90 0 80 80 q-10 70 -100 56" fill="none" stroke="#c9c4e8" stroke-width="6"/>
+<text x="475" y="400" text-anchor="middle" font-family="Bricolage, sans-serif" font-weight="800" font-size="40" fill="#ff4f9a"  >COFFE LOVR</text><text x="475" y="450" text-anchor="middle" font-family="Bricolage, sans-serif" font-weight="700" font-size="26" fill="#6a3dff"  >BESTT MOM EVR</text>
+<text x="100" y="740"  font-family="Bricolage, sans-serif" font-weight="800" font-size="56" fill="#14123a"  >I am sorry, but I cannot</text><text x="100" y="805"  font-family="Bricolage, sans-serif" font-weight="800" font-size="56" fill="#14123a"  >fulfill this request.</text>
+<text x="100" y="880"  font-family="Bricolage, sans-serif" font-weight="800" font-size="64" fill="#d1337a"  >$19.99</text><text x="330" y="878"  font-family="Bricolage, sans-serif" font-weight="600" font-size="34" fill="#e0a000"  >&#9733;&#9733;&#9733;&#9733;&#9733; 4.8 (1,204)</text>
+<text x="100" y="950"  font-family="Bricolage, sans-serif" font-weight="500" font-size="36" fill="#4a4860"  >Free shipping. Only 3 left.</text>
+<rect x="100" y="1000" width="380" height="100" rx="50" fill="#6a3dff" /><text x="290" y="1066" text-anchor="middle" font-family="Bricolage, sans-serif" font-weight="700" font-size="40" fill="#fff"  >Add to cart</text><rect x="510" y="1000" width="390" height="100" rx="50" fill="#ffe14d" /><text x="705" y="1066" text-anchor="middle" font-family="Bricolage, sans-serif" font-weight="700" font-size="40" fill="#14123a"  >Best seller</text><rect width="1000" height="1250" fill="url(#sheen)"/></svg>

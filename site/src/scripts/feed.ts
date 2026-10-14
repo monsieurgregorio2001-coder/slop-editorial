@@ -69,7 +69,7 @@ export function initFeed() {
   // --- The dialog addresses the reader's own taste. Once per session. ---
   const askUpdate = async () => {
     try { if (sessionStorage.getItem("slop.update") === "1") return; sessionStorage.setItem("slop.update", "1"); } catch { /* ignore */ }
-    const r = await dialog({ title: "Taste update available", body: "Your taste has 1 update available. Install now to improve compatibility with what is trending in your area.", buttons: [{ id: "later", label: "Not now" }, { id: "install", label: "Install", primary: true }] });
+    const r = await dialog({ title: "Taste update available", body: "Your taste has 1 update available. Install now to delve into the rich tapestry of what you already like.", buttons: [{ id: "later", label: "Not now" }, { id: "install", label: "Install", primary: true }] });
     if (r === "install") { dialog({ title: "Installing", body: "Do not look away.", buttons: [], bar: true }); requestAnimationFrame(() => document.querySelector<HTMLElement>(".dialog__bar i")?.style.setProperty("width", "100%")); window.setTimeout(() => { document.querySelector(".dialog")?.remove(); notice("Installed. No visible difference."); score(30); }, 1500); }
     else if (r === "later") notice("Reminder set for tomorrow.");
   };

@@ -36,7 +36,7 @@ export function initHome() {
       root.dataset.boot = "on";
       const line = boot.querySelector<HTMLElement>("[data-boot-line]");
       const bar = boot.querySelector<HTMLElement>("[data-boot-bar]");
-      const steps: Array<[number, string, number]> = [[0, "Setting up your experience of being measured", 12], [700, "Checking attention", 38], [1300, "Personalizing taste", 71], [1900, "Done.", 100]];
+      const steps: Array<[number, string, number]> = [[0, "Setting up your experience of being measured", 12], [700, "Certainly! Here is your homepage:", 38], [1300, "Counting fingers: 6", 71], [1900, "Done.", 100]];
       steps.forEach(([at, text, pct]) => timers.push(window.setTimeout(() => { if (line) line.textContent = text; if (bar) bar.style.width = pct + "%"; }, at)));
       timers.push(window.setTimeout(() => boot.setAttribute("data-done", ""), 2400));
       timers.push(window.setTimeout(() => { delete root.dataset.boot; }, 3000));

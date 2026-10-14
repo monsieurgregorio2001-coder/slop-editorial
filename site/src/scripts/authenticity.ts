@@ -51,7 +51,7 @@ export async function initAuthenticity() {
   const addBtn = document.querySelector<HTMLButtonElement>("[data-add-cart]");
   addBtn?.addEventListener("click", add);
   off.push(() => addBtn?.removeEventListener("click", add));
-  if (rm) shop(["barrier", "notice", "sani", "pay", "pack"]);
+  if (rm) shop(["barrier", "notice", "sani", "pay", "finger", "pack"]);
 
   const { tier, why } = pickTier();
   const beats = Array.from(document.querySelectorAll<HTMLElement>("[data-beat]"));
@@ -132,7 +132,7 @@ export async function initAuthenticity() {
       active = i;
       beats.forEach((b, k) => { if (k === i) b.setAttribute("data-on", ""); else b.removeAttribute("data-on"); });
       // The shop arrives one object at a time, after the two clean beats.
-      shop(i >= 2 ? ["barrier", ...(i >= 3 ? ["notice", "sani"] : []), ...(i >= 4 ? ["pay"] : []), ...(i >= 5 ? ["pack"] : [])] : []);
+      shop(i >= 2 ? ["barrier", ...(i >= 3 ? ["notice", "sani"] : []), ...(i >= 4 ? ["pay"] : []), ...(i >= 5 ? ["finger", "pack"] : [])] : []);
       if (i === 2) notice("Please queue behind the barrier.", { once: "queue" });
       if (i === 3) notice("Please sanitize before appreciating.", { once: "seal" });
       if (i === 4) { notice("Appreciation open. Contactless accepted.", { once: "don" }); play("chime"); }

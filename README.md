@@ -1,14 +1,14 @@
 # Slop Editorial
 
-A deadpan satire of AI content and the attention economy, built as software: a staged, scroll-driven site with a real 3D object, backed by an image pipeline that keeps a human in the loop.
+A deadpan satire of AI slop and the attention economy, built as software: six-finger hands, signs that say Sunseet, prompts printed on the picture, and comments that all say Amazing. A staged, scroll-driven site with a real 3D object, backed by an image pipeline that keeps a human in the loop.
 
 [![Slop Editorial home page, developed cover with the Free sticker](docs/hero.png)](https://monsieurgregorio2001-coder.github.io/slop-editorial/)
 
 ## In 30 seconds
 
-- **Problem.** AI makes images nearly free, so publications drift into content that nobody decided to make.
+- **Problem.** AI makes images nearly free, so feeds fill with content nobody decided to make. Hands get six fingers, and every comment says Amazing.
 - **Build.** An Astro site that behaves like the platforms it mocks (boot screen, cookie sheet, rank, ratings that always read 4.2, a gift shop that arrives in front of the gold). Beside it, a Python pipeline that estimates, caps, approves, and logs every paid generation.
-- **Result.** Lighthouse mobile scores 91 and 92 performance and 100 in the other three categories on the home page and the 3D page, with 0.002 layout shift, 0 ms blocking time, 147 real-browser checks, 146 build gates, and 67 unit tests passing.
+- **Result.** Lighthouse mobile scores 93 and 91 performance and 100 in the other three categories on the home page and the 3D page, with 0.002 layout shift, 0 ms blocking time, 150 real-browser checks, 146 build gates, and 68 unit tests passing.
 
 **Live demo:** https://monsieurgregorio2001-coder.github.io/slop-editorial/ (published by the Pages workflow once the repository is public).
 
@@ -20,18 +20,18 @@ Open `/review/` on the running site for the same list with links. Metrics, ratin
 
 | # | Behaviour | Where | What happens |
 | --- | --- | --- | --- |
-| 1 | Homepage, first 20 seconds | `/` | A boot screen sets up your experience of being measured. The masthead prints at 0.4 s. A cookie sheet at 2.6 s offers Accept all and Accept all. The rank chip reads You: #184 today. The still develops when you move or consent, then a sticker lands: Free. Limited availability. |
+| 1 | Homepage, first 20 seconds | `/` | A boot screen sets up your experience of being measured. The masthead prints at 0.4 s. A cookie sheet at 2.6 s offers Accept all and Accept all. The rank chip reads You: #184 today. The still develops when you move or consent, with its prompt leaking underneath: ultra realistic, 8k, trending, masterpiece. Then a sticker lands: Free. Limited availability. |
 | 2 | Beautiful, then wrong | `/` scroll | The still rises under a feature headline. Then the metrics: engagement improved 18 %, preferred by people who skip, viewers preferred version B with no visible difference. |
-| 3 | One interface joke | `/feed/` | Your taste has 1 update available. Not now sets a reminder. Install runs a progress bar and ends: Installed. No visible difference. |
+| 3 | One interface joke | `/feed/` | Your taste has 1 update available, to delve into the rich tapestry of what you already like. Not now sets a reminder. Install runs a progress bar and ends: Installed. No visible difference. |
 | 4 | One embarrassment | `/feed/`, `/` | Stop on the image for 7 s: You have been looking for 0:07. That is above average. |
-| 5 | One banal object ruining luxury | `/authenticity/` | A gilded certificate of authenticity turns on a plinth in Three.js. The gift shop arrives in front of it: crowd barrier, a laminated PLEASE DO NOT GENERATE, sanitizer, a terminal reading TAP TO APPRECIATE 2.00, and a prompt pack at 14.99. Originality. From 0/month. |
-| 6 | Software, not a magazine | `/works/`, `/authenticity/` | The archive is an inventory with rank, rating, views, availability, a price sticker, and people like you also scrolled. The buy bar adds prompt packs and the receipt itemizes what you appreciated. |
-| 7 | The viewer becomes the joke | `/feed/` | Rate this image: the tally reads 4.2 whatever you pick. Choose A or B: no visible difference. Every action improves your rank. |
+| 5 | One banal object ruining luxury | `/authenticity/` | A gilded Certificate of Human Touch turns on a plinth in Three.js. The gift shop arrives in front of it: crowd barrier, a laminated PLEASE DO NOT GENERATE, sanitizer, a terminal reading TAP TO APPRECIATE 2.00, a prompt pack at 14.99, an extra finger at 2.99, and a watermark remover remover. Originality. From 0/month. |
+| 6 | Software, not a magazine | `/works/`, `/authenticity/` | The archive is an inventory of seven slop tropes (six fingers, prompt residue, refusal listings, engagement bait, humble announcements, delve, make it pop) with rank, rating, views, availability, a price sticker, and people like you also scrolled. The buy bar adds prompt packs and the receipt itemizes what you appreciated. |
+| 7 | The viewer becomes the joke | `/feed/` | Rate this image: the tally reads 4.2 whatever you pick, and five commenters say Amazing. Choose A or B: no visible difference. Every action improves your rank. |
 | 8 | Mobile interaction | `/feed/` on a phone | Hold the image. A ring fills in 0.9 s: Appreciation registered. Free shipping on redemption. |
 | 9 | Reduced motion | `/?motion=reduce` | Boot, delays, and staging collapse. Metrics, sticker, shop, and buy bar sit in their finished state. |
 | 10 | Unexpectedly playful | `/authenticity/` | The gift shop works. The pack adds up, the receipt itemizes, and you are thanked for appreciating. |
 
-Two more pages demonstrate human-in-the-loop gates. `/releases/` tracks six sample releases like an order, each with a spend estimate, a cap, and an approval reference. `/queue/` is the approval queue, and its buttons refuse on purpose: *Approval happens with a human, not a button.*
+Two more pages demonstrate human-in-the-loop gates. `/releases/` tracks six sample releases like an order, each with a spend estimate, a cap, and an approval reference. `/queue/` is the approval queue, and its buttons refuse on purpose: *Approval happens with a human, not a button.* Its help box says: I understand your frustration. Would you like to speak to an agent? I am the agent.
 
 ## Architecture
 
@@ -140,12 +140,12 @@ Measured on 14 October 2026 on one laptop, with headless Google Chrome. Treat th
 | Check | Result |
 | --- | --- |
 | Python unit tests (`pipeline/`) | 49 pass |
-| Node unit tests for gate logic and helpers (`site/`) | 18 pass |
-| Real-browser checks in Chrome (`npm run verify`) | 147 pass, 0 fail |
+| Node unit tests for gate logic and helpers (`site/`) | 19 pass |
+| Real-browser checks in Chrome (`npm run verify`) | 150 pass, 0 fail |
 | Axe accessibility, 10 page types in light and dark | 20 runs, 0 violations (WCAG 2.1 A and AA plus best practice) |
 | Site build gates (`npm run check`) | 146 checks pass |
-| Lighthouse, mobile preset, home page | 91 performance, 100 accessibility, 100 best practices, 100 SEO |
-| Lighthouse, mobile preset, `/authenticity/` | 92 performance, 100 accessibility, 100 best practices, 100 SEO |
+| Lighthouse, mobile preset, home page | 93 performance, 100 accessibility, 100 best practices, 100 SEO |
+| Lighthouse, mobile preset, `/authenticity/` | 91 performance, 100 accessibility, 100 best practices, 100 SEO |
 | Largest contentful paint, home and 3D page | 3.0 s and 2.9 s under simulated slow 4G, 0.002 layout shift, 0 ms blocking time |
 | JavaScript shipped | 81 KB gzipped shared, 379 KB gzipped for the lazy 3D chunk, loaded only on `/authenticity/` |
 | Horizontal scroll at 360 px | none on all 10 page types |
@@ -158,7 +158,7 @@ Measured on 14 October 2026 on one laptop, with headless Google Chrome. Treat th
 
 ## Limits and honesty
 
-- The works are short original satire written to exercise the site, not to make claims about the industry.
+- The works are short original satire about widely known AI slop tropes. They name no brands, products, or people, and make no claims about the industry.
 - Release figures on `/releases/` and `/queue/` are sample data from the free mock provider.
 - The 3D object is a procedural placeholder. The WebGPU path is guarded but was not run on real WebGPU hardware. WebGL, the poster tier, and the fallbacks were verified.
 - The mock provider draws abstract placeholder frames. They prove the plumbing, not image quality.

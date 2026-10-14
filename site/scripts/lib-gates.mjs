@@ -95,8 +95,11 @@ const MAX_WORDS = 25;
 /** Text of paragraph-like blocks (p, dd, li), one string per block. */
 export function proseBlocks(html) {
   const blocks = [];
-  // Innermost blocks only: a list item that wraps other blocks is a layout container, not a sentence.
-  for (const m of html.matchAll(/<(p|dd|li)\b[^>]*>((?:(?!<(?:p|dd|li|div|dl|ul|ol|article|section|figure)\b)[\s\S])*?)<\/\1>/gi)) blocks.push(visibleText(m[2]));
+  // Innermost blocks only: a list item that wraps other blocks or is a card of spans is a layout container, not a sentence.
+  for (const m of html.matchAll(/<(p|dd|li)\b[^>]*>((?:(?!<(?:p|dd|li|div|dl|ul|ol|article|section|figure)\b)[\s\S])*?)<\/\1>/gi)) {
+    if (m[1].toLowerCase() === "li" && /<a\b[^>]*>\s*<(?:span|div|img)/i.test(m[2])) continue;
+    blocks.push(visibleText(m[2]));
+  }
   return blocks;
 }
 

@@ -171,7 +171,7 @@ const M = { viewport: { width: 360, height: 740 }, deviceScaleFactor: 2, hasTouc
   // description edit
   await page.evaluate(() => document.querySelector("[data-cost]").scrollIntoView({ block: "center" }));
   await page.waitForFunction(() => document.querySelector("[data-ins]").hasAttribute("data-on"), null, { timeout: 5000 });
-  ok("one interface edit: the decisive word is inserted after reading", (await text(page, "[data-cost-text]")).includes("never"));
+  ok("one interface edit: the decisive word is inserted after reading", (await text(page, "[data-cost-text]")).includes("six"));
   ok("feed first screen explains itself (h1 and rating target visible)", await page.evaluate(() => { scrollTo(0, 0); const h = document.querySelector("h1").getBoundingClientRect(); return h.bottom > 0 && h.top < innerHeight; }));
 
   // 04 the embarrassment
@@ -256,6 +256,9 @@ for (const tier of ["webgl", "poster", "webgpu"]) {
     ok("05 laminated notice: PLEASE DO NOT GENERATE", /PLEASE DO NOT GENERATE/.test(shopText));
     ok("05 payment terminal: TAP TO APPRECIATE 2.00", /TAP TO APPRECIATE\s*2\.00/.test(shopText));
     ok("05 prompt pack 14.99", /Prompt pack\s*14\.99/.test(shopText));
+    ok("05 Extra finger, 2.99", /Extra finger\s*2\.99/.test(shopText));
+    ok("05 Watermark remover remover", /Watermark remover remover/.test(shopText));
+    ok("05 garbled sanitizer label stays garbled", /APPRECIATTING/.test(shopText));
     ok("05 hand sanitizer", /SANITIZE/.test(shopText));
     const beatsText = await page.evaluate(() => document.querySelector(".beats").textContent.replace(/\s+/g, " "));
     ok("05 Originality. From 0/month.", /Originality\. From 0\/month\./.test(beatsText));
@@ -264,7 +267,7 @@ for (const tier of ["webgl", "poster", "webgpu"]) {
     ok("06 buy bar adds prompt packs", rc.n === "2", JSON.stringify(rc));
     ok("06 receipt itemizes: 2 packs are 29.98, total 31.98", rc.pack === "29.98" && rc.total === "31.98", JSON.stringify(rc));
     const rtext = await text(page, "[data-receipt]");
-    ok("06 receipt itemizes what was appreciated", /Appreciation/.test(rtext) && /Thank you for appreciating/.test(rtext) && /Taste\s*sold separately/.test(rtext));
+    ok("06 receipt itemizes what was appreciated", /Appreciation/.test(rtext) && /Watermark remover remover/.test(rtext) && /Thank you for appreciating/.test(rtext) && /Taste\s*sold separately/.test(rtext));
     ok("authenticity has no layout shift (CLS < 0.02)", (await page.evaluate(() => window.__cls)) < 0.02, (await page.evaluate(() => window.__cls)).toFixed(4));
     await page.screenshot({ path: path.join(out, "authenticity-end.png") });
   }
@@ -282,7 +285,7 @@ for (const tier of ["webgl", "poster", "webgpu"]) {
   const imgs = await page.locator(".row__thumb img").evaluateAll((is) => is.map((i) => i.complete));
   ok("06 work thumbnails render", imgs.length === 7);
   await page.locator(".row").first().click();
-  await page.waitForURL(/works\/ten-thousand-sunsets\/$/);
+  await page.waitForURL(/works\/six-fingers-five-stars\/$/);
   await page.waitForSelector(".work__fig img");
   const d = await page.evaluate(() => ({ alt: document.querySelector(".work__fig img").alt, p: document.querySelector(".work__text").innerText.length, sample: !!document.querySelector("[data-sample]") }));
   ok("06 work page: alt text, one paragraph, sample notice", d.alt.length > 40 && d.p > 150 && d.sample);
@@ -364,7 +367,7 @@ for (const tier of ["webgl", "poster", "webgpu"]) {
 // ---------------------------------------------------------------------------------------------
 // Phone: no horizontal scroll anywhere, first screen explains itself, touch tier is the poster
 {
-  const routes = ["", "feed/", "authenticity/", "works/", "works/the-plateau/", "releases/", "releases/r03/", "queue/", "review/", "about/"];
+  const routes = ["", "feed/", "authenticity/", "works/", "works/make-it-pop/", "releases/", "releases/r03/", "queue/", "review/", "about/"];
   for (const r of routes) {
     const page = await open(M, r, `m-${r}`);
     await sleep(r === "" ? 900 : 300);
@@ -417,7 +420,7 @@ ok("console: no errors in any page", consoleErrors.length === 0, consoleErrors.s
 // Accessibility: axe on every page type, light and dark
 {
   const axeSrc = await readFile(path.resolve("node_modules/axe-core/axe.min.js"), "utf8");
-  const routes = ["", "feed/", "authenticity/?tier=poster", "works/", "works/certified-authentic/", "releases/", "releases/r02/", "queue/", "review/", "about/"];
+  const routes = ["", "feed/", "authenticity/?tier=poster", "works/", "works/why-do-pictures-never-trend/", "releases/", "releases/r02/", "queue/", "review/", "about/"];
   for (const scheme of ["light", "dark"]) {
     for (const r of routes) {
       const ctx = await browser.newContext({ baseURL: origin, ...D, colorScheme: scheme, reducedMotion: "reduce" });

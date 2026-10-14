@@ -75,12 +75,14 @@ function hero() {
 ${Array.from({ length: 16 }, (_, i) => `<rect x="${120 + (i % 2) * 40}" y="${hz + 30 + i * 32}" width="${760 - (i % 2) * 80}" height="2" fill="#fff" opacity="${0.18 - i * 0.008}" rx="1"/>`).join("")}
 ${birds}
 <g transform="translate(842 ${hz + 24}) scale(.9)"><rect x="-4" y="0" width="8" height="120" fill="#2a1a78"/><rect x="-86" y="-8" width="172" height="58" rx="10" fill="#fff4dc" stroke="#2a1a78" stroke-width="4"/>
-<text x="0" y="22" text-anchor="middle" font-family="Bricolage, sans-serif" font-weight="800" font-size="20" fill="#2a1a78">SUNSEET POINT</text><text x="0" y="42" text-anchor="middle" font-family="Bricolage, sans-serif" font-weight="600" font-size="12" fill="#2a1a78">OPEN 24 HOURS OF HOURS</text></g>
+<text x="0" y="22" text-anchor="middle" font-family="Bricolage, sans-serif" font-weight="800" font-size="20" fill="#2a1a78">SUNSEET POINT</text><text x="0" y="42" text-anchor="middle" font-family="Bricolage, sans-serif" font-weight="600" font-size="12" fill="#2a1a78">OPEN 24 HOURS OF HOURS</text><text x="0" y="-18" text-anchor="middle" font-family="Bricolage, sans-serif" font-weight="800" font-size="15" fill="#2a1a78">GIFT SHPO · COFEE</text></g>
+<g transform="rotate(-8 150 545)"><circle cx="150" cy="545" r="72" fill="#fff" stroke="#14123a" stroke-width="4"/>${hand(150, 556, 0.19, 6)}<rect x="62" y="618" width="176" height="34" rx="17" fill="#ffe14d" stroke="#14123a" stroke-width="3"/><text x="150" y="642" text-anchor="middle" font-family="Bricolage, sans-serif" font-weight="800" font-size="17" fill="#14123a">FREE EXTRA FINGER</text></g>
 ${sphere(250, 930, 58, "#b8fff0", "#19d3c5")}${sphere(750, 930, 58, "#b8fff0", "#19d3c5")}
 ${sphere(380, 1070, 34, "#ffd1ea", "#ff4f9a")}${sphere(620, 1070, 34, "#ffd1ea", "#ff4f9a")}
 ${sphere(500, 1150, 22, "#fff0b8", "#f5b83a")}
 ${sphere(180, 380, 40, "#e0d4ff", "#7a4dff", false)}${sphere(820, 380, 40, "#e0d4ff", "#7a4dff", false)}
 <ellipse cx="500" cy="${hz + 6}" rx="520" ry="16" fill="#fff" opacity=".2" filter="url(#blur8)"/>
+${T(500, 1215, "ultra realistic, 8k, trending, masterpiece", 26, { anchor: "middle", fill: "#fff", mono: true, w: 500, op: 0.8 })}
 <rect width="${W}" height="${H}" fill="url(#sheen)"/><rect width="${W}" height="${H}" fill="url(#vig)"/>
 </svg>`;
 }
@@ -90,88 +92,90 @@ const frame = (inner, bg1, bg2, extra = "") => `<svg xmlns="http://www.w3.org/20
 <linearGradient id="sheen" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#fff" stop-opacity=".22"/><stop offset=".45" stop-color="#fff" stop-opacity="0"/></linearGradient>${extra}</defs>
 <rect width="${W}" height="${H}" fill="url(#bg)"/>${inner}<rect width="${W}" height="${H}" fill="url(#sheen)"/></svg>`;
 
-// 2. Ten Thousand Sunsets: a grid of identical sunsets, one very slightly different.
-function sunsets() {
-  let t = ""; const cols = 5, rows = 7, pad = 40, gw = (W - pad * 2 - (cols - 1) * 16) / cols, gh = gw * 1.1;
-  for (let i = 0; i < cols * rows; i++) {
-    const x = pad + (i % cols) * (gw + 16), y = 90 + Math.floor(i / cols) * (gh + 14);
-    const odd = i === 17;
-    t += `<g><rect x="${x}" y="${y}" width="${gw}" height="${gh}" rx="14" fill="url(#t)"/><circle cx="${x + gw / 2}" cy="${y + gh * 0.62}" r="${gw * 0.2}" fill="${odd ? "#fff1b8" : "#ffd66b"}"/><rect x="${x}" y="${y + gh * 0.62}" width="${gw}" height="${gh * 0.38}" rx="0" fill="#3a1fa0" opacity=".75"/><path d="M${x} ${y + gh * 0.62}H${x + gw}" stroke="#fff" stroke-opacity=".4"/></g>`;
+// Shared pieces for the slop-trope scenes ----------------------------------------------------
+const T = (x, y, str, size, o = {}) => `<text x="${x}" y="${y}" ${o.anchor ? `text-anchor="${o.anchor}"` : ""} font-family="${o.mono ? "monospace" : "Bricolage, sans-serif"}" font-weight="${o.w || 700}" font-size="${size}" fill="${o.fill || "#14123a"}" ${o.op ? `opacity="${o.op}"` : ""} ${o.ls ? `letter-spacing="${o.ls}"` : ""}>${str}</text>`;
+const pill = (x, y, w, h, fill, extra = "") => `<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="${h / 2}" fill="${fill}" ${extra}/>`;
+/** The classic: a glossy yellow hand with one finger too many. n fingers, plus a thumb. */
+const hand = (cx, cy, sc = 1, n = 6) => {
+  const fw = 58, gap = 6, total = n * fw + (n - 1) * gap, x0 = -total / 2;
+  const heights = [250, 320, 350, 340, 300, 240, 220];
+  let fingers = "";
+  for (let i = 0; i < n; i++) {
+    const h = heights[Math.min(i, heights.length - 1)] * (i === n - 1 && n > 5 ? 0.9 : 1);
+    const x = x0 + i * (fw + gap);
+    fingers += `<rect x="${x}" y="${-h}" width="${fw}" height="${h + 90}" rx="${fw / 2}" fill="url(#skin)" stroke="#d99a00" stroke-width="4"/><rect x="${x + 12}" y="${-h + 16}" width="10" height="${h * 0.5}" rx="5" fill="#fff" opacity=".55"/>`;
   }
-  return frame(`${t}<text x="500" y="62" text-anchor="middle" font-family="Bricolage, sans-serif" font-weight="800" font-size="34" fill="#fff" opacity=".92">10,000 / 10,000 GENERATED</text>`, "#1b1458", "#6a3dff", `<linearGradient id="t" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#5a2fe0"/><stop offset=".6" stop-color="#ff4f9a"/><stop offset="1" stop-color="#ffb07a"/></linearGradient>`);
+  return `<g transform="translate(${cx} ${cy}) scale(${sc})"><defs><linearGradient id="skin" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ffe680"/><stop offset="1" stop-color="#ffc21a"/></linearGradient></defs>
+  <rect x="${x0 - 14}" y="40" width="${total + 28}" height="250" rx="110" fill="url(#skin)" stroke="#d99a00" stroke-width="4"/>
+  <rect x="${x0 - 110}" y="120" width="190" height="62" rx="31" fill="url(#skin)" stroke="#d99a00" stroke-width="4" transform="rotate(38 ${x0 - 10} 150)"/>${fingers}</g>`;
+};
+
+// 2. Six Fingers, Five Stars
+function sixFingers() {
+  return frame(`${T(500, 150, "Made this with my hands", 62, { anchor: "middle", fill: "#fff", w: 800 })}
+${hand(500, 760, 1.15, 6)}
+${pill(120, 1040, 760, 150, "#fff", 'opacity=".95"')}
+${T(160, 1100, "&#9733;&#9733;&#9733;&#9733;&#9733;  Amazing", 40, { fill: "#e0a000" })}${T(160, 1160, "Beautiful work   Wow   Amazing", 38, { fill: "#14123a", w: 600 })}`, "#6a3dff", "#19d3c5");
 }
 
-// 3. The Engagement Plateau: glossy chart, wrong axes.
-function plateau() {
-  const pts = [[110, 1000], [240, 880], [370, 700], [500, 520], [630, 400], [760, 392], [890, 390]];
-  const d = pts.map((p, i) => (i ? "L" : "M") + p.join(" ")).join(" ");
-  const bars = [0, 1, 2, 3, 4, 5, 6].map((i) => `<rect x="${80 + i * 130}" y="${1060 - (i < 5 ? 160 + i * 150 : 780)}" width="62" height="${i < 5 ? 160 + i * 150 : 780}" rx="31" fill="#fff" opacity=".13"/>`).join("");
-  return frame(`${bars}
-<path d="${d}" fill="none" stroke="#fff" stroke-width="14" stroke-linecap="round" stroke-linejoin="round" opacity=".92"/>
-${pts.map(([x, y], i) => sphere(x, y, i > 4 ? 26 : 22, "#ffe9a8", "#ff8a5c", false)).join("")}
-<g font-family="Bricolage, sans-serif" font-weight="700" fill="#fff" opacity=".9"><text x="70" y="1130" font-size="26">MON</text><text x="330" y="1130" font-size="26">TUE</text><text x="590" y="1130" font-size="26">MONDAY</text><text x="800" y="1130" font-size="26">VIBES</text>
-<text x="70" y="140" font-size="64" font-weight="800">+18 %</text><text x="70" y="190" font-size="26" font-weight="500">compared with the previous +18 %</text></g>
-<rect x="70" y="1170" width="860" height="3" fill="#fff" opacity=".4"/>`, "#0f2a8a", "#19d3c5");
+// 3. Certainly! Here is your image
+function certainly() {
+  return frame(`${pill(60, 70, 620, 90, "#f3f1fa")}${T(100, 130, "Certainly! Here is your image:", 36, { fill: "#14123a" })}
+<rect x="60" y="190" width="880" height="660" rx="28" fill="url(#sky2)"/><circle cx="500" cy="620" r="150" fill="#ffd66b"/><rect x="60" y="640" width="880" height="210" fill="#3a1fa0" opacity=".8"/><path d="M60 640H940" stroke="#fff" stroke-opacity=".5" stroke-width="3"/>
+${T(500, 800, "ultra realistic, 8k, trending, masterpiece", 33, { anchor: "middle", fill: "#fff", mono: true, w: 500 })}
+${pill(60, 890, 420, 84, "#fff")}${T(270, 945, "&#8635; Regenerate response", 30, { anchor: "middle", fill: "#14123a", w: 600 })}${pill(500, 890, 180, 84, "#fff")}${T(590, 945, "Copy", 30, { anchor: "middle", fill: "#14123a", w: 600 })}
+${T(60, 1070, "As an AI language model,", 44, { fill: "#fff", w: 700 })}${T(60, 1125, "I cannot tell if this is good.", 44, { fill: "#fff", w: 700 })}`, "#1b1458", "#3b1fd9", `<linearGradient id="sky2" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#5a2fe0"/><stop offset=".7" stop-color="#ff4f9a"/><stop offset="1" stop-color="#ffb07a"/></linearGradient>`);
 }
 
-// 4. Productivity Theatre: a symmetric desk, thirteen hour clock, perpetual in progress.
-function theatre() {
-  const tick = Array.from({ length: 13 }, (_, i) => { const a = (i / 13) * Math.PI * 2 - Math.PI / 2; return `<line x1="${500 + Math.cos(a) * 118}" y1="${230 + Math.sin(a) * 118}" x2="${500 + Math.cos(a) * 138}" y2="${230 + Math.sin(a) * 138}" stroke="#14123a" stroke-width="6" stroke-linecap="round"/>`; }).join("");
-  const rows = ["Align on alignment", "Circle back", "Synergy review", "Plan the planning"].map((t, i) => `<rect x="300" y="${590 + i * 62}" width="30" height="30" rx="8" fill="#19d3c5"/><path d="M308 ${606 + i * 62} l7 7 l11 -14" stroke="#fff" stroke-width="5" fill="none" stroke-linecap="round" stroke-linejoin="round"/><text x="350" y="${614 + i * 62}" font-family="Bricolage, sans-serif" font-weight="600" font-size="28" fill="#14123a">${t}</text><rect x="700" y="${598 + i * 62}" width="${i === 3 ? 50 : 90}" height="14" rx="7" fill="#ffb07a"/>`).join("");
-  const plant = (x) => `<rect x="${x - 36}" y="900" width="72" height="90" rx="16" fill="#fff"/>${[-1, 0, 1].map((k) => `<ellipse cx="${x + k * 34}" cy="${850 - Math.abs(k) * 0}" rx="20" ry="64" fill="#13a46b" transform="rotate(${k * 22} ${x + k * 34} 900)"/>`).join("")}`;
-  return frame(`
-<circle cx="500" cy="230" r="150" fill="#fff"/>${tick}<line x1="500" y1="230" x2="500" y2="140" stroke="#14123a" stroke-width="9" stroke-linecap="round"/><line x1="500" y1="230" x2="560" y2="262" stroke="#6a3dff" stroke-width="7" stroke-linecap="round"/><circle cx="500" cy="230" r="12" fill="#ff4f9a"/>
-<rect x="240" y="500" width="520" height="330" rx="24" fill="#14123a"/><rect x="262" y="522" width="476" height="286" rx="10" fill="#fff"/>${rows}
-<path d="M180 850 H820 L860 890 H140 Z" fill="#c7bfe8"/><rect x="100" y="890" width="800" height="40" rx="12" fill="#e9e3ff"/>
-<rect x="100" y="930" width="800" height="300" fill="#fff" opacity=".14"/>
-${plant(150)}${plant(850)}
-<rect x="445" y="860" width="110" height="80" rx="18" fill="#ff4f9a"/><path d="M555 880 q50 10 0 50" stroke="#ff4f9a" stroke-width="14" fill="none"/>
-${sphere(110, 520, 26, "#ffe9a8", "#f5b83a", false)}${sphere(890, 520, 26, "#ffe9a8", "#f5b83a", false)}
-<text x="500" y="1130" text-anchor="middle" font-family="Bricolage, sans-serif" font-weight="800" font-size="44" fill="#fff" opacity=".95">IN PROGRESS</text>`, "#2a1a78", "#ff4f9a");
+// 4. I am sorry, but I cannot fulfill this request: a product listing
+function sorry() {
+  return frame(`<rect x="60" y="60" width="880" height="1130" rx="30" fill="#fff"/>
+<rect x="100" y="100" width="800" height="560" rx="20" fill="#eceaf7"/>
+<path d="M330 260 H620 L600 560 q-8 40 -48 40 H398 q-40 0 -48 -40 Z" fill="#fff" stroke="#c9c4e8" stroke-width="6"/><path d="M620 320 q90 0 80 80 q-10 70 -100 56" fill="none" stroke="#fff" stroke-width="26"/><path d="M620 320 q90 0 80 80 q-10 70 -100 56" fill="none" stroke="#c9c4e8" stroke-width="6"/>
+${T(475, 400, "COFFE LOVR", 40, { anchor: "middle", fill: "#ff4f9a", w: 800 })}${T(475, 450, "BESTT MOM EVR", 26, { anchor: "middle", fill: "#6a3dff", w: 700 })}
+${T(100, 740, "I am sorry, but I cannot", 56, { fill: "#14123a", w: 800 })}${T(100, 805, "fulfill this request.", 56, { fill: "#14123a", w: 800 })}
+${T(100, 880, "$19.99", 64, { fill: "#d1337a", w: 800 })}${T(330, 878, "&#9733;&#9733;&#9733;&#9733;&#9733; 4.8 (1,204)", 34, { fill: "#e0a000", w: 600 })}
+${T(100, 950, "Free shipping. Only 3 left.", 36, { fill: "#4a4860", w: 500 })}
+${pill(100, 1000, 380, 100, "#6a3dff")}${T(290, 1066, "Add to cart", 40, { anchor: "middle", fill: "#fff" })}${pill(510, 1000, 390, 100, "#ffe14d")}${T(705, 1066, "Best seller", 40, { anchor: "middle", fill: "#14123a" })}`, "#ff9a6a", "#ff4f9a");
 }
 
-// 5. Certified Authentic: gold rosette with ribbons.
-function certified() {
-  const n = 36; let rose = "";
-  for (let i = 0; i < n; i++) { const a = (i / n) * 2 * Math.PI; rose += `<circle cx="${500 + Math.cos(a) * 270}" cy="${520 + Math.sin(a) * 270}" r="40" fill="url(#gold)"/>`; }
-  return frame(`
-<path d="M360 760 L300 1180 L400 1110 L470 1190 L500 780Z" fill="url(#rib)"/><path d="M640 760 L700 1180 L600 1110 L530 1190 L500 780Z" fill="url(#rib)"/>
-${rose}<circle cx="500" cy="520" r="270" fill="url(#gold)"/><circle cx="500" cy="520" r="225" fill="none" stroke="#7a5a12" stroke-opacity=".5" stroke-width="5"/><circle cx="500" cy="520" r="160" fill="url(#gold2)"/>
-<path d="M410 520 l66 70 l120 -140" stroke="#fff6d6" stroke-width="40" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
-<path id="arc" d="M290 520 a210 210 0 0 1 420 0" fill="none"/><text font-family="Bricolage, sans-serif" font-weight="800" font-size="34" letter-spacing="6" fill="#6b4a0c"><textPath href="#arc" startOffset="50%" text-anchor="middle">CERTIFIED AUTHENTIC</textPath></text>
-<path id="arc2" d="M290 520 a210 210 0 0 0 420 0" fill="none"/><text font-family="Bricolage, sans-serif" font-weight="800" font-size="30" letter-spacing="6" fill="#6b4a0c"><textPath href="#arc2" startOffset="50%" text-anchor="middle">GENUINELY SYNTHETIC</textPath></text>
-<ellipse cx="410" cy="360" rx="120" ry="40" fill="#fff" opacity=".35" transform="rotate(-30 410 360)"/>`, "#14123a", "#3b1fd9",
-    `<linearGradient id="gold" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#fff0b8"/><stop offset=".45" stop-color="#e5b13a"/><stop offset="1" stop-color="#a8761a"/></linearGradient><linearGradient id="gold2" x1="1" y1="1" x2="0" y2="0"><stop offset="0" stop-color="#fff0b8"/><stop offset=".5" stop-color="#e5b13a"/><stop offset="1" stop-color="#b8841f"/></linearGradient><linearGradient id="rib" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ff4f9a"/><stop offset="1" stop-color="#b3206a"/></linearGradient>`);
+// 5. Why do pictures like this never trend?
+function neverTrend() {
+  const rows = ["Amazing", "Beautiful work", "Amazing", "Wow", "Amazing"].map((c, i) => `<circle cx="120" cy="${905 + i * 64}" r="22" fill="${["#19d3c5", "#ff4f9a", "#ffd66b", "#6a3dff", "#13a46b"][i]}"/>${T(160, 915 + i * 64, c, 34, { fill: "#14123a", w: 600 })}`).join("");
+  return frame(`<rect x="50" y="50" width="900" height="1150" rx="28" fill="#fff"/><circle cx="120" cy="125" r="40" fill="#ccc6ee"/>${pill(180, 100, 300, 26, "#14123a", 'opacity=".8"')}${pill(180, 140, 190, 18, "#14123a", 'opacity=".25"')}
+${T(90, 235, "Why do pictures like this", 46, { fill: "#14123a", w: 800 })}${T(90, 290, "never trend?", 46, { fill: "#14123a", w: 800 })}
+<rect x="90" y="320" width="820" height="440" rx="16" fill="url(#cab)"/><path d="M260 640 L500 400 L740 640 Z" fill="#7a3b2a"/><rect x="300" y="620" width="400" height="140" fill="#a8553a"/><rect x="340" y="660" width="70" height="100" fill="#ffd66b"/><rect x="450" y="650" width="90" height="70" fill="#ffd66b"/><rect x="580" y="650" width="90" height="70" fill="#ffefae"/>
+<rect x="640" y="520" width="190" height="62" rx="8" fill="#fff4dc" stroke="#7a3b2a" stroke-width="4"/>${T(735, 560, "COZY CABBIN", 25, { anchor: "middle", fill: "#7a3b2a", w: 800 })}
+${T(90, 830, "&#10084; 12.4k   Comments", 34, { fill: "#d1337a", w: 700 })}${rows}`, "#13a46b", "#0f2a8a", `<linearGradient id="cab" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#5a2fe0"/><stop offset=".6" stop-color="#ff7aa8"/><stop offset="1" stop-color="#ffd0a0"/></linearGradient>`);
 }
 
-// 6. Recommended For You: a recursion of the same recommendation.
-function loopArt() {
-  let t = "";
-  for (let i = 0; i < 9; i++) {
-    const s = 1 - i * 0.11, w = 860 * s, h = 1080 * s, x = 500 - w / 2, y = 625 - h / 2;
-    const hues = ["#6a3dff", "#8a4dff", "#c94fd0", "#ff4f9a", "#ff7a8a", "#ff9a6a", "#ffb07a", "#ffd0a0", "#ffe9c8"];
-    t += `<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="${40 * s}" fill="${hues[i]}" stroke="#fff" stroke-opacity=".5" stroke-width="3"/><text x="${x + 30 * s}" y="${y + 48 * s}" font-family="Bricolage, sans-serif" font-weight="700" font-size="${30 * s}" fill="#fff" opacity=".9">Because you viewed this</text>`;
-  }
-  return frame(t + sphere(500, 640, 46, "#fff0b8", "#f5b83a", false), "#0f0c3a", "#2b1f86");
+// 6. I am humbled to announce: a fourteen paragraph post
+function humbled() {
+  const lines = Array.from({ length: 14 }, (_, i) => pill(110, 380 + i * 50, [640, 560, 700, 300, 620, 680, 420, 660, 540, 700, 340, 600, 480, 640][i], 20, "#14123a", 'opacity=".22"')).join("");
+  return frame(`<rect x="50" y="50" width="900" height="1150" rx="28" fill="#fff"/><circle cx="130" cy="130" r="42" fill="#ccc6ee"/>${pill(200, 105, 340, 26, "#14123a", 'opacity=".8"')}${pill(200, 148, 230, 18, "#14123a", 'opacity=".25"')}
+${T(110, 280, "I am humbled to announce", 54, { fill: "#14123a", w: 800 })}${T(110, 340, "that nothing happened.", 54, { fill: "#14123a", w: 800 })}
+${lines}${T(110, 1118, "The real lesson? B2B sales.", 44, { fill: "#d1337a", w: 800 })}${pill(710, 1078, 190, 70, "#4B2BFF")}${T(805, 1126, "Agree?", 38, { anchor: "middle", fill: "#fff" })}`, "#2b1f86", "#6a3dff");
 }
 
-// 7. The Quiet Feed: four cards that are all the same card.
-function feedArt() {
-  const card = (y, hue) => `<rect x="150" y="${y}" width="700" height="250" rx="30" fill="#fff"/><rect x="190" y="${y + 36}" width="178" height="178" rx="22" fill="${hue}"/>${sphere(279, y + 125, 42, "#fff", hue, false)}<rect x="400" y="${y + 50}" width="380" height="22" rx="11" fill="#14123a" opacity=".85"/><rect x="400" y="${y + 92}" width="300" height="14" rx="7" fill="#14123a" opacity=".25"/><rect x="400" y="${y + 120}" width="340" height="14" rx="7" fill="#14123a" opacity=".25"/><text x="400" y="${y + 195}" font-family="Bricolage, sans-serif" font-weight="800" font-size="34" fill="#ff4f9a">★ 4.2</text><text x="500" y="${y + 195}" font-family="Bricolage, sans-serif" font-weight="600" font-size="24" fill="#14123a" opacity=".6">same as before</text>`;
-  return frame(`${card(150, "#7a4dff")}${card(430, "#7a4dff")}${card(710, "#7a4dff")}${card(990, "#7a4dff")}<text x="500" y="100" text-anchor="middle" font-family="Bricolage, sans-serif" font-weight="800" font-size="40" fill="#fff">YOU ARE ALL CAUGHT UP</text>`, "#19d3c5", "#0f2a8a");
+// 7. Delve into the tapestry
+function delve() {
+  const dashes = [0, 1, 2, 3, 4, 5, 6, 7].map((i) => `<rect x="${90 + i * 100}" y="1100" width="76" height="14" rx="3" fill="#fff" opacity=".92"/>`).join("");
+  return frame(`${T(500, 120, "In today&#8217;s fast-paced world", 44, { anchor: "middle", fill: "#fff", w: 600 })}
+${T(500, 360, "DELVE", 190, { anchor: "middle", fill: "#ffe14d", w: 800 })}${T(500, 560, "TAPESTRY", 150, { anchor: "middle", fill: "#ff4f9a", w: 800 })}${T(500, 760, "TESTAMENT", 138, { anchor: "middle", fill: "#19d3c5", w: 800 })}
+${T(500, 920, "Let us dive in.", 82, { anchor: "middle", fill: "#fff", w: 700 })}${T(500, 1040, "40 em dashes per paragraph", 40, { anchor: "middle", fill: "#fff", w: 600, op: 0.85 })}${dashes}`, "#14123a", "#6a3dff");
 }
 
-// 8. Synthetic Candid: two cups, mirrored, a bokeh field, a caption that says unposed.
-function candid() {
-  const r = rnd(11); let bokeh = "";
-  for (let i = 0; i < 26; i++) bokeh += `<circle cx="${r() * W}" cy="${r() * 760}" r="${20 + r() * 50}" fill="#fff" opacity="${0.06 + r() * 0.12}" filter="url(#blur3)"/>`;
-  const cup = (x, flip) => `<g transform="translate(${x} 780) scale(${flip} 1)"><path d="M-120 -170 H120 L100 90 q-10 40 -50 40 H-50 q-40 0 -50 -40 Z" fill="#fff"/><ellipse cx="0" cy="-170" rx="120" ry="28" fill="#d9c4a8"/><ellipse cx="0" cy="-170" rx="104" ry="20" fill="#7a4a2a"/><path d="M118 -120 q70 0 60 60 q-10 50 -80 40" fill="none" stroke="#fff" stroke-width="22" stroke-linecap="round"/><path d="M-70 -120 v150" stroke="#ff4f9a" stroke-width="16" stroke-linecap="round" opacity=".7"/></g>`;
-  return frame(`${bokeh}${cup(330, 1)}${cup(670, -1)}
-<path d="M500 560 l-14 -40 l28 0 Z" fill="#ffe9a8"/>${star(500, 500, 6)}${star(470, 520, 3)}${star(530, 520, 3)}
-<rect x="260" y="1010" width="480" height="84" rx="42" fill="#fff"/><text x="500" y="1066" text-anchor="middle" font-family="Bricolage, sans-serif" font-weight="800" font-size="40" fill="#14123a">UNPOSED</text>`, "#ff9a6a", "#6a3dff");
+// 8. Make it pop: one more variation, a bigger logo
+function pop() {
+  let g = ""; const scales = [0.22, 0.34, 0.5, 0.72, 1, 1.5];
+  scales.forEach((sc, i) => {
+    const x = 70 + (i % 2) * 450, y = 170 + Math.floor(i / 2) * 340;
+    g += `<g><clipPath id="c${i}"><rect x="${x}" y="${y}" width="410" height="300" rx="18"/></clipPath><rect x="${x}" y="${y}" width="410" height="300" rx="18" fill="#fff"/><g clip-path="url(#c${i})"><g transform="translate(${x + 205} ${y + 150}) scale(${sc})"><circle r="95" fill="#4B2BFF"/>${T(0, 14, "LOGO", 44, { anchor: "middle", fill: "#fff", w: 800 })}</g></g>${T(x + 14, y + 34, "v" + (i + 1), 26, { fill: "#14123a", w: 700, op: 0.7 })}</g>`;
+  });
+  return frame(`${T(500, 110, "One more variation", 62, { anchor: "middle", fill: "#fff", w: 800 })}${g}${T(500, 1215, "&#8220;Can you make the logo bigger?&#8221;", 40, { anchor: "middle", fill: "#14123a", w: 700 })}`, "#ff9a6a", "#ffe14d");
 }
 
-const works = { "hero-still": hero(), "work-sunsets": sunsets(), "work-plateau": plateau(), "work-theatre": theatre(), "work-certified": certified(), "work-loop": loopArt(), "work-feed": feedArt(), "work-candid": candid() };
+const works = { "hero-still": hero(), "work-fingers": sixFingers(), "work-certainly": certainly(), "work-sorry": sorry(), "work-trend": neverTrend(), "work-humbled": humbled(), "work-delve": delve(), "work-pop": pop() };
 
 const browser = await chromium.launch({ executablePath: CHROME });
 const page = await browser.newPage({ viewport: { width: W, height: H }, deviceScaleFactor: 1.2 });

@@ -78,3 +78,9 @@ test("longSentences ignores layout list items that wrap other blocks", () => {
   const wrapper = `<li><div>${"word ".repeat(40)}</div><dl><dd>Short.</dd></dl></li>`;
   assert.deepEqual(longSentences(wrapper), []);
 });
+
+test("longSentences skips card list items made of an anchor around spans, not plain list items", () => {
+  const card = `<li><a href="/x/"><span>${"word ".repeat(40)}</span></a></li>`;
+  assert.deepEqual(longSentences(card), []);
+  assert.equal(longSentences(`<li>${"word ".repeat(40)}.</li>`).length, 1);
+});

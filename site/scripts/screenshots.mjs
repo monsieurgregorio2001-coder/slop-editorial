@@ -29,14 +29,14 @@ async function developedHome(viewport, dsf = 1) {
 
 { // Home desktop, and the README hero at 1600 wide
   const { ctx, page } = await developedHome({ width: 1440, height: 900 });
-  await page.screenshot({ path: path.join(review, "slop2-home-desktop.png") });
+  await page.screenshot({ path: path.join(review, "slop3-home-desktop.png") });
   await ctx.close();
   const h = await developedHome({ width: 1600, height: 1000 });
   await h.page.screenshot({ path: path.join(docs, "hero.png") });
   await h.ctx.close();
   const c = await developedHome({ width: 1200, height: 750 });
   const png = await c.page.screenshot();
-  await sharp(png).resize(1200, 750).webp({ quality: 84 }).toFile(path.join(review, "slop2-card.webp"));
+  await sharp(png).resize(1200, 750).webp({ quality: 84 }).toFile(path.join(review, "slop3-card.webp"));
   await sharp(png).resize(1200, 750).png().toFile(path.join(docs, "card.png"));
   await sharp(png).resize(1200, 750).webp({ quality: 84 }).toFile(path.join(docs, "card.webp"));
   await c.ctx.close();
@@ -47,7 +47,7 @@ async function developedHome(viewport, dsf = 1) {
 }
 { // Home mobile
   const { ctx, page } = await developedHome({ width: 390, height: 844 }, 2);
-  await page.screenshot({ path: path.join(review, "slop2-home-mobile.png") });
+  await page.screenshot({ path: path.join(review, "slop3-home-mobile.png") });
   await ctx.close();
 }
 { // Feed desktop
@@ -55,7 +55,7 @@ async function developedHome(viewport, dsf = 1) {
   const page = await ctx.newPage();
   await page.goto(url + "feed/", { waitUntil: "load" });
   await sleep(1500);
-  await page.screenshot({ path: path.join(review, "slop2-feed-desktop.png") });
+  await page.screenshot({ path: path.join(review, "slop3-feed-desktop.png") });
   await ctx.close();
 }
 { // Authenticity desktop: the gold with the gift shop in front of it
@@ -65,7 +65,7 @@ async function developedHome(viewport, dsf = 1) {
   await page.waitForFunction(() => document.querySelector("[data-seal]").dataset.tier, null, { timeout: 15000 });
   await page.evaluate(() => { const l = document.querySelector("[data-launch]"); window.scrollTo(0, l.offsetTop + (l.offsetHeight - innerHeight) * 0.9); });
   await sleep(2200);
-  await page.screenshot({ path: path.join(review, "slop2-authenticity-desktop.png") });
+  await page.screenshot({ path: path.join(review, "slop3-authenticity-desktop.png") });
   await ctx.close();
 }
 { // Works desktop
@@ -73,7 +73,7 @@ async function developedHome(viewport, dsf = 1) {
   const page = await ctx.newPage();
   await page.goto(url + "works/", { waitUntil: "load" });
   await sleep(800);
-  await page.screenshot({ path: path.join(review, "slop2-works-desktop.png") });
+  await page.screenshot({ path: path.join(review, "slop3-works-desktop.png") });
   await ctx.close();
 }
 await browser.close();
