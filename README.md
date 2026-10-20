@@ -10,7 +10,7 @@ A deadpan satire of AI slop and the attention economy, built as software: six-fi
 - **Build.** An Astro site that hangs nine generated works like a gallery and labels them like the platforms it mocks (cookie sheet, visitor number, ratings that always read 4.2, a gift shop that arrives in front of the gold). Beside it, a Python pipeline that estimates, caps, approves, and logs every paid generation.
 - **Result.** Lighthouse mobile scores 93 and 91 performance and 100 in the other three categories on the home page and the 3D page, with 0.002 layout shift, 0 ms blocking time, 143 real-browser checks, 146 build gates, and 68 unit tests passing.
 
-**Live demo:** https://monsieurgregorio2001-coder.github.io/slop-editorial/ (published by the Pages workflow once the repository is public).
+**Live demo:** https://monsieurgregorio2001-coder.github.io/slop-editorial/
 
 The thesis is one line: **Generation is cheap. Taste is not.** The target is platforms, metrics, incentives, AI, and the reader. Every image was generated from a written brief with an image model, then checked by a person against that brief (six digits, three suns, readable text). The certificate object is procedural 3D. The pipeline runs offline by default with a free mock provider, so nothing here needs an account, a key, or a network connection.
 
@@ -131,7 +131,7 @@ npm run screenshots        # review screenshots, README hero, card, and Open Gra
 
 ## Deploying the site
 
-The workflow in `.github/workflows/site.yml` builds the site with the repository name as its base path and runs the gates. It deploys to GitHub Pages from the default branch. It has not been run. Enable Pages with the GitHub Actions source in the repository settings before the first push.
+The workflow in `.github/workflows/site.yml` builds the site with the repository name as its base path and runs the gates. It deploys to GitHub Pages from the default branch on every push, and has done so since 14 October 2026.
 
 ## Tests and measured results
 
@@ -141,7 +141,7 @@ Measured on 14 October 2026 on one laptop, with headless Google Chrome. Treat th
 | --- | --- |
 | Python unit tests (`pipeline/`) | 49 pass |
 | Node unit tests for gate logic and helpers (`site/`) | 19 pass |
-| Real-browser checks in Chrome (`npm run verify`) | 150 pass, 0 fail |
+| Real-browser checks in Chrome (`npm run verify`) | 143 pass, 0 fail (re-run on 20 October 2026; an earlier run counted 150 before the gallery rehang removed seven checks) |
 | Axe accessibility, 10 page types in light and dark | 20 runs, 0 violations (WCAG 2.1 A and AA plus best practice) |
 | Site build gates (`npm run check`) | 146 checks pass |
 | Lighthouse, mobile preset, home page | 93 performance, 100 accessibility, 100 best practices, 100 SEO |
@@ -167,3 +167,7 @@ Measured on 14 October 2026 on one laptop, with headless Google Chrome. Treat th
 ## Licence
 
 MIT. Copyright 2026 Garfield Greg Lim III. See `LICENSE`.
+
+## Development conventions
+
+Start with [local project context](docs/CONTEXT.md) and [agent instructions](AGENTS.md). Shared structure, review, and spec practices live in the [portfolio hub repository](https://github.com/monsieurgregorio2001-coder/monsieurgregorio2001-coder.github.io), under CONTRIBUTING.md and docs/portfolio/. Small fixes use a short verification record; material behavior changes use a focused spec.
