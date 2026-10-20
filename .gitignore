@@ -10,3 +10,9 @@ site/.astro/
 site/test-output/
 .env
 .env.*
+
+# Local machine and generated files
+*.py[cod]
+
+# Local environment (keep example configuration versionable)
+!.env.example
