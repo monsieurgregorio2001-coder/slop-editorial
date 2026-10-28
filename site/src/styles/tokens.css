@@ -30,13 +30,14 @@
   --stage: #0E0B1F;
   --cream: #F6F1E3;
   --chrome: linear-gradient(180deg, #fbfbfb 0%, #e6e6e6 100%);
+  --on-fill: #FFFFFF;
 
   --display: "Bricolage Grotesque", "Avenir Next", "Helvetica Neue", Arial, sans-serif;
   --text: "Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
   --mono: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
 
   --gutter: clamp(16px, 4vw, 48px);
-  --measure: 1120px;
+  --measure: 1200px;
   --ease: cubic-bezier(.2, .7, .1, 1);
   --mode-ease: 500ms var(--ease);
   --shell-h: 52px;
@@ -49,7 +50,8 @@
   --card: var(--surface);
 }
 
-/* The graphite room. Opt in from the footer. Never navy, never saturated. */
+/* The graphite room. It follows the OS colour scheme. The Room toggle in the footer overrides it
+   either way: data-theme="dark" forces graphite, data-theme="light" forces paper. Never navy, never saturated. */
 html[data-theme="dark"] {
   color-scheme: dark;
   --paper: #141316;
@@ -64,6 +66,50 @@ html[data-theme="dark"] {
   --negative: #FF8A80;
   --gold: #D9B35C;
   --chrome: linear-gradient(180deg, #2a2a2f 0%, #1d1d21 100%);
+  --on-fill: #141316;
+}
+@media (prefers-color-scheme: dark) {
+  html:not([data-theme]) {
+    color-scheme: dark;
+    --paper: #141316;
+    --surface: #1C1B20;
+    --mat: #202024;
+    --ink: #ECEAE5;
+    --muted-ink: #A3A1AA;
+    --rule: #2C2B32;
+    --violet: #A99BFF;
+    --violet-wash: #1E1B33;
+    --positive: #6FD3A0;
+    --negative: #FF8A80;
+    --gold: #D9B35C;
+    --chrome: linear-gradient(180deg, #2a2a2f 0%, #1d1d21 100%);
+    --on-fill: #141316;
+  }
+}
+
+/* The room contract (DIRECTION 4.3). The house crumb and footer read these seven, plus the --h-* tokens
+   re-pointed below so they follow the room's own paper, graphite, stage and telemetry registers.
+   Yellow is fill only. Text in the room hue uses --room-ink. */
+:root[data-room="slop-editorial"] {
+  --room-bg: var(--bg);
+  --room-fg: var(--fg);
+  --room-muted: var(--muted);
+  --room-rule: var(--line);
+  --room: #F2CF3B;
+  --room-ink: #7D5E07;
+  --room-wash: #F5F0DE;
+  --h-bg: var(--bg);
+  --h-ink: var(--fg);
+  --h-ink-2: var(--muted);
+  --h-ink-3: color-mix(in srgb, var(--fg) 55%, var(--bg));
+  --h-rule: var(--line);
+  --h-surface: var(--card);
+  --h-surface-2: color-mix(in srgb, var(--fg) 7%, var(--bg));
+  --h-accent: var(--accent);
+}
+html[data-theme="dark"][data-room="slop-editorial"] { --room: #F6D653; --room-ink: #F6D653; --room-wash: #262210; }
+@media (prefers-color-scheme: dark) {
+  html:not([data-theme])[data-room="slop-editorial"] { --room: #F6D653; --room-ink: #F6D653; --room-wash: #262210; }
 }
 
 /* Behavioural modes: the same components, a different register. A mode only re-points tokens. */

@@ -1,7 +1,7 @@
 ---
 import Base from "../../layouts/Base.astro";
 import { getCollection, render } from "astro:content";
-import { withBase } from "../../lib/text.js";
+import { withBase, priceLabel } from "../../lib/text.js";
 import { catalogue, plateFor } from "../../lib/catalogue";
 export async function getStaticPaths() {
   const all = await getCollection("works");
@@ -36,7 +36,7 @@ const next = pieces[i + 1];
         <dt>Rating</dt><dd>★ {d.rating} · {d.ratings} ratings</dd>
         <dt>Views</dt><dd>{d.views}</dd>
         <dt>Status</dt><dd>{d.availability}</dd>
-        <dt>Price</dt><dd>{d.price === "0.00" ? "Free" : d.price}</dd>
+        <dt>Price</dt><dd>{priceLabel(d.price)}</dd>
       </dl>
       <p class="label__note">People like you also scrolled: {d.also}.</p>
       <p class="label__note" data-sample>Sample work. Image generated from a written brief with an image model, then checked by a person against that brief. Original text.</p>

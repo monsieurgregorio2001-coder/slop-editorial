@@ -1,12 +1,15 @@
 // Generates every raster image on the site from code: art-directed SVG scenes with a
 // deliberate "too perfect" stock-AI look. Renders with headless Chrome, encodes with sharp.
-// Usage: node scripts/make-art.mjs   (outputs are committed under public/img)
+// Usage: node scripts/make-art.mjs   (outputs go to art-src/render, never to public/img)
+// The photographs on the site came from an image model. This script draws the old SVG studies only, and it
+// cannot write into public/ at all, so a re-run can never overwrite a photograph.
 import { chromium } from "playwright-core";
 import sharp from "sharp";
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
+import { assertOutsidePublic } from "./lib-fence.mjs";
 
-const OUT = path.resolve("public/img");
+const OUT = assertOutsidePublic("art-src/render");
 const CHROME = process.env.CHROMIUM_PATH || "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome";
 const FONT = path.resolve("src/assets/fonts/bricolage-grotesque-latin-wght-normal.woff2");
 await mkdir(OUT, { recursive: true });

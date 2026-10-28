@@ -3,3 +3,4 @@ dist/
 .astro/
 test-output/
 .claude/
+art-src/render/

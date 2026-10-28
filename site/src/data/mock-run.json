@@ -1,0 +1,118 @@
+{
+  "schema": 1,
+  "command": "python -m slopgen run --provider mock --approval-ref MOCK-REF-001 --max-usd 5.00",
+  "provider": "mock",
+  "plan": {
+    "name": "ai-and-taste",
+    "width": 1024,
+    "height": 1280,
+    "candidates": 2,
+    "prompts": [
+      "P1",
+      "P2",
+      "P3",
+      "P4"
+    ]
+  },
+  "jobs": [
+    {
+      "job": "P1 c1",
+      "state": "new",
+      "model": "mock-t2i",
+      "estimate_usd": 0.0,
+      "refs": []
+    },
+    {
+      "job": "P1 c2",
+      "state": "new",
+      "model": "mock-t2i",
+      "estimate_usd": 0.0,
+      "refs": []
+    },
+    {
+      "job": "P2 c1",
+      "state": "blocked",
+      "model": "mock-edit",
+      "estimate_usd": 0.0,
+      "refs": [
+        "references/style-reference.png",
+        "P1(pending)"
+      ]
+    },
+    {
+      "job": "P2 c2",
+      "state": "blocked",
+      "model": "mock-edit",
+      "estimate_usd": 0.0,
+      "refs": [
+        "references/style-reference.png",
+        "P1(pending)"
+      ]
+    },
+    {
+      "job": "P3 c1",
+      "state": "blocked",
+      "model": "mock-edit",
+      "estimate_usd": 0.0,
+      "refs": [
+        "P1(pending)",
+        "P2(pending)"
+      ]
+    },
+    {
+      "job": "P3 c2",
+      "state": "blocked",
+      "model": "mock-edit",
+      "estimate_usd": 0.0,
+      "refs": [
+        "P1(pending)",
+        "P2(pending)"
+      ]
+    },
+    {
+      "job": "P4 c1",
+      "state": "new",
+      "model": "mock-t2i",
+      "estimate_usd": 0.0,
+      "refs": []
+    },
+    {
+      "job": "P4 c2",
+      "state": "new",
+      "model": "mock-t2i",
+      "estimate_usd": 0.0,
+      "refs": []
+    }
+  ],
+  "estimate_usd": 0.0,
+  "cap_usd": 5.0,
+  "approval_ref": "MOCK-REF-001",
+  "approval_note": "The mock provider is free, so no approval was needed. The reference is passed only to show where the ledger records it.",
+  "ledger": [
+    {
+      "approval_ref": "MOCK-REF-001",
+      "estimate": 0.0,
+      "event": "run_started",
+      "only": null,
+      "provider": "mock",
+      "t": "2026-10-28T12:33:34Z"
+    },
+    {
+      "cached": 0,
+      "done": 8,
+      "event": "run_finished",
+      "failed": 0,
+      "filtered": 0,
+      "spent_estimate": 0.0,
+      "t": "2026-10-28T12:33:34Z"
+    }
+  ],
+  "summary": {
+    "done": 8,
+    "cached": 0,
+    "filtered": 0,
+    "failed": 0,
+    "spent_estimate": 0.0
+  },
+  "ledger_events": 26
+}

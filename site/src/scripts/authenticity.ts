@@ -1,23 +1,13 @@
-import { gsap } from "gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { notice, view, bindViewed, reducedMotion, cart, score } from "./system";
 import { watchReader } from "./behaviour";
-import { pickTier, type Tier } from "./tier";
-import type { SealHandle } from "./seal-scene";
 import { play } from "./sound";
 import { money } from "../lib/text.js";
 
-gsap.registerPlugin(ScrollTrigger);
-const FRAMES = 18;
-const B = import.meta.env.BASE_URL;
 let off: Array<() => void> = [];
-let handle: SealHandle | null = null;
 
 function teardown() {
   document.documentElement.removeAttribute("data-commerce");
   off.splice(0).forEach((f) => f());
-  ScrollTrigger.getAll().forEach((s) => s.kill());
-  handle?.dispose(); handle = null;
 }
 
 export async function initAuthenticity() {
@@ -28,10 +18,6 @@ export async function initAuthenticity() {
   const host = document.querySelector<HTMLElement>("[data-seal]");
   const stage = document.querySelector<HTMLElement>("[data-stage]");
   const runway = document.querySelector<HTMLElement>("[data-runway]");
-  const tierEl = document.querySelector<HTMLElement>("[data-tier]");
-  const ctl = document.querySelector<HTMLElement>("[data-ctl]");
-  const poster = document.querySelector<HTMLElement>("[data-poster]");
-  const posterImg = document.querySelector<HTMLImageElement>("[data-poster-img]");
   if (!host || !stage || !runway) return;
 
   view("the-certificate");
@@ -53,75 +39,12 @@ export async function initAuthenticity() {
   off.push(() => addBtn?.removeEventListener("click", add));
   if (rm) shop(["barrier", "notice", "sani", "pay", "finger", "pack"]);
 
-  const { tier, why } = pickTier();
   const beats = Array.from(document.querySelectorAll<HTMLElement>("[data-beat]"));
   const buybar = document.querySelector<HTMLElement>("[data-buybar]");
 
-  let light = rm ? 1 : 0, frameIdx = 0;
-  const setFrame = (f: number) => {
-    if (!posterImg) return;
-    const i = ((Math.round(f) % FRAMES) + FRAMES) % FRAMES;
-    if (i !== frameIdx || !posterImg.getAttribute("src")) { frameIdx = i; posterImg.src = `${B}img/seal/seal-${String(i).padStart(2, "0")}.webp`; }
-  };
-  const applyLight = (l: number) => { light = l; handle?.setLight(l); host.style.setProperty("--lit", String(0.35 + l * 0.8)); };
-
-  // --- Mount the object for the chosen tier ---
-  let used: Tier = tier;
-  if (tier !== "poster") {
-    try {
-      const { mountSeal } = await import("./seal-scene");
-      handle = await mountSeal(host, { tier, dpr: Math.min(devicePixelRatio, 2) });
-      used = handle.renderer;
-    } catch (e) {
-      console.warn("seal: 3D unavailable, using poster sequence", e);
-      used = "poster";
-    }
-  }
-  if (document.documentElement.dataset.page !== "authenticity") { handle?.dispose(); handle = null; return; }
-  root.removeAttribute("data-commerce");
-  if (poster) poster.hidden = used !== "poster";
-  if (used === "poster") {
-    // The first frame ships in the HTML. The rest are fetched once the page has settled.
-    const rest = () => { for (let i = 1; i < FRAMES; i++) new Image().src = `${B}img/seal/seal-${String(i).padStart(2, "0")}.webp`; };
-    if (document.readyState === "complete") window.setTimeout(rest, 600); else window.addEventListener("load", () => window.setTimeout(rest, 600), { once: true });
-  }
-  host.dataset.tier = used;
-  if (tierEl) tierEl.textContent = `Render: ${used} (${used === tier ? why : "fallback"})`;
-  if (ctl) ctl.hidden = false;
-  applyLight(light);
-  if (handle && rm) handle.setAuto(false);
-
-  // --- Drag to rotate. Buttons and arrow keys for everyone. No wheel capture. ---
-  let dragging = false, lx = 0, ly = 0, posterAngle = 0;
-  const rotate = (dy: number, dx = 0) => {
-    if (handle) handle.rotate(dy, dx);
-    else { posterAngle += dy; setFrame((posterAngle / (Math.PI * 2)) * FRAMES); }
-  };
-  const down = (e: PointerEvent) => { dragging = true; lx = e.clientX; ly = e.clientY; handle?.setAuto(false); host.setPointerCapture?.(e.pointerId); };
-  const mv = (e: PointerEvent) => {
-    if (dragging) { rotate((e.clientX - lx) * 0.01, (e.clientY - ly) * 0.004); lx = e.clientX; ly = e.clientY; return; }
-    if (e.pointerType === "mouse") { const r = host.getBoundingClientRect(); handle?.setLean(((e.clientX - r.left) / r.width) * 2 - 1, ((e.clientY - r.top) / r.height) * 2 - 1); }
-  };
-  const up = () => { dragging = false; };
-  host.addEventListener("pointerdown", down); host.addEventListener("pointermove", mv); host.addEventListener("pointerup", up); host.addEventListener("pointercancel", up);
-  host.tabIndex = 0;
-  const key = (e: KeyboardEvent) => {
-    if (e.key === "ArrowLeft") { rotate(-0.2); e.preventDefault(); }
-    if (e.key === "ArrowRight") { rotate(0.2); e.preventDefault(); }
-    if (e.key === "+" || e.key === "=") handle?.zoom(-1);
-    if (e.key === "-") handle?.zoom(1);
-  };
-  host.addEventListener("keydown", key);
-  const bt = (e: Event) => {
-    const t = e.target as HTMLElement;
-    const r = t.closest<HTMLElement>("[data-rot]"), z = t.closest<HTMLElement>("[data-zoom]");
-    if (r) rotate(Number(r.dataset.rot) * 0.35);
-    if (z) handle?.zoom(Number(z.dataset.zoom) * 1.5);
-  };
-  ctl?.addEventListener("click", bt);
-  const rs = () => handle?.resize();
-  window.addEventListener("resize", rs);
-  off.push(() => { host.removeEventListener("pointerdown", down); host.removeEventListener("pointermove", mv); host.removeEventListener("pointerup", up); host.removeEventListener("keydown", key); ctl?.removeEventListener("click", bt); window.removeEventListener("resize", rs); });
+  // The certificate is a photograph. Scroll brings the light up and carries a band of it across the plate.
+  const applyLight = (l: number, sweep: number) => { host.style.setProperty("--lit", String(0.6 + l * 0.45)); host.style.setProperty("--sweep", String(sweep)); };
+  applyLight(rm ? 1 : 0, 0.5);
 
   // --- The sequence: look at this first, then this, then why it matters. ---
   if (!rm) {
@@ -140,15 +63,21 @@ export async function initAuthenticity() {
       root.toggleAttribute("data-commerce", i >= 4);
     };
     show(0);
-    ScrollTrigger.create({
-      trigger: document.querySelector("[data-launch]")!, start: "top top", end: "bottom bottom",
-      onUpdate: (self) => {
-        const p = self.progress;
-        show(Math.min(n - 1, Math.floor(p * n)));
-        applyLight(gsap.utils.clamp(0, 1, p / 0.3));
-        if (!handle) { posterAngle = p * Math.PI * 2 * 1.4; setFrame((posterAngle / (Math.PI * 2)) * FRAMES); }
-      },
-    });
+    // Plain scroll progress through the runway. A passive listener, no wheel capture, no pinning library.
+    const launch = document.querySelector<HTMLElement>("[data-launch]")!;
+    let queued = false;
+    const update = () => {
+      queued = false;
+      const r = launch.getBoundingClientRect();
+      const p = Math.min(1, Math.max(0, -r.top / Math.max(1, r.height - innerHeight)));
+      show(Math.min(n - 1, Math.floor(p * n)));
+      applyLight(Math.min(1, p / 0.3), p);
+    };
+    const onScroll = () => { if (!queued) { queued = true; requestAnimationFrame(update); } };
+    addEventListener("scroll", onScroll, { passive: true });
+    addEventListener("resize", onScroll);
+    off.push(() => { removeEventListener("scroll", onScroll); removeEventListener("resize", onScroll); });
+    update();
   } else {
     beats.forEach((b) => b.setAttribute("data-on", ""));
   }

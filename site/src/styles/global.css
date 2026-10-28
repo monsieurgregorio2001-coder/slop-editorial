@@ -21,8 +21,8 @@ h1, h2, h3, p, ul, ol, dl, figure { margin: 0; }
 .prose { max-width: 62ch; display: grid; gap: 1em; }
 .prose p { line-height: 1.65; }
 .vh { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
-.skip { position: fixed; left: var(--gutter); top: 8px; z-index: 100; background: var(--fg); color: var(--bg); padding: 8px 12px; border-radius: 8px; transform: translateY(-200%); }
-.skip:focus { transform: none; }
+/* The house layer injects its crumb and footer at build. The wrapper adds no box, so the crumb stays sticky to the page. */
+.house-slot { display: contents; }
 main:focus { outline: none; }
 .mark { display: block; background: currentColor; -webkit-mask: var(--src) left center / contain no-repeat; mask: var(--src) left center / contain no-repeat; }
 
@@ -30,7 +30,7 @@ main:focus { outline: none; }
 .wrap { width: min(100%, var(--measure)); margin-inline: auto; padding-inline: var(--gutter); }
 .section { padding-block: clamp(48px, 8vh, 88px); }
 .section--tight { padding-block: clamp(32px, 5vh, 56px); }
-.rule { border: 0; border-top: 1px solid var(--line); margin: 0; }
+.rule { border: 0; border-top: 1px solid var(--line); margin-block: 0; margin-inline: auto; padding: 0; width: min(calc(100% - 2 * var(--gutter)), calc(var(--measure) - 2 * var(--gutter))); }
 .head { display: grid; gap: 8px; margin-bottom: clamp(24px, 4vh, 40px); }
 .head .lede { color: var(--muted); }
 
@@ -67,15 +67,15 @@ main:focus { outline: none; }
 .btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; font: 500 14px/1 var(--text); min-height: 44px; color: var(--fg); background: transparent; border: 1px solid var(--fg); border-radius: 8px; padding: 0 16px; cursor: pointer; text-decoration: none; transition: background 160ms var(--ease), color 160ms var(--ease); }
 .btn:hover { background: var(--fg); color: var(--bg); }
 .btn:active { transform: translateY(1px); }
-.btn--primary { color: #fff; background: var(--violet); border-color: var(--violet); }
-.btn--primary:hover { background: #3b1fd9; border-color: #3b1fd9; color: #fff; }
-.btn--go { color: #fff; background: var(--positive); border-color: var(--positive); }
-.btn--go:hover { filter: brightness(1.05); color: #fff; }
+.btn--primary { color: var(--on-fill); background: var(--violet); border-color: var(--violet); }
+.btn--primary:hover { filter: brightness(.9); color: var(--on-fill); background: var(--violet); }
+.btn--go { color: var(--on-fill); background: var(--positive); border-color: var(--positive); }
+.btn--go:hover { filter: brightness(1.05); color: var(--on-fill); background: var(--positive); }
 .sheet { position: fixed; left: 0; right: 0; bottom: 0; z-index: 70; display: flex; flex-wrap: wrap; align-items: center; gap: 8px 20px; padding: 10px var(--gutter); background: var(--surface); color: var(--fg); border-top: 1px solid var(--line); font: 400 14px/1.4 var(--text); }
 .sheet p { margin: 0; }
 .sheet small { color: var(--muted); font-size: 13px; }
 .sheet__row { display: flex; gap: 8px; margin-left: auto; }
-.sheet__row .btn { min-height: 36px; font-size: 13px; padding: 0 12px; }
+.sheet__row .btn { min-height: 44px; font-size: 13px; padding: 0 12px; }
 .sheet:not([data-on]) { translate: 0 110%; transition: translate 600ms var(--ease); }
 .sheet[data-on] { translate: 0 0; transition: translate 600ms var(--ease); }
 .dialog { position: fixed; inset: 0; z-index: 80; display: grid; place-items: center; padding: 16px; background: rgb(20 18 30 / .4); }
@@ -84,7 +84,7 @@ main:focus { outline: none; }
 .dialog__box p { color: #5F5F6B; }
 .dialog__box .btn { color: #17171B; border-color: #17171B; }
 .dialog__box .btn:hover { background: #17171B; color: #fff; }
-.dialog__box .btn--primary { color: #fff; }
+.dialog__box .btn--primary { color: #fff; background: #4B2BFF; border-color: #4B2BFF; }
 .dialog__row { display: flex; gap: 8px; justify-content: flex-end; margin-top: 8px; }
 .dialog__bar { height: 6px; border-radius: 3px; background: #e4e1f0; overflow: hidden; }
 .dialog__bar i { display: block; height: 100%; width: 0; background: #4B2BFF; transition: width 1400ms var(--ease); }
@@ -109,30 +109,25 @@ main:focus { outline: none; }
 .pill[data-tone="ready"]::before { background: var(--gold); }
 .pill[data-tone="in_review"]::before { background: var(--accent); }
 
-/* Shell: the thin shared portfolio line, the navigation and the visitor line. ---------- */
-.shell { position: relative; z-index: 50; background: color-mix(in srgb, var(--bg) 94%, transparent); border-bottom: 1px solid var(--line); backdrop-filter: blur(10px); }
-.shell__in { display: flex; align-items: center; justify-content: space-between; gap: 6px 16px; flex-wrap: wrap; padding: 6px var(--gutter); min-height: var(--shell-h); width: min(100%, var(--measure)); margin-inline: auto; }
-.crumb { display: flex; align-items: center; gap: 8px; font: 500 14px/1 var(--text); min-width: 0; }
-.crumb a { text-decoration: none; display: inline-flex; align-items: center; gap: 8px; min-height: 32px; }
-.crumb__me { font-weight: 600; }
-.crumb__slash { color: var(--muted); }
-.crumb__proj img { border-radius: 5px; }
-.crumb a:hover, .shell__nav a:hover { color: var(--accent); }
-.shell__nav { display: flex; gap: 4px clamp(12px, 2vw, 24px); align-items: center; flex-wrap: wrap; }
-.shell__nav a { font: 500 14px/1 var(--text); text-decoration: none; padding: 10px 2px; }
-.shell__nav a[aria-current="page"] { text-decoration: underline; text-underline-offset: 6px; text-decoration-thickness: 2px; text-decoration-color: var(--accent); }
-.visitor { display: flex; gap: 14px; flex-wrap: wrap; width: min(100%, var(--measure)); margin-inline: auto; padding: 0 var(--gutter); font: 400 12px/1.6 var(--mono); color: var(--muted); min-height: 20px; font-variant-numeric: tabular-nums; }
+/* Shell: the room's own navigation sits under the house crumb. Every target is 44 px tall. ---------- */
+.shell { position: relative; z-index: 40; background: var(--bg); border-bottom: 1px solid var(--line); }
+.shell__in { display: flex; align-items: center; padding: 0 var(--gutter); width: min(100%, var(--measure)); margin-inline: auto; }
+.shell__nav { display: flex; gap: 0 clamp(4px, 2vw, 20px); align-items: center; margin-inline: -10px; }
+.shell__nav a { display: inline-flex; align-items: center; min-height: 44px; padding: 0 10px; font: 500 14px/1 var(--text); text-decoration: none; }
+.shell__nav a:hover { color: var(--room-ink); }
+.shell__nav a[aria-current="page"] { text-decoration: underline; text-underline-offset: 6px; text-decoration-thickness: 2px; text-decoration-color: var(--room); }
+/* One quiet row, always the same height, so the notice that arrives later never moves the page. */
+.visitor { display: flex; gap: 14px; flex-wrap: nowrap; overflow: hidden; white-space: nowrap; width: min(100%, var(--measure)); margin-inline: auto; padding: 0 var(--gutter); font: 400 12px/24px var(--mono); height: 24px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.visitor span { flex: none; }
 .visitor span:empty { display: none; }
-.visitor__notice { transition: opacity 400ms var(--ease); }
+.visitor__notice { flex: 0 1 auto !important; min-width: 0; overflow: hidden; text-overflow: ellipsis; transition: opacity 400ms var(--ease); }
 .visitor__notice[data-swap] { opacity: 0; }
-@media (min-width: 900px) { .shell { position: sticky; top: 0; } }
-@media (max-width: 899px) { .shell__nav { width: 100%; gap: 0 14px; } .shell__nav a { padding: 8px 0; font-size: 13px; } }
 
 .foot { position: relative; z-index: 2; background: var(--bg); border-top: 1px solid var(--line); }
 .foot__in { width: min(100%, var(--measure)); margin-inline: auto; padding: 40px var(--gutter) 44px; display: grid; gap: 14px; font: 400 14px/1.55 var(--text); color: var(--muted); }
 .foot__in > p:first-child { max-width: 72ch; }
 .foot__links { display: flex; flex-wrap: wrap; gap: 4px 20px; }
-.foot__links a { min-height: 24px; }
+.foot__links a { display: inline-flex; align-items: center; min-height: 44px; }
 .foot__row { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
 .foot button { font: 500 12px/1 var(--mono); letter-spacing: .06em; text-transform: uppercase; color: var(--fg); background: none; border: 1px solid var(--line); border-radius: 8px; min-height: 44px; padding: 0 14px; cursor: pointer; }
 .foot button[aria-pressed="true"] { border-color: var(--accent); color: var(--accent); }
@@ -158,3 +153,6 @@ html[data-rm] { transition: none; }
 html[data-rm] *, html[data-rm] *::before, html[data-rm] *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; scroll-behavior: auto !important; transition-duration: .01ms !important; }
 
 .page { background: var(--bg); color: var(--fg); min-height: 100svh; }
+
+/* The house truth chip never wraps off the screen. */
+.house-label { white-space: normal; padding-block: 4px; }

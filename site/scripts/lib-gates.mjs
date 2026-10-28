@@ -3,6 +3,11 @@ import path from "node:path";
 
 const ENTITIES = { "&amp;": "&", "&lt;": "<", "&gt;": ">", "&quot;": '"', "&#39;": "'", "&#x27;": "'", "&mdash;": "\u2014", "&#8212;": "\u2014", "&nbsp;": " " };
 
+/** Removes quoted program output (<code data-verbatim>), which keeps the CLI's own punctuation. */
+export function withoutVerbatim(html) {
+  return html.replace(/<(code|pre)\b[^>]*\bdata-verbatim\b[^>]*>[\s\S]*?<\/\1>/gi, " ");
+}
+
 /** Text a reader sees: scripts, styles, comments and tags removed, entities decoded. */
 export function visibleText(html) {
   return html
@@ -64,7 +69,7 @@ export function structureViolations(html) {
   const h1 = (html.match(/<h1[\s>]/gi) || []).length;
   if (h1 !== 1) out.push(`expected one h1, found ${h1}`);
   for (const img of html.match(/<img\b[^>]*>/gi) || []) if (!/\balt=/.test(img)) out.push("img without alt");
-  if (!/class="skip/.test(html)) out.push("missing skip link");
+  if (!/class="(?:house-)?skip/.test(html)) out.push("missing skip link");
   return out;
 }
 
@@ -77,6 +82,14 @@ export function internalHrefs(html) {
     hrefs.push(h);
   }
   return hrefs;
+}
+
+// Pages the hub and the other rooms own. The house crumb, menu and footer link to them, so they are checked on the hub, not here.
+const HOUSE_HREFS = new Set(["/", "/changelog/", "/colophon/", "/llms.txt", "/index.md", "/paperlab/", "/mindmap-mcp/", "/paluwagan/"]);
+
+/** True for a link that belongs to the house or to another room. */
+export function isHouseHref(href) {
+  return HOUSE_HREFS.has(href);
 }
 
 /** Map an href to the file the static host would serve. `base` is "/" or "/name/". */

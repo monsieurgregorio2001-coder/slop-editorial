@@ -26,6 +26,16 @@ export function money(n) {
   return (Math.round(n * 100) / 100).toFixed(2);
 }
 
+/** Every staged price names its currency. The gallery sells nothing, and the pipeline cap is in the same unit. */
+export function usd(amount) {
+  return `USD ${money(Number(amount))}`;
+}
+
+/** A staged price as a reader sees it: Free, or an amount with its currency. */
+export function priceLabel(price) {
+  return /^\d/.test(price) && Number(price) > 0 ? usd(price) : "Free";
+}
+
 /** Staged starting view counts. Plausible, formatted, and the same on the server, with JavaScript off, and under reduced motion. */
 export const VIEW_BASE = { "the-still": 1204331, "the-certificate": 388902 };
 

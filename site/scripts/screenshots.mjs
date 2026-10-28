@@ -13,7 +13,7 @@ const review = path.resolve(process.argv[2] || path.join(os.homedir(), "Developm
 const docs = path.resolve("../docs");
 await mkdir(review, { recursive: true });
 const { server, url } = await serveDist(path.resolve("dist"), base);
-const browser = await chromium.launch({ executablePath: CHROME, args: ["--use-gl=angle", "--use-angle=swiftshader", "--enable-unsafe-swiftshader", "--ignore-gpu-blocklist"] });
+const browser = await chromium.launch({ executablePath: CHROME, args: [] });
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
 async function developedHome(viewport, dsf = 1) {
@@ -58,11 +58,11 @@ async function developedHome(viewport, dsf = 1) {
   await page.screenshot({ path: path.join(review, "slop3-feed-desktop.png") });
   await ctx.close();
 }
-{ // Authenticity desktop: the gold with the gift shop in front of it
+{ // Authenticity desktop: the certificate photograph with the gift shop in front of it
   const ctx = await browser.newContext({ viewport: { width: 1440, height: 900 } });
   const page = await ctx.newPage();
-  await page.goto(url + "authenticity/?tier=webgl", { waitUntil: "load" });
-  await page.waitForFunction(() => document.querySelector("[data-seal]").dataset.tier, null, { timeout: 15000 });
+  await page.goto(url + "authenticity/", { waitUntil: "load" });
+  await page.waitForSelector("[data-seal] img");
   await page.evaluate(() => { const l = document.querySelector("[data-launch]"); window.scrollTo(0, l.offsetTop + (l.offsetHeight - innerHeight) * 0.9); });
   await sleep(2200);
   await page.screenshot({ path: path.join(review, "slop3-authenticity-desktop.png") });

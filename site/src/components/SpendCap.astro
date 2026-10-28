@@ -1,0 +1,142 @@
+---
+import prices from "../data/spend-prices.json";
+import mock from "../data/mock-run.json";
+import { compute, MAX_PLATES, MAX_REROLLS, type PriceRow } from "../lib/spend.ts";
+import { resultHtml } from "../lib/spend-view.ts";
+
+const table = prices.rows as PriceRow[];
+const providers = [...new Set(table.map((r) => r.provider))];
+const start = { plates: "9", rerolls: "1", model: "fal|fal-ai/flux/dev", cap: "0.50" };
+const first = compute(start, table);
+const perImage = (usd: number) => (usd === 0 ? "free" : `USD ${usd} per image`);
+---
+<section class="capsec wrap section" id="spend-cap" aria-labelledby="cap-h">
+  <div class="head">
+    <p class="sys">Proof toy</p>
+    <h2 id="cap-h" class="h1">The spend cap</h2>
+    <p class="lede">The pipeline refuses to spend past a cap. Set a run and see what its cost check says.</p>
+    <p><span class="house-label">Runs the pipeline's cost check in your browser. Generates nothing.</span></p>
+  </div>
+
+  <div class="capsec__cols">
+    <div class="capbox">
+      <form class="capbox__form" data-spend novalidate autocomplete="off">
+        <div class="field">
+          <label for="cap-plates">Plates</label>
+          <input id="cap-plates" name="plates" type="text" inputmode="numeric" value={start.plates} aria-describedby="cap-plates-h" data-field="plates" />
+          <small id="cap-plates-h">1 to {MAX_PLATES}</small>
+        </div>
+        <div class="field">
+          <label for="cap-rerolls">Rerolls per plate</label>
+          <input id="cap-rerolls" name="rerolls" type="text" inputmode="numeric" value={start.rerolls} aria-describedby="cap-rerolls-h" data-field="rerolls" />
+          <small id="cap-rerolls-h">0 to {MAX_REROLLS}</small>
+        </div>
+        <div class="field field--wide">
+          <label for="cap-model">Model</label>
+          <select id="cap-model" name="model" data-field="model">
+            {providers.map((p) => (
+              <optgroup label={p}>
+                {table.filter((r) => r.provider === p).map((r) => <option value={`${r.provider}|${r.model}`} selected={`${r.provider}|${r.model}` === start.model}>{r.model} ({r.mode}, {perImage(r.usd)})</option>)}
+              </optgroup>
+            ))}
+          </select>
+          <small>Prices are the pipeline's planning figures at {prices.width} by {prices.height}. The provider invoice governs.</small>
+        </div>
+        <div class="field">
+          <label for="cap-cap">Cap in USD</label>
+          <input id="cap-cap" name="cap" type="text" inputmode="decimal" value={start.cap} aria-describedby="cap-cap-h" data-field="cap" />
+          <small id="cap-cap-h">The CLI default is 5.00</small>
+        </div>
+        <div class="field field--btn"><button type="reset" class="btn" data-reset>Reset</button></div>
+      </form>
+      <div class="capbox__out" role="status" aria-live="polite" data-out data-start={JSON.stringify(start)} set:html={resultHtml(first)}></div>
+      <noscript><p class="label__note">This check needs JavaScript. The result above is the default run.</p></noscript>
+    </div>
+
+    <aside class="rec" aria-labelledby="rec-h">
+      <p><span class="house-label">Mock provider run. No images were generated.</span></p>
+      <h3 id="rec-h" class="rec__h">A committed record</h3>
+      <p class="label__note">The mock provider is free and only draws placeholder frames. None are shown here. This is what the pipeline wrote down.</p>
+      <dl class="rec__dl">
+        <dt>Command</dt><dd><code data-verbatim class="cli">{mock.command}</code></dd>
+        <dt>Plan</dt><dd>{mock.plan.name}, {mock.plan.width} by {mock.plan.height}, {mock.plan.candidates} candidates for each of {mock.plan.prompts.length} prompts, {mock.jobs.length} jobs</dd>
+        <dt>Estimate</dt><dd>USD {mock.estimate_usd.toFixed(2)}</dd>
+        <dt>Cap</dt><dd>USD {mock.cap_usd.toFixed(2)}</dd>
+        <dt>Approval reference</dt><dd>{mock.approval_ref}. {mock.approval_note}</dd>
+        <dt>Ledger</dt><dd><pre data-verbatim class="cli rec__pre" tabindex="0" aria-label="Ledger lines from the mock run">{mock.ledger.map((l) => JSON.stringify(l)).join("\n")}</pre></dd>
+      </dl>
+      <details class="rec__jobs">
+        <summary>The {mock.jobs.length} planned jobs</summary>
+        <table>
+          <thead><tr><th scope="col">Job</th><th scope="col">State</th><th scope="col">Model</th><th scope="col">Estimate</th></tr></thead>
+          <tbody>{mock.jobs.map((j) => <tr><th scope="row">{j.job}</th><td>{j.state}</td><td>{j.model}</td><td>USD {j.estimate_usd.toFixed(2)}</td></tr>)}</tbody>
+        </table>
+      </details>
+    </aside>
+  </div>
+</section>
+
+<script>
+  import { compute, type PriceRow } from "../lib/spend.ts";
+  import { resultHtml } from "../lib/spend-view.ts";
+  import prices from "../data/spend-prices.json";
+
+  function init() {
+    const form = document.querySelector<HTMLFormElement>("[data-spend]");
+    const out = document.querySelector<HTMLElement>("[data-out]");
+    if (!form || !out || form.dataset.bound) return;
+    form.dataset.bound = "1";
+    const field = (n: string) => form.querySelector<HTMLInputElement & HTMLSelectElement>(`[data-field="${n}"]`)!;
+    const run = () => {
+      const r = compute({ plates: field("plates").value, rerolls: field("rerolls").value, model: field("model").value, cap: field("cap").value }, prices.rows as PriceRow[]);
+      out.innerHTML = resultHtml(r);
+      form.querySelectorAll("[aria-invalid]").forEach((e) => e.removeAttribute("aria-invalid"));
+      if (r.kind === "error") field(r.field).setAttribute("aria-invalid", "true");
+    };
+    form.addEventListener("input", run);
+    form.addEventListener("change", run);
+    form.addEventListener("submit", (e) => e.preventDefault());
+    form.addEventListener("reset", () => window.setTimeout(run, 0));
+  }
+  document.addEventListener("astro:page-load", init);
+</script>
+
+<style>
+  .capsec { padding-top: 0; }
+  .capsec__cols { display: grid; gap: clamp(24px, 4vw, 48px); grid-template-columns: minmax(0, 1fr); align-items: start; }
+  @media (min-width: 960px) { .capsec__cols { grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); } }
+  .capbox { display: grid; gap: 20px; padding: clamp(16px, 2.4vw, 28px); border: 1px solid var(--line); border-radius: 12px; background: var(--card); min-width: 0; }
+  .capbox__form { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+  .field { display: grid; gap: 6px; align-content: start; min-width: 0; }
+  .field--wide { grid-column: 1 / -1; }
+  .field--btn { align-content: end; }
+  .field label { font: 600 14px/1.3 var(--text); }
+  .field small { font: 400 13px/1.4 var(--text); color: var(--muted); }
+  .field input, .field select { font: 400 16px/1.2 var(--text); color: var(--fg); background: var(--bg); border: 1px solid var(--muted); border-radius: 8px; min-height: 44px; padding: 0 12px; width: 100%; min-width: 0; }
+  .field select { text-overflow: ellipsis; }
+  .field input:hover, .field select:hover { border-color: var(--fg); }
+  .field [aria-invalid="true"] { border-color: var(--negative); border-width: 2px; }
+  .capbox__out { display: grid; gap: 12px; padding-top: 16px; border-top: 1px solid var(--line); min-height: 14rem; align-content: start; }
+  .capbox__out :global(.cap__sum) { font: 400 16px/1.5 var(--text); }
+  .capbox__out :global(.cap__verdict) { display: grid; gap: 8px; padding: 14px 16px; border-radius: 8px; border: 1px solid var(--line); border-left-width: 6px; }
+  .capbox__out :global(.cap__verdict.is-refused) { border-left-color: var(--negative); }
+  .capbox__out :global(.cap__verdict.is-under) { border-left-color: var(--positive); }
+  .capbox__out :global(.cap__tag) { font: 600 13px/1.2 var(--mono); letter-spacing: .08em; text-transform: uppercase; }
+  .capbox__out :global(.cap__tag.is-error) { color: var(--negative); }
+  .capbox__out :global(.cap__msg), .capbox__out :global(.cap__cmd) { font: 400 15px/1.5 var(--text); color: var(--muted); }
+  .capbox__out :global(.cap__req) { margin: 0; padding-left: 1.2em; display: grid; gap: 8px; }
+  :global(code.cli), :global(pre.cli) { font: 400 13px/1.55 var(--mono); overflow-wrap: anywhere; white-space: pre-wrap; background: color-mix(in srgb, var(--fg) 6%, var(--bg)); border-radius: 4px; padding: 2px 6px; }
+  :global(pre.cli) { margin: 0; padding: 10px 12px; }
+
+  .rec { display: grid; gap: 12px; min-width: 0; }
+  .rec__h { font: 600 22px/1.2 var(--display); letter-spacing: -.02em; margin: 0; }
+  .rec__dl { display: grid; gap: 4px 0; margin: 0; }
+  .rec__dl dt { font: 500 12px/1.9 var(--mono); letter-spacing: .06em; text-transform: uppercase; color: var(--muted); margin-top: 10px; }
+  .rec__dl dd { margin: 0; font: 400 15px/1.5 var(--text); min-width: 0; }
+  .rec__pre { overflow-x: auto; white-space: pre; overflow-wrap: normal; }
+  .rec__jobs { border: 1px solid var(--line); border-radius: 8px; }
+  .rec__jobs summary { min-height: 44px; display: flex; align-items: center; padding: 0 12px; cursor: pointer; font: 600 14px/1.2 var(--text); }
+  .rec__jobs table { width: 100%; border-collapse: collapse; font: 400 13px/1.4 var(--mono); display: block; overflow-x: auto; }
+  .rec__jobs th, .rec__jobs td { text-align: left; padding: 6px 12px; border-top: 1px solid var(--line); white-space: nowrap; font-weight: 400; }
+  .rec__jobs thead th { color: var(--muted); }
+</style>

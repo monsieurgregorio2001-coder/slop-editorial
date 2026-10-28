@@ -25,10 +25,17 @@ jobs:
         working-directory: site
     env:
       ASTRO_TELEMETRY_DISABLED: "1"
+      HOUSE_DIR: ${{ github.workspace }}/hub
       SITE_BASE: /${{ github.event.repository.name }}/
       SITE_URL: https://${{ github.repository_owner }}.github.io
     steps:
       - uses: actions/checkout@v4
+      # House 2.0.0 lives in the public hub repo. The commit is pinned until the tag house-2.0.0 exists.
+      - uses: actions/checkout@v4
+        with:
+          repository: monsieurgregorio2001-coder/monsieurgregorio2001-coder.github.io
+          ref: 8938fa639a4edab03948da56d69fc0a50f7f94ae
+          path: hub
       - uses: actions/setup-node@v4
         with: { node-version: "22", cache: npm, cache-dependency-path: site/package-lock.json }
       - uses: actions/setup-python@v5
@@ -42,6 +49,8 @@ jobs:
         working-directory: pipeline
         run: python -m unittest discover -s tests -t . 2>&1 | tee "$RUNNER_TEMP/logs/pipeline.txt"
       - run: npm run build
+      - name: Pages still match the pinned house
+        run: npm run house:check
       - name: Voice, honesty, link and performance gates
         run: npm run check 2>&1 | tee "$RUNNER_TEMP/logs/check.txt"
       - name: Real-browser checks
@@ -49,7 +58,7 @@ jobs:
         env: { CHROMIUM_PATH: /usr/bin/google-chrome }
       - name: Write evidence.json
         run: >
-          node scripts/evidence.mjs
+          node --experimental-strip-types scripts/evidence.mjs
           --unit "$RUNNER_TEMP/logs/unit.txt" --pipeline "$RUNNER_TEMP/logs/pipeline.txt"
           --check "$RUNNER_TEMP/logs/check.txt" --verify "$RUNNER_TEMP/logs/verify.txt"
       - run: cat dist/evidence.json

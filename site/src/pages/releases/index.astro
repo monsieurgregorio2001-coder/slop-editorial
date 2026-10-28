@@ -1,7 +1,7 @@
 ---
 import Base from "../../layouts/Base.astro";
 import { getCollection } from "astro:content";
-import { withBase } from "../../lib/text.js";
+import { withBase, priceLabel } from "../../lib/text.js";
 const u = (p = "") => withBase(import.meta.env.BASE_URL, p);
 const rel = (await getCollection("releases")).sort((a, b) => a.data.order - b.data.order);
 const done = rel.filter((r) => r.data.state === "APPROVED").length;
@@ -29,7 +29,7 @@ const waiting = rel.filter((r) => r.data.state === "READY").length;
               <span class="mono">{r.data.kind} · {r.data.window}</span>
             </span>
             <span class="slot__status"><span class="pill" data-tone={r.data.state.toLowerCase()}>{label[r.data.state]}</span><span class="mono">{r.data.production}</span></span>
-            <span class="mono slot__price">{r.data.price === "0.00" ? "Free" : r.data.price}</span>
+            <span class="mono slot__price">{priceLabel(r.data.price)}</span>
           </a>
         </li>
       ))}

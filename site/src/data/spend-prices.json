@@ -1,0 +1,63 @@
+{
+  "schema": 1,
+  "width": 1024,
+  "height": 1280,
+  "rows": [
+    {
+      "provider": "mock",
+      "model": "mock-t2i",
+      "mode": "t2i",
+      "usd": 0.0,
+      "free": true
+    },
+    {
+      "provider": "mock",
+      "model": "mock-edit",
+      "mode": "edit",
+      "usd": 0.0,
+      "free": true
+    },
+    {
+      "provider": "fal",
+      "model": "fal-ai/flux/dev",
+      "mode": "t2i",
+      "usd": 0.0393,
+      "free": false
+    },
+    {
+      "provider": "fal",
+      "model": "fal-ai/flux-kontext/dev",
+      "mode": "edit",
+      "usd": 0.05,
+      "free": false
+    },
+    {
+      "provider": "fal",
+      "model": "fal-ai/qwen-image-edit-plus",
+      "mode": "edit",
+      "usd": 0.0393,
+      "free": false
+    },
+    {
+      "provider": "replicate",
+      "model": "black-forest-labs/flux-dev",
+      "mode": "t2i",
+      "usd": 0.025,
+      "free": false
+    },
+    {
+      "provider": "replicate",
+      "model": "black-forest-labs/flux-kontext-dev",
+      "mode": "edit",
+      "usd": 0.025,
+      "free": false
+    },
+    {
+      "provider": "replicate",
+      "model": "qwen/qwen-image-edit-plus",
+      "mode": "edit",
+      "usd": 0.025,
+      "free": false
+    }
+  ]
+}

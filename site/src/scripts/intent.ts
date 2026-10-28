@@ -56,7 +56,7 @@ function pump() {
 export function fetchAhead(href: string, prio: number) {
   if (!allowed()) { stats.skipped++; return; }
   const u = new URL(href, location.href);
-  if (u.origin !== location.origin || u.pathname === location.pathname || /\.[a-z0-9]{2,5}$/i.test(u.pathname)) return;
+  if (u.origin !== location.origin || !u.pathname.startsWith(import.meta.env.BASE_URL) || u.pathname === location.pathname || /\.[a-z0-9]{2,5}$/i.test(u.pathname)) return;
   const key = u.pathname + u.search;
   const have = held.get(key);
   if (have && performance.now() - have.at < TTL_MS) return;

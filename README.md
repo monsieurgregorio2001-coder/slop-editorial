@@ -1,6 +1,6 @@
 # Slop Editorial
 
-A deadpan satire of AI slop and the attention economy, built as software: six-finger hands, signs that say Sunseet, prompts printed on the picture, and comments that all say Amazing. Hung like an exhibition: warm paper, framed prints, wall labels that list the metrics where the medium should be, and a real 3D object. Backed by an image pipeline that keeps a human in the loop.
+A deadpan satire of AI slop and the attention economy, built as software: six-finger hands, signs that say Sunseet, prompts printed on the picture, and comments that all say Amazing. Hung like an exhibition: warm paper, framed prints, wall labels that list the metrics where the medium should be. Backed by an image pipeline that keeps a human in the loop.
 
 [![Slop Editorial home page, the framed still with its wall label and the Free sticker](docs/hero.png)](https://monsieurgregorio2001-coder.github.io/slop-editorial/)
 
@@ -8,11 +8,11 @@ A deadpan satire of AI slop and the attention economy, built as software: six-fi
 
 - **Problem.** AI makes images nearly free, so feeds fill with content nobody decided to make. Hands get six fingers, and every comment says Amazing.
 - **Build.** An Astro site that hangs nine generated works like a gallery and labels them like the platforms it mocks (cookie sheet, visitor number, ratings that always read 4.2, a gift shop that arrives in front of the gold). Beside it, a Python pipeline that estimates, caps, approves, and logs every paid generation.
-- **Result.** 143 real-browser checks, 146 build gates, and 70 unit tests pass. CI runs all of them.
+- **Result.** 243 real-browser checks, 144 build gates, 40 site tests, 56 pipeline tests and 1,536 parity fixtures pass. CI runs all of them.
 
 **Live demo:** https://monsieurgregorio2001-coder.github.io/slop-editorial/
 
-The thesis is one line: **Generation is cheap. Taste is not.** It mocks platforms, incentives and the output, never people. Every image was generated from a written brief with an image model, then checked by a person against that brief ([owner confirmation, 2026-10-28](docs/review-record.md); six digits, three suns, readable text). The certificate object is procedural 3D. The pipeline runs offline by default with a free mock provider, so nothing here needs an account, a key, or a network connection.
+The thesis is one line: **Generation is cheap. Taste is not.** It mocks platforms, incentives and the output, never people. Every image was generated from a written brief with an image model, then checked by a person against that brief ([owner confirmation, 2026-10-28](docs/review-record.md); six digits, three suns, readable text). The certificate is a generated photograph with a CSS light sweep. The pipeline runs offline by default with a free mock provider, so nothing here needs an account, a key, or a network connection.
 
 ## The ten behaviours
 
@@ -24,7 +24,7 @@ The unlinked `/review/` page on the running site lists the same behaviours (noin
 | 2 | Beautiful, then wrong | `/feed/` | The still, then its label. The metrics arrive: engagement improved 18 %, preferred by people who skip, this image performed well. |
 | 3 | One interface joke | `/feed/` | Your taste has 1 update available, to delve into the rich tapestry of what you already like. Not now sets a reminder. Install runs a progress bar and ends: Installed. No visible difference. |
 | 4 | One embarrassment | `/feed/`, `/` | Stop on the image for 7 s: You have been looking for 0:07. That is above average. |
-| 5 | One banal object ruining luxury | `/authenticity/` | A gilded Certificate of Human Touch turns on a plinth in Three.js. The gift shop arrives in front of it: crowd barrier, a laminated PLEASE DO NOT GENERATE, sanitizer, a terminal reading TAP TO APPRECIATE 2.00, a prompt pack at 14.99, an extra finger at 2.99, and a watermark remover remover. Originality. From 0/month. |
+| 5 | One banal object ruining luxury | `/authenticity/` | A gilded Certificate of Human Touch stands on a plinth as a generated photograph, and a CSS light sweep crosses it as you scroll. The gift shop arrives in front of it: crowd barrier, a laminated PLEASE DO NOT GENERATE, sanitizer, a terminal reading TAP TO APPRECIATE 2.00, a prompt pack at 14.99, an extra finger at 2.99, and a watermark remover remover. Originality. From 0/month. |
 | 6 | A catalogue, not a feed | `/works/`, `/authenticity/` | The archive is an exhibition of nine works (six fingers, prompt residue, a refusal listing, engagement bait, a tokenmaxxer award, delve, a thirsty data center, a certificate) with a plate number, rating, views and price in each label. The buy bar adds prompt packs and the receipt itemizes what you appreciated. |
 | 7 | The viewer becomes the joke | `/feed/` | Every action improves your visitor number. Scroll, hold, install an update: the number drops and the system thanks you. Your taste has been updated. |
 | 8 | Mobile interaction | `/feed/` on a phone | Hold the image. A ring fills in 0.9 s: Appreciation registered. Free shipping on redemption. |
@@ -56,16 +56,16 @@ flowchart LR
 | Part | Folder | Stack |
 | --- | --- | --- |
 | Generation pipeline `slopgen` | `pipeline/` | Python 3.10 or later, requests, Pillow, python-pptx, reportlab, PyYAML |
-| Publication site | `site/` | Astro 7, MDX, TypeScript, GSAP ScrollTrigger, motion, Three.js, Node 22.12 or later |
+| Publication site | `site/` | Astro 7, MDX, TypeScript, GSAP ScrollTrigger on the feed, motion, house 2.0.0, Node 22.12 or later |
 
 ### Site features
 
 - Static output at the `/slop-editorial/` base, critical CSS inlined, no third-party hosts, no analytics, and no cookies.
 - View Transitions with a shared element between the cover and the feed. Scroll sequences are scrubbed by GSAP ScrollTrigger with no pinning tricks, no wheel capture, and no scroll hijack.
-- A 3D object with three tiers: WebGPU when available (guarded, with a timeout), then WebGL, then an 18-frame poster sequence for touch devices and data saver. Rotate by drag, buttons, or arrow keys.
+- The shared house crumb and footer, joined at build by `house-sync` and pinned in `site/house.lock.json`. Links to the hub and other rooms reload the document so the doorway can run. The room follows the OS colour scheme, and the footer Room toggle overrides it.
 - Fetch-ahead on hover or touch with a priority queue and hard limits, plus a build-stamped service worker for repeat visits.
-- Reduced motion applied before first paint, from the OS setting, the footer toggle, or `?motion=reduce`. Light and dark schemes from design tokens.
-- The nine works were generated with an image model and shipped as WebP. The 3D poster frames are rendered in code by `scripts/render-poster.mjs`. The wordmark is outlined from the font by `scripts/make-logo.py`. Fonts are self-hosted under the SIL Open Font License (`public/OFL.txt`).
+- Reduced motion applied before first paint, from the OS setting, the Room motion toggle, the house Calm switch, or `?motion=reduce`. Light and dark schemes from design tokens.
+- The nine works were generated with an image model and shipped as WebP. The wordmark is outlined from the font by `scripts/make-logo.py`. Fonts are self-hosted under the SIL Open Font License (`public/OFL.txt`).
 - Build gates that fail on the old brand, external requests, em dashes, semicolons, contractions, long sentences, broken links, leaks, and blown budgets. A real-browser suite drives headless Chrome through Playwright.
 
 ### Pipeline features
@@ -122,12 +122,12 @@ npm run build
 npm run check              # build gates over dist/
 npm test                   # unit tests for the gate logic and helpers
 npm run verify             # real-browser checks in headless Chrome, axe in light and dark
-npm run poster             # re-render the 3D poster frames from the live scene
-npm run art                # re-render the generated images
+npm run art                # redraw the old SVG studies into art-src/render. It cannot write to public/img
+npm run house:check        # fail when a built page drifts from the pinned house
 npm run screenshots        # review screenshots, README hero, card, and Open Graph image
 ```
 
-`verify`, `poster`, `art`, and `screenshots` use Google Chrome. They look for it at the macOS default path and honour `CHROMIUM_PATH`.
+`verify` and `screenshots` use Google Chrome. They look for it at the macOS default path and honour `CHROMIUM_PATH`.
 
 ## Deploying the site
 
@@ -135,17 +135,23 @@ The workflow in `.github/workflows/site.yml` builds the site with the repository
 
 ## Tests and measured results
 
-Each count below comes from a suite in this repo. I reran the unit tests and build gates on 28 October 2026. The real-browser count is from the 20 October 2026 run. CI runs every suite on each push.
+Each count below comes from a run on 28 October 2026 at the commit that adds the spend cap. CI runs every suite on each push and writes the same counts to `evidence.json`.
 
 | Check | Result |
 | --- | --- |
-| Python unit tests (`pipeline/`) | 49 pass |
-| Node unit tests for gate logic and helpers (`site/`) | 21 pass |
-| Real-browser checks in Chrome (`npm run verify`) | 143 pass, 0 fail |
-| Axe accessibility, 10 page types in light and dark (part of `npm run verify`) | 20 runs, 0 violations (WCAG 2.1 A and AA plus best practice) |
-| Site build gates (`npm run check`) | 146 checks pass |
-| JavaScript shipped (budget gate in `npm run check`) | 80 KB gzipped shared, 379 KB gzipped for the lazy 3D chunk, loaded only on `/authenticity/` |
-| Horizontal scroll at 360 px (part of `npm run verify`) | none on all 10 page types |
+| Python unit tests (`pipeline/`) | 56 pass |
+| Node unit tests for gate logic, helpers, the spend cap port and the receipt (`site/`) | 40 pass |
+| Spend cap parity: Python and TypeScript on generated fixtures (`site/test/fixtures/spend-parity.json`) | 1,536 of 1,536 agree |
+| Real-browser checks in Chrome (`npm run verify`) | 243 pass, 0 fail |
+| Axe accessibility, 10 page types at 390 and 1440 in light and dark (part of `npm run verify`) | 40 runs, 0 violations |
+| Site build gates (`npm run check`) | 144 checks pass |
+| JavaScript before interaction, gzipped (budget gate in `npm run check`) | 10.6 KB on the home page (budget 15), 11.3 KB on the certificate page (budget 20) |
+| Horizontal scroll at 360 px, full motion and Calm (part of `npm run verify`) | none on all 10 page types |
+| Layout shift on the home page and the certificate page at 390 and 1280, cookie sheet included | 0 |
+
+## The spend cap
+
+The Method page at `/about/` runs the pipeline's cost check in the browser. `pipeline/slopgen/spend.py` holds the price table, the estimate and the cap check as pure functions, and the runner calls them. `site/src/lib/spend.ts` is a TypeScript port. `python -m slopgen.spend_fixtures` writes the parity fixtures, a Python test fails when the committed file is stale, and a Node test replays every row through the port. `python -m slopgen.mock_record` runs the pipeline with the free mock provider and writes the committed record shown beside the toy. Nothing here calls a paid provider.
 
 ## Credits
 
@@ -156,7 +162,8 @@ Each count below comes from a suite in this repo. I reran the unit tests and bui
 
 - The works are short original satire about widely known AI slop tropes. They name no brands, products, or people, and make no claims about the industry.
 - Release figures on `/releases/` and `/queue/` are sample data from the free mock provider.
-- The 3D object is a procedural placeholder. The WebGPU path is guarded but was not run on real WebGPU hardware. WebGL, the poster tier, and the fallbacks were verified.
+- Paid providers were tested against fakes only. The current nine plates have no generation record.
+- The spend cap page shows a planning estimate from the pipeline's price table. The provider invoice governs.
 - The mock provider draws abstract placeholder frames. They prove the plumbing, not image quality.
 - Live provider behavior, prices and model names change. Treat the price tables as planning figures.
 

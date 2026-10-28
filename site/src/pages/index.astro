@@ -6,7 +6,6 @@ import { catalogue } from "../lib/catalogue";
 import { hold } from "../lib/transitions";
 const u = (p = "") => withBase(import.meta.env.BASE_URL, p);
 const wide = [800, 1200, 1600].map((w) => `${u(`img/hero-wide-${w}.webp`)} ${w}w`).join(", ");
-const tall = [480, 800, 1000].map((w) => `${u(`img/hero-still-${w}.webp`)} ${w}w`).join(", ");
 const pieces = await catalogue();
 const showing = pieces.filter((p) => ["02", "06", "09"].includes(p.n));
 const releases = (await getCollection("releases")).sort((a, b) => a.data.order - b.data.order).slice(0, 4);
@@ -20,13 +19,12 @@ const alt = "A neon sunset over violet peaks and a mirrored lake. Two chrome sph
       <h1 class="vh">Slop Editorial. Generation is cheap. Taste is not.</h1>
       <div class="cover__mast">
         <span class="cover__word mark" role="img" aria-label="Slop Editorial" style={`--src:url(${u("wordmark.svg")})`}></span>
-        <p class="cover__pos">Generation is cheap.<br />Taste is not.</p>
+        <p class="cover__pos">A satire of AI slop, hung like an exhibition.</p>
       </div>
 
-      <a class="cover__stage frame frame--wide" href={u("feed/")} data-hero-link data-stage>
+      <a class="cover__stage frame frame--wide" id="room-hero" href={u("feed/")} data-hero-link data-stage>
         <div class="cover__img" transition:name="hero-still">
           <picture>
-            <source media="(max-width: 640px)" srcset={tall} sizes="100vw" type="image/webp" />
             <source srcset={wide} sizes="(max-width: 1200px) 100vw, 1120px" type="image/webp" />
             <img src={u("img/hero-wide-1200.webp")} width="1600" height="900" alt={alt} decoding="async" fetchpriority="high" />
           </picture>
@@ -91,25 +89,31 @@ const alt = "A neon sunset over violet peaks and a mirrored lake. Two chrome sph
 </Base>
 
 <style>
-  .cover { display: grid; gap: clamp(20px, 3vh, 32px); padding-top: clamp(24px, 4vh, 48px); padding-bottom: clamp(40px, 7vh, 72px); }
-  .cover__mast { display: flex; justify-content: space-between; align-items: flex-end; gap: 24px; }
+  .cover { display: grid; grid-template-columns: minmax(0, 1fr); gap: clamp(16px, 3vh, 32px); padding-top: clamp(16px, 3vh, 40px); padding-bottom: clamp(40px, 7vh, 72px); }
+  .cover__mast { display: grid; gap: 8px; }
   .cover__word { width: clamp(180px, 26vw, 360px); aspect-ratio: 251 / 52; color: var(--fg); }
-  .cover__pos { font: 600 clamp(15px, 1.5vw, 20px)/1.2 var(--display); letter-spacing: -.015em; text-align: right; color: var(--muted); }
+  .cover__pos { font: 600 clamp(16px, 1.5vw, 20px)/1.25 var(--display); letter-spacing: -.015em; color: var(--muted); max-width: 40ch; text-wrap: balance; }
   .cover__stage { text-decoration: none; color: inherit; }
   .cover__img { overflow: clip; }
   .cover__img picture, .cover__img img { display: block; width: 100%; }
-  .cover__img img { object-fit: cover; }
+  .cover__img img { object-fit: cover; max-height: 62vh; }
   .cover__stage:hover .cover__img img { filter: saturate(1.04); }
   .cover__sticker { position: absolute; right: clamp(22px, 4vw, 48px); top: clamp(22px, 3vw, 40px); z-index: 2; font-size: clamp(22px, 2.6vw, 38px); text-align: center; }
   .cover__sticker small { display: block; font: 700 .32em/1.1 var(--text); text-transform: uppercase; letter-spacing: .06em; margin-top: .25em; }
   .cover__label { grid-template-columns: minmax(0, 1fr); max-width: 64ch; }
   .cover__row { display: flex; align-items: center; gap: 12px; }
-  .cover__title { font-size: clamp(26px, 3vw, 40px); }
+  .cover__title { font-size: clamp(24px, 2.4vw, 34px); }
   .cover__dwell:empty { display: none; }
   .cover__dwell { color: var(--accent); }
+  /* From 900 px the wall label hangs beside the plate, so both sit above the fold at 1440 by 900. */
+  @media (min-width: 900px) {
+    .cover { grid-template-columns: minmax(0, 1.9fr) minmax(260px, 1fr); column-gap: clamp(24px, 3vw, 48px); align-items: start; }
+    .cover__mast { grid-column: 1 / -1; }
+    .cover__label { padding-top: 8px; }
+  }
 
   .head--row { display: flex; align-items: baseline; justify-content: space-between; gap: 16px; }
-  .more { text-decoration: none; }
+  .more { text-decoration: none; display: inline-flex; align-items: center; min-height: 44px; }
   .more:hover { color: var(--accent); }
   .grid--three { grid-template-columns: repeat(3, minmax(0, 1fr)); }
   .avail { list-style: none; margin: 0 0 20px; padding: 0; display: grid; border-top: 1px solid var(--line); }
@@ -118,11 +122,8 @@ const alt = "A neon sunset over violet peaks and a mirrored lake. Two chrome sph
   .avail__s[data-tone="approved"], .avail__s[data-tone="ready"] { color: var(--positive); }
   @media (max-width: 760px) { .grid--three { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
   @media (max-width: 640px) {
-    .cover__mast { flex-direction: column; align-items: flex-start; gap: 8px; }
     .cover__word { width: min(60vw, 240px); }
-    .cover__pos { text-align: left; }
-    .cover__img img { aspect-ratio: 4 / 5; }
-    .cover__sticker { right: 18px; top: 18px; font-size: 22px; }
+    .cover__sticker { right: 14px; top: 14px; font-size: 18px; }
     .avail__row { grid-template-columns: 1fr; gap: 2px; }
     .grid--three { grid-template-columns: 1fr; }
   }

@@ -1,6 +1,9 @@
 ---
 import Base from "../layouts/Base.astro";
 import { withBase } from "../lib/text.js";
+import SpendCap from "../components/SpendCap.astro";
+import Receipt from "../components/Receipt.astro";
+import HowBuilt from "../components/HowBuilt.astro";
 const u = (p = "") => withBase(import.meta.env.BASE_URL, p);
 const REPO = "https://github.com/monsieurgregorio2001-coder/slop-editorial";
 ---
@@ -15,13 +18,13 @@ const REPO = "https://github.com/monsieurgregorio2001-coder/slop-editorial";
       <h2 class="h2">Problem</h2>
       <p>AI makes images nearly free, so feeds fill with content nobody decided to make. Hands get six fingers, signs say Sunseet, and every comment says Amazing.</p>
       <h2 class="h2">Build</h2>
-      <p>A static Astro site with a real 3D object in three render tiers. The build fails on em dashes, broken links and JavaScript over budget. Nine images were generated from written briefs with an image model, then checked by a person against each brief: six digits, three suns, readable text. Beside the site sits a Python pipeline that estimates, caps, approves, and logs every generation.</p>
+      <p>A static Astro site. The build fails on em dashes, broken links and JavaScript over budget. Nine images were generated from written briefs with an image model, then checked by a person against each brief: six digits, three suns, readable text. Beside the site sits a Python pipeline that estimates, caps, approves, and logs every generation.</p>
       <h2 class="h2">Result</h2>
       <p>The release tracker and the approval queue show the point of the whole thing. Approval happens with a human, not a button.</p>
       <h2 class="h2">Honesty notes</h2>
       <ul>
         <li>Every image was generated from a written brief with an image model.</li>
-        <li>The certificate object on the certificate page is procedural 3D, drawn in code.</li>
+        <li>The certificate on the certificate page is a generated photograph. The light that crosses it is CSS.</li>
         <li>Ratings, ranks, views, and prices are staged and live in this browser only.</li>
         <li>The site sets no cookies and runs no analytics. The cookie sheet is the joke.</li>
         <li>Fonts are self-hosted under the SIL Open Font License. <a href={u("OFL.txt")}>Read the license</a>.</li>
@@ -29,6 +32,9 @@ const REPO = "https://github.com/monsieurgregorio2001-coder/slop-editorial";
       <p><a class="btn" href={REPO} rel="noopener">Read the code</a></p>
     </div>
   </article>
+  <SpendCap />
+  <Receipt />
+  <HowBuilt />
 </Base>
 <style>
   .about { max-width: calc(68ch + 2 * var(--gutter)); margin-inline: auto; }

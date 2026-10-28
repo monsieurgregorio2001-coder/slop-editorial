@@ -46,31 +46,54 @@ export function applyMotionPreference() {
   const root = document.documentElement;
   const q = new URLSearchParams(location.search).get("motion");
   if (q === "reduce" || q === "auto") { store = read(); store.motion = q; write(store); }
-  const mq = window.matchMedia("(prefers-reduced-motion: reduce)");
   store = read();
-  if (store.motion === "reduce") root.dataset.motion = "reduce"; else delete root.dataset.motion;
-  if (mq.matches || store.motion === "reduce") root.setAttribute("data-rm", ""); else root.removeAttribute("data-rm");
+  restoreHouseMotion();
+  syncReducedMotion();
   document.querySelectorAll<HTMLButtonElement>("[data-motion-toggle]").forEach((b) => {
     const on = reducedMotion();
     b.setAttribute("aria-pressed", String(on));
     b.textContent = on ? "Motion: reduced" : "Motion: full";
   });
+  return root;
 }
 
-/** The room: warm paper by default, a graphite room on request. Never follows the OS on its own. */
+/** The house owns data-motion (full or calm). A page swap replaces the root attributes, so put it back. */
+function restoreHouseMotion() {
+  const root = document.documentElement;
+  let m: string | null = null;
+  try { m = localStorage.getItem("house.motion"); } catch { /* no storage */ }
+  const next = m === "full" || m === "calm" ? m : window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "calm" : "full";
+  if (root.dataset.motion !== next) root.dataset.motion = next;
+}
+
+/** Reduced motion here means: the OS setting, the room's own toggle, or the house Calm switch. */
+function syncReducedMotion() {
+  const root = document.documentElement;
+  const rm = window.matchMedia("(prefers-reduced-motion: reduce)").matches || store.motion === "reduce" || root.dataset.motion === "calm";
+  if (rm) root.setAttribute("data-rm", ""); else root.removeAttribute("data-rm");
+}
+// When the house Calm switch flips, the room follows at once.
+new MutationObserver(() => { syncReducedMotion(); document.querySelectorAll<HTMLButtonElement>("[data-motion-toggle]").forEach((b) => { const on = reducedMotion(); b.setAttribute("aria-pressed", String(on)); b.textContent = on ? "Motion: reduced" : "Motion: full"; }); })
+  .observe(document.documentElement, { attributes: true, attributeFilter: ["data-motion"] });
+
+/** The room follows the OS colour scheme. The footer toggle overrides it either way. */
+export function isDark(): boolean {
+  const t = document.documentElement.dataset.theme;
+  return t ? t === "dark" : window.matchMedia("(prefers-color-scheme: dark)").matches;
+}
 export function applyTheme() {
   const root = document.documentElement;
   store = read();
-  if (store.theme === "dark") root.dataset.theme = "dark"; else delete root.dataset.theme;
+  if (store.theme === "dark") root.dataset.theme = "dark"; else if (store.theme === "paper") root.dataset.theme = "light"; else delete root.dataset.theme;
   document.querySelectorAll<HTMLButtonElement>("[data-theme-toggle]").forEach((b) => {
-    const dark = store.theme === "dark";
+    const dark = isDark();
     b.setAttribute("aria-pressed", String(dark));
     b.textContent = dark ? "Room: graphite" : "Room: paper";
   });
 }
 export function toggleTheme() {
   store = read();
-  store.theme = store.theme === "dark" ? "paper" : "dark";
+  store.theme = isDark() ? "paper" : "dark";
   write(store);
   applyTheme();
   notice(store.theme === "dark" ? "Lights dimmed." : "Lights restored.");

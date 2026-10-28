@@ -1,11 +1,5 @@
 """Persistent request lifecycle. Unknown outcomes never silently submit a second job."""
-import math
-from .errors import SlopError
-
-
-def validate_cap(cap):
-    if not math.isfinite(cap) or cap < 0:
-        raise SlopError("--max-usd must be a finite, non-negative amount")
+from .spend import validate_cap  # noqa: F401  (re-exported: the cap check lives in spend.py)
 
 
 def record_state(rec):

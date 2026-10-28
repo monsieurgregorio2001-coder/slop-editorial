@@ -4,7 +4,6 @@ import { withBase, VIEW_BASE, formatCount } from "../../lib/text.js";
 import { hold } from "../../lib/transitions";
 const u = (p = "") => withBase(import.meta.env.BASE_URL, p);
 const wide = [800, 1200, 1600].map((w) => `${u(`img/hero-wide-${w}.webp`)} ${w}w`).join(", ");
-const tall = [480, 800, 1000].map((w) => `${u(`img/hero-still-${w}.webp`)} ${w}w`).join(", ");
 const alt = "A neon sunset over violet peaks and a mirrored lake. Two chrome spheres float over the water. A floodlit wooden sign reads Sunseet Point, Open 24 hours of hours.";
 ---
 <Base title="The Still · Slop Editorial" description="The Still is the first work in the exhibition. Stand in front of it, hold it, and watch your visitor number improve." mode="product" page="feed">
@@ -12,7 +11,6 @@ const alt = "A neon sunset over violet peaks and a mirrored lake. Two chrome sph
     <section class="wrap still" data-stage aria-label="The Still, framed">
       <div class="still__frame frame frame--wide" transition:name="hero-still">
         <picture>
-          <source media="(max-width: 640px)" srcset={tall} sizes="100vw" type="image/webp" />
           <source srcset={wide} sizes="(max-width: 1200px) 100vw, 1120px" type="image/webp" />
           <img data-hero-img src={u("img/hero-wide-1200.webp")} width="1600" height="900" alt={alt} decoding="sync" fetchpriority="high" />
         </picture>
@@ -60,7 +58,7 @@ const alt = "A neon sunset over violet peaks and a mirrored lake. Two chrome sph
 
     <section class="wrap section--tight next" aria-label="Next work">
       <a class="next__link" href={u("authenticity/")} data-next>
-        <span class="sys">Next · 09 · 14.99 · Free shipping on redemption</span>
+        <span class="sys">Next · 09 · USD 14.99 · Free shipping on redemption</span>
         <span class="h2 next__title">Certificate of Human Touch</span>
       </a>
     </section>
@@ -98,5 +96,5 @@ const alt = "A neon sunset over violet peaks and a mirrored lake. Two chrome sph
   .next__link { display: grid; gap: 8px; text-decoration: none; }
   .next__link:hover .next__title, .next__link:focus-visible .next__title { color: var(--accent); }
   @media (max-width: 900px) { .spec { grid-template-columns: 1fr; } }
-  @media (max-width: 640px) { .still__frame img { aspect-ratio: 4 / 5; } .ring { top: 40%; } }
+  @media (max-width: 640px) { .ring { top: 40%; } }
 </style>
