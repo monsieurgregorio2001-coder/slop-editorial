@@ -45,7 +45,10 @@ self.addEventListener("fetch", (e) => {
   if (req.method !== "GET" || req.headers.has("range")) return;
   const url = new URL(req.url);
   if (url.origin !== self.location.origin || url.pathname === ROOT + "sw.js") return;
-  const rel = url.pathname.startsWith(ROOT) ? url.pathname.slice(ROOT.length) : "";
+  if (!url.pathname.startsWith(ROOT)) return;
+  const rel = url.pathname.slice(ROOT.length);
+  // evidence.json is a CI receipt that must always come from the network, never from a cache.
+  if (rel === "evidence.json") return;
   if (rel.startsWith("_astro/")) return void e.respondWith(cacheFirst(req));
   if (/^img\//.test(rel) || /\.(woff2|svg)$/.test(rel)) return void e.respondWith(swr(e, req, STATIC));
   const wantsHtml = req.mode === "navigate" || (req.headers.get("accept") || "").includes("text/html");
