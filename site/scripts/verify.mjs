@@ -17,7 +17,12 @@ const { server, url: ROOT, origin } = await serveDist(path.resolve("dist"), base
 const u = (p = "") => ROOT + p;
 
 let passed = 0, failed = 0;
-const ok = (name, pass, detail = "") => { pass ? passed++ : failed++; console.log(`${pass ? "PASS" : "FAIL"}  ${name}${detail ? "  " + detail : ""}`); };
+const ok = (name, pass, detail = "") => {
+  pass ? passed++ : failed++;
+  console.log(`${pass ? "PASS" : "FAIL"}  ${name}${detail ? "  " + detail : ""}`);
+  // In Actions a failure is also an annotation, so it can be read without the log.
+  if (!pass && process.env.GITHUB_ACTIONS) console.log(`::error title=verify::${name}${detail ? "  " + detail : ""}`);
+};
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
 const browser = await chromium.launch({ executablePath: CHROME, args: [] });
