@@ -8,15 +8,15 @@ A deadpan satire of AI slop and the attention economy, built as software: six-fi
 
 - **Problem.** AI makes images nearly free, so feeds fill with content nobody decided to make. Hands get six fingers, and every comment says Amazing.
 - **Build.** An Astro site that hangs nine generated works like a gallery and labels them like the platforms it mocks (cookie sheet, visitor number, ratings that always read 4.2, a gift shop that arrives in front of the gold). Beside it, a Python pipeline that estimates, caps, approves, and logs every paid generation.
-- **Result.** Lighthouse mobile scores 93 and 91 performance and 100 in the other three categories on the home page and the 3D page, with 0.002 layout shift, 0 ms blocking time, 143 real-browser checks, 146 build gates, and 68 unit tests passing.
+- **Result.** 143 real-browser checks, 146 build gates, and 68 unit tests pass. CI runs all of them.
 
 **Live demo:** https://monsieurgregorio2001-coder.github.io/slop-editorial/
 
-The thesis is one line: **Generation is cheap. Taste is not.** The target is platforms, metrics, incentives, AI, and the reader. Every image was generated from a written brief with an image model, then checked by a person against that brief (six digits, three suns, readable text). The certificate object is procedural 3D. The pipeline runs offline by default with a free mock provider, so nothing here needs an account, a key, or a network connection.
+The thesis is one line: **Generation is cheap. Taste is not.** It mocks platforms, incentives and the output, never people. Every image was generated from a written brief with an image model, then checked by a person against that brief ([owner confirmation, 2026-10-28](docs/review-record.md); six digits, three suns, readable text). The certificate object is procedural 3D. The pipeline runs offline by default with a free mock provider, so nothing here needs an account, a key, or a network connection.
 
 ## The ten behaviours
 
-Open `/review/` on the running site for the same list with links. Metrics, ratings, ranks, and prices are staged and live in the browser only.
+The unlinked `/review/` page on the running site lists the same behaviours (noindex, not in navigation). Metrics, ratings, ranks, and prices are staged and live in the browser only.
 
 | # | Behaviour | Where | What happens |
 | --- | --- | --- | --- |
@@ -65,7 +65,7 @@ flowchart LR
 - A 3D object with three tiers: WebGPU when available (guarded, with a timeout), then WebGL, then an 18-frame poster sequence for touch devices and data saver. Rotate by drag, buttons, or arrow keys.
 - Fetch-ahead on hover or touch with a priority queue and hard limits, plus a build-stamped service worker for repeat visits.
 - Reduced motion applied before first paint, from the OS setting, the footer toggle, or `?motion=reduce`. Light and dark schemes from design tokens.
-- Every image is generated in code (`scripts/make-art.mjs`, `scripts/render-poster.mjs`) and shipped as WebP. The wordmark is outlined from the font by `scripts/make-logo.py`. Fonts are self-hosted under the SIL Open Font License (`public/OFL.txt`).
+- The nine works were generated with an image model and shipped as WebP. The 3D poster frames are rendered in code by `scripts/render-poster.mjs`. The wordmark is outlined from the font by `scripts/make-logo.py`. Fonts are self-hosted under the SIL Open Font License (`public/OFL.txt`).
 - Build gates that fail on the old brand, external requests, em dashes, semicolons, contractions, long sentences, broken links, leaks, and blown budgets. A real-browser suite drives headless Chrome through Playwright.
 
 ### Pipeline features
@@ -82,7 +82,7 @@ The fal and Replicate adapters follow the public API documentation and are teste
 
 ## Human-in-the-loop approval gates
 
-The same pattern appears in both halves of the project. Automation proposes, a named person disposes, and the decision is written down.
+The same pattern appears in both halves of the project. The tool suggests. A named person approves, and the approval is logged.
 
 A small generic example:
 
@@ -135,21 +135,17 @@ The workflow in `.github/workflows/site.yml` builds the site with the repository
 
 ## Tests and measured results
 
-Measured on 14 October 2026 on one laptop, with headless Google Chrome. Treat these as a snapshot, not a benchmark.
+Each count below comes from a suite in this repo. I reran the unit tests and build gates on 28 October 2026. The real-browser count is from the 20 October 2026 run. CI runs every suite on each push.
 
 | Check | Result |
 | --- | --- |
 | Python unit tests (`pipeline/`) | 49 pass |
 | Node unit tests for gate logic and helpers (`site/`) | 19 pass |
-| Real-browser checks in Chrome (`npm run verify`) | 143 pass, 0 fail (re-run on 20 October 2026; an earlier run counted 150 before the gallery rehang removed seven checks) |
-| Axe accessibility, 10 page types in light and dark | 20 runs, 0 violations (WCAG 2.1 A and AA plus best practice) |
+| Real-browser checks in Chrome (`npm run verify`) | 143 pass, 0 fail |
+| Axe accessibility, 10 page types in light and dark (part of `npm run verify`) | 20 runs, 0 violations (WCAG 2.1 A and AA plus best practice) |
 | Site build gates (`npm run check`) | 146 checks pass |
-| Lighthouse, mobile preset, home page | 93 performance, 100 accessibility, 100 best practices, 100 SEO |
-| Lighthouse, mobile preset, `/authenticity/` | 91 performance, 100 accessibility, 100 best practices, 100 SEO |
-| Largest contentful paint, home and 3D page | 3.0 s and 2.9 s under simulated slow 4G, 0.002 layout shift, 0 ms blocking time |
-| JavaScript shipped | 81 KB gzipped shared, 379 KB gzipped for the lazy 3D chunk, loaded only on `/authenticity/` |
-| Horizontal scroll at 360 px | none on all 10 page types |
-| Mock pipeline, 8 candidates plus review sheet plus deck | 1.3 s cold, 0.4 s when fully cached |
+| JavaScript shipped (budget gate in `npm run check`) | 80 KB gzipped shared, 379 KB gzipped for the lazy 3D chunk, loaded only on `/authenticity/` |
+| Horizontal scroll at 360 px (part of `npm run verify`) | none on all 10 page types |
 
 ## Credits
 
@@ -170,4 +166,4 @@ MIT. Copyright 2026 Garfield Greg Lim III. See `LICENSE`.
 
 ## Development conventions
 
-Start with [local project context](docs/CONTEXT.md) and [agent instructions](AGENTS.md). Shared structure, review, and spec practices live in the [portfolio hub repository](https://github.com/monsieurgregorio2001-coder/monsieurgregorio2001-coder.github.io), under CONTRIBUTING.md and docs/portfolio/. Small fixes use a short verification record; material behavior changes use a focused spec.
+Start with [local project context](docs/CONTEXT.md) and [agent instructions](AGENTS.md). Shared structure, review, and spec practices live in the [portfolio hub repository](https://github.com/monsieurgregorio2001-coder/monsieurgregorio2001-coder.github.io), under CONTRIBUTING.md and docs/portfolio/. Small fixes use a short verification record. Material behavior changes use a focused spec.

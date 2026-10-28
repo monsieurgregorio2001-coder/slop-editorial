@@ -16,7 +16,7 @@ const waiting = rel.filter((r) => r.data.state === "READY").length;
       <h1 class="h1">Your November is {pct} % approved.</h1>
       <p class="lede">{done} of {rel.length} releases approved. {waiting} ready for a human. Nothing ships on its own.</p>
       <div class="track" role="img" aria-label={`${pct} percent approved`}><i style={`width:${pct}%`}></i></div>
-      <p class="mono run__links"><a href={u("queue/")}>Approval queue</a> · <a href={u("review/")}>Review index</a></p>
+      <p class="mono run__links"><a href={u("queue/")}>Approval queue</a></p>
     </div>
 
     <ol class="slots">
