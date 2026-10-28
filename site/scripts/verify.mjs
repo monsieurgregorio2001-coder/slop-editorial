@@ -26,7 +26,8 @@ const consoleErrors = [];
 const foreign = new Set();
 const contexts = [];
 
-async function open(ctxOpts, route, tag, { settle = "load" } = {}) {
+async function open(ctxOpts, route, tag, { settle = "load", evidence = null } = {}) {
+  const opts = { evidence };
   for (const c of contexts.splice(0)) await c.close().catch(() => {});
   const ctx = await browser.newContext({ baseURL: origin, ...ctxOpts });
   contexts.push(ctx);
@@ -34,6 +35,8 @@ async function open(ctxOpts, route, tag, { settle = "load" } = {}) {
   page.on("console", (m) => { if (m.type() === "error" && !tag.startsWith("expected")) consoleErrors.push(`${tag}: ${m.text()}`); });
   page.on("pageerror", (e) => consoleErrors.push(`${tag}: ${e}`));
   page.on("request", (r) => { const x = new URL(r.url()); if (!/^(data|blob):/.test(r.url()) && x.origin !== origin) foreign.add(r.url()); });
+  // evidence.json is written by CI after this run. Without a file the receipt must say so, and a 404 would be a console error.
+  await ctx.route("**/evidence.json", (r) => r.fulfill({ status: 200, contentType: "application/json", body: opts.evidence ? JSON.stringify(opts.evidence) : "{}" }));
   await page.addInitScript(() => {
     window.__cls = 0;
     new PerformanceObserver((l) => { for (const e of l.getEntries()) if (!e.hadRecentInput) window.__cls += e.value; }).observe({ type: "layout-shift", buffered: true });
@@ -269,6 +272,66 @@ const M = { viewport: { width: 360, height: 740 }, deviceScaleFactor: 2, hasTouc
   ok("authenticity has no layout shift (CLS 0)", (await page.evaluate(() => window.__cls)) < 0.0005, (await page.evaluate(() => window.__cls)).toFixed(4));
   await page.screenshot({ path: path.join(out, "authenticity-end.png") });
   await collect(page);
+}
+
+// The spend cap toy and its receipt, on the Method page only
+{
+  const page = await open(D, "about/", "spend");
+  await page.waitForSelector("[data-spend][data-bound]");
+  const lab = await text(page, "#spend-cap");
+  ok("toy label: Runs the pipeline's cost check in your browser. Generates nothing.", lab.includes("Runs the pipeline's cost check in your browser. Generates nothing."));
+  ok("record label: Mock provider run. No images were generated.", (await text(page, ".rec")).includes("Mock provider run. No images were generated."));
+  const cli = async () => (await page.locator("[data-out] code.cli").allInnerTexts()).map((t) => t.trim());
+  ok("default run is refused with the CLI's exact string, values substituted", (await cli())[0] === "slopgen: estimated $0.71 exceeds --max-usd 0.50; raise the cap or narrow with --only", (await cli())[0]);
+  ok("the result sits in a polite status region", (await page.locator("[data-out]").getAttribute("role")) === "status" && (await page.locator("[data-out]").getAttribute("aria-live")) === "polite");
+  await page.locator("#cap-cap").fill("5");
+  const under = await cli();
+  ok("under the cap it shows the CLI's own approval requirement", /Under the cap/.test(await text(page, "[data-out]")) && under[0] === "slopgen: estimated spend $0.71 on fal; rerun with --yes to proceed" && under[1] === "slopgen: paid runs need --approval-ref naming the recorded human approval", under.join(" | "));
+  ok("the command shown carries the cap", under[2].includes("--max-usd 5.00") && under[2].includes("--approval-ref"));
+  await page.locator("#cap-cap").fill("-1");
+  ok("a negative cap gets the CLI's words", (await cli())[0] === "slopgen: --max-usd must be a finite, non-negative amount", (await cli())[0]);
+  await page.locator("#cap-plates").fill("");
+  ok("empty plates ask again and mark the field invalid", /Check this input/.test(await text(page, "[data-out]")) && (await page.locator("#cap-plates").getAttribute("aria-invalid")) === "true");
+  await page.locator("[data-reset]").click();
+  await sleep(100);
+  ok("Reset restores the default run", (await cli())[0].includes("exceeds --max-usd 0.50") && (await page.locator("#cap-plates").inputValue()) === "9");
+  await page.locator("#cap-model").selectOption({ value: "mock|mock-t2i" });
+  ok("the free mock provider needs no cap and no approval", /Free to run/.test(await text(page, "[data-out]")));
+  await page.locator("#cap-model").selectOption({ value: "replicate|black-forest-labs/flux-dev" });
+  await page.locator("#cap-plates").fill("20");
+  await page.locator("#cap-rerolls").fill("3");
+  ok("80 jobs on replicate at USD 0.025 total USD 2.00 against the 0.50 cap", (await cli())[0] === "slopgen: estimated $2.00 exceeds --max-usd 0.50; raise the cap or narrow with --only", (await cli())[0]);
+  await page.locator("#cap-plates").focus();
+  await page.keyboard.press("Tab");
+  ok("keyboard: Tab moves through the fields in order with a visible focus ring", await page.evaluate(() => document.activeElement.id === "cap-rerolls" && getComputedStyle(document.activeElement).outlineStyle !== "none"));
+  const targets = await page.evaluate(() => [...document.querySelectorAll("#spend-cap input, #spend-cap select, #spend-cap button, .hb a, #receipt a")].filter((e) => e.getBoundingClientRect().height < 43.5).map((e) => e.id || e.className));
+  ok("toy controls are 44 px tall", targets.length === 0, targets.join(","));
+  ok("the receipt without evidence says not measured yet", (await page.locator("#receipt .is-missing").count()) >= 4 && /not measured yet/.test(await text(page, "#receipt")));
+  ok("How this was built has three columns and the proposed label", (await page.locator(".hb__col").count()) === 3 && /Proposed by Claude, waiting for Garfield's review/.test(await text(page, "#how")));
+  await page.screenshot({ path: path.join(out, "about-toy.png"), fullPage: true });
+  await collect(page);
+  const withEvidence = {
+    schema: 1, commit: "abc1234", ran_at: "2026-10-28T12:00:00Z", runner: "local run, Node 22",
+    tests: [{ id: "unit", label: "Site unit tests", passed: 40, total: 40, command: "npm test" }, { id: "parity", label: "Spend cap parity fixtures, Python and TypeScript", passed: 1536, total: 1536, command: "npm test" }],
+    evals: [], budgets: [{ id: "js-home-gz", limit: 15360, actual: 10240 }],
+    limits: ["Paid providers were tested against fakes only.", "The current nine plates have no generation record."],
+  };
+  const r = await open(D, "about/", "receipt", { evidence: withEvidence });
+  await r.waitForFunction(() => !document.querySelector('[data-slot="tests"] .is-missing'), null, { timeout: 4000 });
+  const rt = await text(r, "#receipt");
+  ok("the receipt prints what evidence.json holds", /40 of 40/.test(rt) && /1536 of 1536/.test(rt) && /10\.0 KB/.test(rt) && /None\./.test(rt));
+  ok("limits: Paid providers were tested against fakes only.", rt.includes("Paid providers were tested against fakes only."));
+  ok("limits: The current nine plates have no generation record.", rt.includes("The current nine plates have no generation record."));
+  await collect(r);
+  const wall = await open(D, "works/make-it-pop/", "wall");
+  ok("the toy is never on a wall label", (await wall.locator("[data-spend], #spend-cap").count()) === 0 && !/spend cap/i.test(await wall.locator("main").innerText()));
+  const home = await open(D, "", "home-no-toy");
+  ok("the toy is not on the home page either", (await home.locator("[data-spend]").count()) === 0);
+  const njs = await browser.newContext({ baseURL: origin, ...D, javaScriptEnabled: false });
+  const np = await njs.newPage();
+  await np.goto(u("about/"));
+  ok("JavaScript off: the default run and the record are still on the page", /refused/i.test(await np.locator("[data-out]").innerText()) && /MOCK-REF-001/.test(await np.locator(".rec").innerText()));
+  await njs.close();
 }
 
 // ---------------------------------------------------------------------------------------------

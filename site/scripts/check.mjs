@@ -4,7 +4,7 @@ import { readdir, readFile, stat } from "node:fs/promises";
 import { gzipSync } from "node:zlib";
 import path from "node:path";
 import { BUDGETS, pageJsBytes } from "./lib-budget.mjs";
-import { brandViolation, hrefToFile, isHouseHref, internalHrefs, leakViolations, longSentences, remoteResources, structureViolations, visibleText, voiceViolations } from "./lib-gates.mjs";
+import { brandViolation, hrefToFile, isHouseHref, withoutVerbatim, internalHrefs, leakViolations, longSentences, remoteResources, structureViolations, visibleText, voiceViolations } from "./lib-gates.mjs";
 
 const dist = path.resolve("dist");
 const base = (process.env.SITE_BASE || "/slop-editorial/").replace(/\/?$/, "/");
@@ -31,9 +31,9 @@ const tool = (f) => rel(f).includes("poster-stage");
 // 1. Voice, structure and links for every page.
 for (const f of pages) {
   const html = await readFile(f, "utf8");
-  const v = voiceViolations(visibleText(html));
+  const v = voiceViolations(visibleText(withoutVerbatim(html)));
   v.length ? fail(`voice: ${v.join(", ")} in ${rel(f)}`) : pass(`voice: ok in ${rel(f)}`);
-  const long = longSentences(html);
+  const long = longSentences(withoutVerbatim(html));
   long.length ? fail(`voice: sentence over 25 words (${long[0]}) in ${rel(f)}`) : pass(`voice: sentences short in ${rel(f)}`);
   if (!rel(f).startsWith("404") && !tool(f)) {
     const s = structureViolations(html);

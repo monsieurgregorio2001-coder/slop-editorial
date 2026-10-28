@@ -1,0 +1,45 @@
+---
+import { SLOTS } from "../lib/receipt.ts";
+---
+<section class="rcpsec wrap section" id="receipt" aria-labelledby="rcp-h" data-receipt-host>
+  <div class="head">
+    <p class="sys">Receipt</p>
+    <h2 id="rcp-h" class="h1">What was checked</h2>
+    <p class="lede">These figures are read from the file the last CI run wrote. If the file is missing, they say so.</p>
+  </div>
+  <article class="house-receipt rcp">
+    <dl class="house-receipt-rows">
+      <div><dt>Tests</dt><dd data-slot="tests" set:html={SLOTS.tests(null)} /></div>
+      <div><dt>Evals</dt><dd data-slot="evals" set:html={SLOTS.evals(null)} /></div>
+      <div><dt>Budgets</dt><dd data-slot="budgets" set:html={SLOTS.budgets(null)} /></div>
+      <div><dt>What this does not do</dt><dd data-slot="limits" set:html={SLOTS.limits(null)} /></div>
+      <div><dt>Run</dt><dd data-slot="run" set:html={SLOTS.run(null)} /></div>
+    </dl>
+  </article>
+</section>
+
+<script>
+  import { SLOTS, type Evidence } from "../lib/receipt.ts";
+  async function fill() {
+    const host = document.querySelector<HTMLElement>("[data-receipt-host]");
+    if (!host || host.dataset.filled) return;
+    host.dataset.filled = "1";
+    try {
+      const res = await fetch(import.meta.env.BASE_URL + "evidence.json", { cache: "no-store" });
+      if (!res.ok) return;
+      const e = (await res.json()) as Evidence;
+      for (const [slot, render] of Object.entries(SLOTS)) {
+        const el = host.querySelector<HTMLElement>(`[data-slot="${slot}"]`);
+        if (el) el.innerHTML = render(e);
+      }
+    } catch { /* offline or no file: the slots keep saying not measured yet */ }
+  }
+  document.addEventListener("astro:page-load", fill);
+</script>
+
+<style>
+  .rcpsec { padding-top: 0; }
+  .rcp { max-width: 820px; }
+  .rcp :global(.rcp__list) { margin: 0; padding-left: 1.1em; display: grid; gap: 10px; }
+  .rcp :global(.num) { font-family: var(--mono); font-variant-numeric: tabular-nums; font-weight: 500; }
+</style>

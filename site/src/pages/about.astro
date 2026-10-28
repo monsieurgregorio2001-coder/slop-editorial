@@ -1,6 +1,9 @@
 ---
 import Base from "../layouts/Base.astro";
 import { withBase } from "../lib/text.js";
+import SpendCap from "../components/SpendCap.astro";
+import Receipt from "../components/Receipt.astro";
+import HowBuilt from "../components/HowBuilt.astro";
 const u = (p = "") => withBase(import.meta.env.BASE_URL, p);
 const REPO = "https://github.com/monsieurgregorio2001-coder/slop-editorial";
 ---
@@ -29,6 +32,9 @@ const REPO = "https://github.com/monsieurgregorio2001-coder/slop-editorial";
       <p><a class="btn" href={REPO} rel="noopener">Read the code</a></p>
     </div>
   </article>
+  <SpendCap />
+  <Receipt />
+  <HowBuilt />
 </Base>
 <style>
   .about { max-width: calc(68ch + 2 * var(--gutter)); margin-inline: auto; }

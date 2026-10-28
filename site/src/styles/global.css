@@ -153,3 +153,6 @@ html[data-rm] { transition: none; }
 html[data-rm] *, html[data-rm] *::before, html[data-rm] *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; scroll-behavior: auto !important; transition-duration: .01ms !important; }
 
 .page { background: var(--bg); color: var(--fg); min-height: 100svh; }
+
+/* The house truth chip never wraps off the screen. */
+.house-label { white-space: normal; padding-block: 4px; }

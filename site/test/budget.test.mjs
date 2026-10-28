@@ -30,3 +30,10 @@ test("the house skip link satisfies the structure gate", () => {
   const html = '<html lang="en"><meta name="viewport" content="x"><meta name="description" content="d"><a class="house-skip" href="#m">s</a><h1>T</h1>';
   assert.deepEqual(structureViolations(html), []);
 });
+
+import { withoutVerbatim, visibleText, voiceViolations } from "../scripts/lib-gates.mjs";
+test("quoted CLI output keeps its own punctuation, prose around it is still linted", () => {
+  const html = '<p>Refused.</p><code data-verbatim class="cli">slopgen: estimated spend $1.00 on fal; rerun with --yes</code><p>Bad; prose</p>';
+  assert.deepEqual(voiceViolations(visibleText(withoutVerbatim('<p>Fine.</p><code data-verbatim>a; b</code>'))), []);
+  assert.deepEqual(voiceViolations(visibleText(withoutVerbatim(html))), ["semicolon"]);
+});

@@ -3,6 +3,11 @@ import path from "node:path";
 
 const ENTITIES = { "&amp;": "&", "&lt;": "<", "&gt;": ">", "&quot;": '"', "&#39;": "'", "&#x27;": "'", "&mdash;": "\u2014", "&#8212;": "\u2014", "&nbsp;": " " };
 
+/** Removes quoted program output (<code data-verbatim>), which keeps the CLI's own punctuation. */
+export function withoutVerbatim(html) {
+  return html.replace(/<(code|pre)\b[^>]*\bdata-verbatim\b[^>]*>[\s\S]*?<\/\1>/gi, " ");
+}
+
 /** Text a reader sees: scripts, styles, comments and tags removed, entities decoded. */
 export function visibleText(html) {
   return html

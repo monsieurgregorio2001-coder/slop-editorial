@@ -1,0 +1,53 @@
+---
+// Entries come only from this repo's commits and docs. Decisions an agent proposed are marked and never sit under "What I decided".
+const REPO = "https://github.com/monsieurgregorio2001-coder/slop-editorial";
+const c = (h: string) => `${REPO}/commit/${h}`;
+const did = [
+  { t: "Wrote the honesty sweep that removed claims CI did not measure, and the README and About rewrites that followed.", h: ["89ee58b", "8110371", "1fc8776"] },
+  { t: "Wrote the evidence.json writer that parses real test counts from CI logs.", h: ["efb415f"] },
+  { t: "Joined the room to the house, replaced the three.js certificate with the generated photograph, and fenced the old art script away from the photographs.", h: ["29a59f4"] },
+];
+const decided = [
+  { t: "Added the nine generated images to the repository as masters.", h: ["5f07b86"] },
+  { t: "Confirmed on 2026-10-28 that I checked every image against its brief. The record is docs/review-record.md.", h: [] as string[] },
+];
+const fixed = [
+  { t: "Lighthouse, LCP, and mock-pipeline timing figures were removed because CI never measured them. Caught in review.", h: ["89ee58b"] },
+  { t: "The About page said the briefs, the checks and the rejects were in the repository. They are not, so the line was dropped.", h: ["89ee58b"] },
+  { t: "The review index was unlinked and marked noindex.", h: ["8110371"] },
+];
+---
+<section class="hbsec wrap section" id="how" aria-labelledby="hb-h">
+  <div class="head">
+    <p class="sys">How this was built</p>
+    <h2 id="hb-h" class="h1">AI-assisted development with Claude Code</h2>
+    <p class="lede">Only entries this repository can back with a commit or a file. The history is short, so the lists are too.</p>
+  </div>
+  <div class="hb">
+    <div class="hb__col">
+      <h3 class="hb__h">What AI did</h3>
+      <ul>{did.map((d) => <li>{d.t} {d.h.map((h, i) => <><a class="hb__c" href={c(h)} rel="noopener">{h}</a>{i < d.h.length - 1 ? ", " : ""}</>)}</li>)}</ul>
+    </div>
+    <div class="hb__col">
+      <h3 class="hb__h">What I decided</h3>
+      <ul>{decided.map((d) => <li>{d.t} {d.h.map((h) => <a class="hb__c" href={c(h)} rel="noopener">{h}</a>)}</li>)}</ul>
+      <p class="hb__prop"><span class="house-label">Proposed by Claude, waiting for Garfield's review</span></p>
+      <p class="hb__note">Dropping 3D for a photograph and a CSS light sweep. Showing the spend cap check on this page.</p>
+    </div>
+    <div class="hb__col">
+      <h3 class="hb__h">What I rejected or corrected</h3>
+      <ul>{fixed.map((d) => <li>{d.t} {d.h.map((h) => <a class="hb__c" href={c(h)} rel="noopener">{h}</a>)}</li>)}</ul>
+    </div>
+  </div>
+</section>
+<style>
+  .hbsec { padding-top: 0; }
+  .hb { display: grid; gap: 24px; grid-template-columns: minmax(0, 1fr); }
+  @media (min-width: 900px) { .hb { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 32px; } }
+  .hb__col { display: grid; gap: 12px; align-content: start; min-width: 0; }
+  .hb__h { font: 600 20px/1.2 var(--display); letter-spacing: -.02em; margin: 0; }
+  .hb ul { margin: 0; padding-left: 1.1em; display: grid; gap: 10px; font: 400 15px/1.55 var(--text); }
+  .hb__c { font: 400 13px/1 var(--mono); display: inline-flex; align-items: center; min-height: 44px; padding: 0 4px; }
+  .hb__prop { margin: 0; }
+  .hb__note { font: 400 15px/1.55 var(--text); color: var(--muted); margin: 0; }
+</style>

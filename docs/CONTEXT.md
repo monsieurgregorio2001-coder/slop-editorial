@@ -1,10 +1,10 @@
 # Slop Editorial: Local context
 
-Updated: 2026-10-20 (Asia/Manila). Facts come from local README/layout inspection; historical app metrics were not rerun.
+Updated: 2026-10-28. The room is joined to house 2.0.0 (`site/house.lock.json`, `HOUSE_DIR` points at a hub checkout). The certificate page uses the generated photograph, not three.js. The Method page carries the spend cap toy, backed by `pipeline/slopgen/spend.py`, parity fixtures and a committed mock run record. Counts are in the README.
 
 ## Implementation
 
-Astro site in site/ and Python image generation pipeline in pipeline/. Nine existing PNGs are in incoming/. They were untracked before this documentation work.
+Astro site in site/ and Python image generation pipeline in pipeline/. Nine PNG masters are in incoming/ and stay in git (owner decision, 2026-10-28). `npm run art` must not be run and cannot write to public/img.
 
 See [README](../README.md) for setup and detailed architecture.
 

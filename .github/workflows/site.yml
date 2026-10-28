@@ -58,7 +58,7 @@ jobs:
         env: { CHROMIUM_PATH: /usr/bin/google-chrome }
       - name: Write evidence.json
         run: >
-          node scripts/evidence.mjs
+          node --experimental-strip-types scripts/evidence.mjs
           --unit "$RUNNER_TEMP/logs/unit.txt" --pipeline "$RUNNER_TEMP/logs/pipeline.txt"
           --check "$RUNNER_TEMP/logs/check.txt" --verify "$RUNNER_TEMP/logs/verify.txt"
       - run: cat dist/evidence.json

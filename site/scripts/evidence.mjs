@@ -6,6 +6,7 @@ import { readFile, readdir, stat, writeFile } from "node:fs/promises";
 import { execSync } from "node:child_process";
 import { join } from "node:path";
 import { BUDGETS, pageJsBytes } from "./lib-budget.mjs";
+import { parity } from "./lib-parity.mjs";
 
 const args = Object.fromEntries(process.argv.slice(2).reduce((a, v, i, all) => (v.startsWith("--") ? [...a, [v.slice(2), all[i + 1]]] : a), []));
 for (const k of ["unit", "pipeline", "check", "verify"]) if (!args[k]) { console.error(`missing --${k} <log file>`); process.exit(2); }
@@ -64,13 +65,16 @@ const runner = process.env.GITHUB_ACTIONS
   ? `GitHub Actions ${process.env.ImageOS ?? "ubuntu"}, Node ${process.versions.node.split(".")[0]}`
   : `local run, Node ${process.versions.node.split(".")[0]}`;
 
+const par = await parity();
+const parityTest = suite("parity", "Spend cap parity fixtures, Python and TypeScript", "npm test", par.passed, par.total);
+
 const evidence = {
   schema: 1,
   room: "slop-editorial",
   commit,
   ran_at: new Date().toISOString().replace(/\.\d+Z$/, "Z"),
   runner,
-  tests: [unit, pipeline, gates, browser],
+  tests: [unit, pipeline, gates, browser, parityTest],
   evals: [],
   figures: [
     { id: "js-home-gz", value: homeJs, unit: "bytes", label: "JavaScript on the home page, gzipped", source: "site/scripts/lib-budget.mjs" },
@@ -84,6 +88,7 @@ const evidence = {
   limits: [
     "Paid providers were tested against fakes only.",
     "The current nine plates have no generation record.",
+    "The spend estimate is a planning figure. The provider invoice governs.",
   ],
 };
 for (const b of evidence.budgets) if (b.actual > b.limit) problems.push(`budget ${b.id}: ${b.actual} over ${b.limit}`);
