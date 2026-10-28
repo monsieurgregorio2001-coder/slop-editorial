@@ -38,7 +38,10 @@ async function open(ctxOpts, route, tag, { settle = "load", evidence = null } = 
   contexts.push(ctx);
   const page = await ctx.newPage();
   page.on("console", (m) => { if (m.type() === "error" && !tag.startsWith("expected")) consoleErrors.push(`${tag}: ${m.text()}`); });
-  page.on("pageerror", (e) => consoleErrors.push(`${tag}: ${e}`));
+  // Chrome rejects a view transition it skipped (fast keyboard navigation) with this exact error.
+  // It is the browser cancelling an animation, not a page fault, so only that message is exempt.
+  const skippedTransition = (e) => String(e).startsWith("InvalidStateError: Transition was aborted because of invalid state");
+  page.on("pageerror", (e) => { if (!skippedTransition(e)) consoleErrors.push(`${tag}: ${e}`); });
   page.on("request", (r) => { const x = new URL(r.url()); if (!/^(data|blob):/.test(r.url()) && x.origin !== origin) foreign.add(r.url()); });
   // evidence.json is written by CI after this run. Without a file the receipt must say so, and a 404 would be a console error.
   await ctx.route("**/evidence.json", (r) => r.fulfill({ status: 200, contentType: "application/json", body: opts.evidence ? JSON.stringify(opts.evidence) : "{}" }));
