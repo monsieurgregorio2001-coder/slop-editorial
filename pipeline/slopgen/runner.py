@@ -11,6 +11,7 @@ from dataclasses import dataclass, field
 
 from .errors import PlanError, SlopError
 from .execution import validate_cap, begin_attempt, record_failure, record_state
+from .spend import refusal
 from .provenance import source_snapshot
 from .providers.base import GenRequest
 
@@ -140,13 +141,9 @@ class Runner:
         if unresolved and not retry_uncertain:
             raise SlopError("unresolved submission: inspect provider history before --retry-uncertain; a prior charge may exist")
         total = self.estimate_total(jobs)
-        if not self.free:
-            if not yes:
-                raise SlopError(f"estimated spend ${total:.2f} on {self.provider.name}; rerun with --yes to proceed")
-            if not approval_ref:
-                raise SlopError("paid runs need --approval-ref naming the recorded human approval")
-            if total > max_usd:
-                raise SlopError(f"estimated ${total:.2f} exceeds --max-usd {max_usd:.2f}; raise the cap or narrow with --only")
+        message = refusal(total, max_usd, self.provider.name, self.free, yes, approval_ref)
+        if message:
+            raise SlopError(message)
         spent = 0.0
         summary = {"done": 0, "cached": 0, "filtered": 0, "failed": 0, "spent_estimate": 0.0}
         self.store.log("run_started", provider=self.provider.name, approval_ref=approval_ref, estimate=total,
