@@ -33,6 +33,7 @@ const ogImage = Astro.site ? new URL(u("og.png"), Astro.site).href : u("og.png")
     <meta name="twitter:card" content="summary_large_image" />
     <link rel="icon" type="image/svg+xml" href={u("favicon.svg")} />
     <!-- house:boot --><!-- /house:boot -->
+    <slot name="head" />
     <link rel="stylesheet" href="/house/2.0.1/tokens.css" />
     <link rel="stylesheet" href="/house/2.0.1/house.css" />
     <script is:inline src="/house/2.0.1/doorway.js"></script>
