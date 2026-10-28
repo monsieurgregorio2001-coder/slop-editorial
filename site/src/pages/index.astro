@@ -5,7 +5,9 @@ import { withBase, VIEW_BASE, formatCount } from "../lib/text.js";
 import { catalogue } from "../lib/catalogue";
 import { hold } from "../lib/transitions";
 const u = (p = "") => withBase(import.meta.env.BASE_URL, p);
-const wide = [800, 1200, 1600].map((w) => `${u(`img/hero-wide-${w}.webp`)} ${w}w`).join(", ");
+const wide = [480, 640, 800, 1200, 1600].map((w) => `${u(`img/hero-wide-${w}.webp`)} ${w}w`).join(", ");
+// Phones size the plate at half the viewport width: it is the LCP element and must not queue behind a 137 KB file.
+const heroSizes = "(max-width: 600px) 50vw, (max-width: 1200px) 100vw, 1120px";
 const pieces = await catalogue();
 const showing = pieces.filter((p) => ["02", "06", "09"].includes(p.n));
 const releases = (await getCollection("releases")).sort((a, b) => a.data.order - b.data.order).slice(0, 4);
@@ -13,6 +15,7 @@ const status: Record<string, string> = { DRAFT: "Draft", IN_REVIEW: "In review",
 const alt = "A neon sunset over violet peaks and a mirrored lake. Two chrome spheres float over the water. A floodlit wooden sign reads Sunseet Point, Open 24 hours of hours.";
 ---
 <Base title="Slop Editorial" description="Slop Editorial. Generation is cheap. Taste is not. A deadpan satire of AI content and the attention economy, hung like an exhibition." mode="product" page="home">
+  <link slot="head" rel="preload" as="image" type="image/webp" imagesrcset={wide} imagesizes={heroSizes} fetchpriority="high" />
   <div class="page" transition:name="page" transition:animate={hold}>
 
     <section class="cover wrap" data-cover aria-label="Cover">
@@ -25,7 +28,7 @@ const alt = "A neon sunset over violet peaks and a mirrored lake. Two chrome sph
       <a class="cover__stage frame frame--wide" id="room-hero" href={u("feed/")} data-hero-link data-stage>
         <div class="cover__img" transition:name="hero-still">
           <picture>
-            <source srcset={wide} sizes="(max-width: 1200px) 100vw, 1120px" type="image/webp" />
+            <source srcset={wide} sizes={heroSizes} type="image/webp" />
             <img src={u("img/hero-wide-1200.webp")} width="1600" height="900" alt={alt} decoding="async" fetchpriority="high" />
           </picture>
         </div>
