@@ -14,7 +14,6 @@ interface Props {
 const { title, description = "Slop Editorial. Generation is cheap. Taste is not. A satire of AI content and the attention economy.", mode = "product", page, noindex = false } = Astro.props;
 const base = import.meta.env.BASE_URL;
 const u = (p = "") => withBase(base, p);
-const HUB = "https://monsieurgregorio2001-coder.github.io/";
 const REPO = "https://github.com/monsieurgregorio2001-coder/slop-editorial";
 const ogImage = Astro.site ? new URL(u("og.png"), Astro.site).href : u("og.png");
 const nav: Array<[string, string, string]> = [
@@ -25,7 +24,7 @@ const nav: Array<[string, string, string]> = [
 ];
 ---
 <!doctype html>
-<html lang="en" data-mode={mode} data-page={page}>
+<html lang="en" data-room="slop-editorial" data-mode={mode} data-page={page}>
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
@@ -39,6 +38,11 @@ const nav: Array<[string, string, string]> = [
     <meta property="og:image" content={ogImage} />
     <meta name="twitter:card" content="summary_large_image" />
     <link rel="icon" type="image/svg+xml" href={u("favicon.svg")} />
+    <!-- house:boot --><!-- /house:boot -->
+    <link rel="stylesheet" href="/house/2.0.0/tokens.css" />
+    <link rel="stylesheet" href="/house/2.0.0/house.css" />
+    <script is:inline src="/house/2.0.0/doorway.js"></script>
+    <script is:inline type="module" src="/house/2.0.0/house.js"></script>
     <link rel="preload" href={displayUrl} as="font" type="font/woff2" crossorigin />
     <link rel="preload" href={interUrl} as="font" type="font/woff2" crossorigin />
     <!-- Motion and room preferences are applied before first paint. -->
@@ -46,36 +50,30 @@ const nav: Array<[string, string, string]> = [
       (function () {
         try {
           var r = document.documentElement;
+          r.setAttribute("data-js", "");
           var q = new URLSearchParams(location.search).get("motion");
           var s = JSON.parse(localStorage.getItem("slop.session") || "{}");
           var forced = q === "reduce" || (q !== "auto" && s.motion === "reduce");
-          if (forced) r.dataset.motion = "reduce";
-          var rm = forced || matchMedia("(prefers-reduced-motion: reduce)").matches;
+          var rm = forced || matchMedia("(prefers-reduced-motion: reduce)").matches || r.dataset.motion === "calm";
           if (rm) r.setAttribute("data-rm", "");
+          // No stored choice means the room follows the OS colour scheme.
           if (s.theme === "dark") r.dataset.theme = "dark";
+          else if (s.theme === "paper") r.dataset.theme = "light";
         } catch (e) {}
       })();
     </script>
     <ClientRouter />
   </head>
   <body>
-    <a class="skip" href="#main">Skip to content</a>
-    <header class="shell">
+    <a class="house-skip" href="#main">Skip to content</a>
+    <div class="house-slot" transition:persist="house-crumb"><!-- house:crumb --><!-- /house:crumb --></div>
+    <div class="shell">
       <div class="shell__in">
-        <div class="crumb">
-          <a class="crumb__me" href={HUB}>Garfield Lim</a>
-          <span class="crumb__slash" aria-hidden="true">/</span>
-          <a class="crumb__proj" href={u()} aria-label="Slop Editorial, home">
-            <img src={u("logo.svg")} width="22" height="22" alt="" />
-            <span>Slop Editorial</span>
-          </a>
-        </div>
-        <nav class="shell__nav" aria-label="Primary">
+        <nav class="shell__nav" aria-label="Slop Editorial">
           {nav.map(([id, label, href]) => <a href={u(href)} aria-current={page === id ? "page" : undefined}>{label}</a>)}
-          <a href={REPO} rel="noopener">Code</a>
         </nav>
       </div>
-    </header>
+    </div>
     <!-- The visitor line: staged measurement in one quiet row. Local only, hidden from assistive tech because it is theatre. -->
     <p class="visitor" aria-hidden="true" transition:persist="hud"><span data-hud-id>Visitor no. 184 today</span><span class="visitor__notice" data-hud-notice></span></p>
     <!-- The one joke every visitor gets. No cookie is set and both buttons agree. -->
@@ -87,15 +85,12 @@ const nav: Array<[string, string, string]> = [
     <main id="main" tabindex="-1">
       <slot />
     </main>
-    <footer class="foot">
+    <section class="foot" aria-label="About this room">
       <div class="foot__in">
         <p>Slop Editorial is a portfolio satire. Every image was generated from a written brief with an image model, then checked by a person against that brief. Counters live in this browser only, and nothing leaves this device.</p>
         <p class="foot__links">
           <span>Built by Garfield Greg Lim III</span>
-          <a href={HUB}>Portfolio</a>
-          <a href="https://github.com/monsieurgregorio2001-coder" rel="noopener">GitHub</a>
-          <a href="https://www.linkedin.com/in/garfield-lim-8239242a9" rel="noopener">LinkedIn</a>
-          <a href="mailto:lim.ggreg@outlook.com">lim.ggreg@outlook.com</a>
+          <a href={REPO} rel="noopener">Code</a>
           <a href={u("OFL.txt")}>Font licenses</a>
         </p>
         <div class="foot__row">
@@ -104,13 +99,22 @@ const nav: Array<[string, string, string]> = [
           <button type="button" data-sound-toggle aria-pressed="false">Sound: off</button>
         </div>
       </div>
-    </footer>
+    </section>
+    <div class="house-slot" transition:persist="house-footer"><!-- house:footer --><!-- /house:footer --></div>
     <script>
-      import { applyMotionPreference } from "../scripts/system";
+      import { applyMotionPreference, applyTheme } from "../scripts/system";
       import "../scripts/sound";
       import { initIntent } from "../scripts/intent";
       applyMotionPreference();
-      document.addEventListener("astro:after-swap", () => applyMotionPreference());
+      document.addEventListener("astro:after-swap", () => { applyMotionPreference(); applyTheme(); });
+      // Links to the house and to other rooms leave this site's router: the browser navigates, so the doorway can run.
+      // The persisted footer keeps its Plain text link, so it is pointed at the current page every time.
+      const leave = () => {
+        const base = import.meta.env.BASE_URL;
+        document.querySelectorAll<HTMLAnchorElement>("a[data-house-plain]").forEach((a) => { a.href = location.pathname.replace(/[^/]*$/, "") + "index.md"; a.setAttribute("data-astro-reload", ""); });
+        document.querySelectorAll<HTMLAnchorElement>('a[href^="/"]').forEach((a) => { if (!(a.getAttribute("href") ?? "").startsWith(base)) a.setAttribute("data-astro-reload", ""); });
+      };
+      document.addEventListener("astro:page-load", leave);
       document.addEventListener("astro:page-load", initIntent);
       if (import.meta.env.PROD && "serviceWorker" in navigator) {
         const url = import.meta.env.BASE_URL + "sw.js";

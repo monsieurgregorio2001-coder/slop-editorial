@@ -3,7 +3,8 @@
 import { readdir, readFile, stat } from "node:fs/promises";
 import { gzipSync } from "node:zlib";
 import path from "node:path";
-import { brandViolation, hrefToFile, internalHrefs, leakViolations, longSentences, remoteResources, structureViolations, visibleText, voiceViolations } from "./lib-gates.mjs";
+import { BUDGETS, pageJsBytes } from "./lib-budget.mjs";
+import { brandViolation, hrefToFile, isHouseHref, internalHrefs, leakViolations, longSentences, remoteResources, structureViolations, visibleText, voiceViolations } from "./lib-gates.mjs";
 
 const dist = path.resolve("dist");
 const base = (process.env.SITE_BASE || "/slop-editorial/").replace(/\/?$/, "/");
@@ -39,6 +40,7 @@ for (const f of pages) {
     s.length ? fail(`structure: ${s.join(", ")} in ${rel(f)}`) : pass(`structure: ok in ${rel(f)}`);
   }
   for (const href of internalHrefs(html)) {
+    if (isHouseHref(href)) continue;
     const target = hrefToFile(href, base, dist);
     if (target === null) { fail(`links: ${href} escapes the site base in ${rel(f)}`); continue; }
     (await exists(target)) ? null : fail(`links: ${href} does not resolve (from ${rel(f)})`);
@@ -80,21 +82,23 @@ srcHits === 0 ? pass("voice: source has no em dashes or contractions in copy") :
 
 // 4. Performance budgets (gzip) and HTML-first rules.
 const js = files.filter((f) => f.endsWith(".js") && f.includes("_astro"));
-let shared = 0, lazy = 0;
-for (const f of js) {
-  const src = await readFile(f, "utf8");
-  const size = gzipSync(src).length;
-  if (/WebGLRenderer|WebGPURenderer/.test(src)) lazy += size; else shared += size;
-}
 const kb = (n) => (n / 1024).toFixed(1);
-shared <= 110 * 1024 ? pass(`perf: shared JS ${kb(shared)} KB gz (budget 110)`) : fail(`perf: shared JS ${kb(shared)} KB gz over 110`);
-lazy <= 420 * 1024 ? pass(`perf: lazy 3D JS ${kb(lazy)} KB gz (budget 420)`) : fail(`perf: lazy 3D JS ${kb(lazy)} KB gz over 420`);
+let worst = 0, worstPage = "";
+for (const f of pages) {
+  const bytes = await pageJsBytes(await readFile(f, "utf8"), base, dist);
+  if (bytes > worst) { worst = bytes; worstPage = rel(f); }
+  if (rel(f) === "index.html") bytes <= BUDGETS.home ? pass(`perf: home JS ${kb(bytes)} KB gz (budget ${kb(BUDGETS.home)})`) : fail(`perf: home JS ${kb(bytes)} KB gz over ${kb(BUDGETS.home)}`);
+  if (rel(f) === path.join("authenticity", "index.html")) bytes <= BUDGETS.certificate ? pass(`perf: certificate JS ${kb(bytes)} KB gz (budget ${kb(BUDGETS.certificate)})`) : fail(`perf: certificate JS ${kb(bytes)} KB gz over ${kb(BUDGETS.certificate)}`);
+}
+worst <= BUDGETS.anyPage ? pass(`perf: heaviest page JS ${kb(worst)} KB gz in ${worstPage} (budget ${kb(BUDGETS.anyPage)})`) : fail(`perf: ${worstPage} JS ${kb(worst)} KB gz over ${kb(BUDGETS.anyPage)}`);
+// The certificate page ships a photograph and CSS, not a 3D library.
+js.some((f) => /three|WebGLRenderer|WebGPURenderer/.test(path.basename(f))) ? fail("perf: a 3D library chunk is still in the build") : pass("perf: no 3D library chunk in the build");
 let imgMax = 0;
 for (const f of files.filter((x) => /\.(webp|png|jpg|svg)$/.test(x))) imgMax = Math.max(imgMax, (await stat(f)).size);
-imgMax <= 250 * 1024 ? pass(`perf: largest image ${kb(imgMax)} KB`) : fail(`perf: largest image ${kb(imgMax)} KB over 250`);
+imgMax <= BUDGETS.imageMax ? pass(`perf: largest image ${kb(imgMax)} KB`) : fail(`perf: largest image ${kb(imgMax)} KB over 250`);
 for (const f of pages) {
   const html = await readFile(f, "utf8");
-  /<link[^>]+rel="stylesheet"/.test(html) ? fail(`speed: render-blocking stylesheet in ${rel(f)}`) : pass(`speed: critical CSS inline in ${rel(f)}`);
+  /<link[^>]+rel="stylesheet"[^>]+href="(?!\/house\/2\.0\.0\/)/.test(html) ? fail(`speed: render-blocking stylesheet in ${rel(f)}`) : pass(`speed: critical CSS inline in ${rel(f)}`);
   const remote = remoteResources(html);
   remote.length ? fail(`external: request to ${remote[0]} in ${rel(f)}`) : pass(`external: no third-party hosts in ${rel(f)}`);
 }

@@ -38,3 +38,12 @@ test("staged view counts are plausible and formatted with commas", async () => {
   assert.equal(formatCount(1000), "1,000");
   assert.ok(VIEW_BASE["the-still"] > 1_000_000);
 });
+
+test("every staged price names its currency", async () => {
+  const { usd, priceLabel } = await import("../src/lib/text.js");
+  assert.equal(usd(14.99), "USD 14.99");
+  assert.equal(usd("4.50"), "USD 4.50");
+  assert.equal(priceLabel("Free"), "Free");
+  assert.equal(priceLabel("0.00"), "Free");
+  assert.equal(priceLabel("19.99"), "USD 19.99");
+});

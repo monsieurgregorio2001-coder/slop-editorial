@@ -64,7 +64,7 @@ export function structureViolations(html) {
   const h1 = (html.match(/<h1[\s>]/gi) || []).length;
   if (h1 !== 1) out.push(`expected one h1, found ${h1}`);
   for (const img of html.match(/<img\b[^>]*>/gi) || []) if (!/\balt=/.test(img)) out.push("img without alt");
-  if (!/class="skip/.test(html)) out.push("missing skip link");
+  if (!/class="(?:house-)?skip/.test(html)) out.push("missing skip link");
   return out;
 }
 
@@ -77,6 +77,14 @@ export function internalHrefs(html) {
     hrefs.push(h);
   }
   return hrefs;
+}
+
+// Pages the hub and the other rooms own. The house crumb, menu and footer link to them, so they are checked on the hub, not here.
+const HOUSE_HREFS = new Set(["/", "/changelog/", "/colophon/", "/llms.txt", "/index.md", "/paperlab/", "/mindmap-mcp/", "/paluwagan/"]);
+
+/** True for a link that belongs to the house or to another room. */
+export function isHouseHref(href) {
+  return HOUSE_HREFS.has(href);
 }
 
 /** Map an href to the file the static host would serve. `base` is "/" or "/name/". */

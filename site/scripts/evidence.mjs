@@ -3,9 +3,9 @@
 // failing suite exits non-zero, so CI fails instead of publishing a doubtful receipt.
 // Usage: node scripts/evidence.mjs --unit f --pipeline f --check f --verify f [--out dist/evidence.json]
 import { readFile, readdir, stat, writeFile } from "node:fs/promises";
-import { gzipSync } from "node:zlib";
 import { execSync } from "node:child_process";
 import { join } from "node:path";
+import { BUDGETS, pageJsBytes } from "./lib-budget.mjs";
 
 const args = Object.fromEntries(process.argv.slice(2).reduce((a, v, i, all) => (v.startsWith("--") ? [...a, [v.slice(2), all[i + 1]]] : a), []));
 for (const k of ["unit", "pipeline", "check", "verify"]) if (!args[k]) { console.error(`missing --${k} <log file>`); process.exit(2); }
@@ -51,12 +51,11 @@ async function walk(d) {
   return r;
 }
 const files = await walk(dist);
-let shared = 0, lazy = 0, imgMax = 0;
-for (const f of files.filter((x) => x.endsWith(".js") && x.includes("_astro"))) {
-  const src = await read(f);
-  const size = gzipSync(src).length;
-  if (/WebGLRenderer|WebGPURenderer/.test(src)) lazy += size; else shared += size;
-}
+const base = (process.env.SITE_BASE || "/slop-editorial/").replace(/\/?$/, "/");
+const pageJs = async (rel) => pageJsBytes(await read(join(dist, rel)), base, dist);
+const homeJs = await pageJs("index.html");
+const certificateJs = await pageJs("authenticity/index.html");
+let imgMax = 0;
 for (const f of files.filter((x) => /\.(webp|png|jpg|svg)$/.test(x))) imgMax = Math.max(imgMax, (await stat(f)).size);
 
 const sh = (c) => execSync(c, { encoding: "utf8" }).trim();
@@ -74,13 +73,13 @@ const evidence = {
   tests: [unit, pipeline, gates, browser],
   evals: [],
   figures: [
-    { id: "js-shared-gz", value: shared, unit: "bytes", label: "shared JavaScript, gzipped", source: "site/scripts/check.mjs" },
-    { id: "js-3d-gz", value: lazy, unit: "bytes", label: "lazy 3D chunk, gzipped", source: "site/scripts/check.mjs" },
+    { id: "js-home-gz", value: homeJs, unit: "bytes", label: "JavaScript on the home page, gzipped", source: "site/scripts/lib-budget.mjs" },
+    { id: "js-certificate-gz", value: certificateJs, unit: "bytes", label: "JavaScript on the certificate page, gzipped", source: "site/scripts/lib-budget.mjs" },
   ],
   budgets: [
-    { id: "js-shared-gz", limit: 110 * 1024, actual: shared },
-    { id: "js-3d-gz", limit: 420 * 1024, actual: lazy },
-    { id: "image-max", limit: 250 * 1024, actual: imgMax },
+    { id: "js-home-gz", limit: BUDGETS.home, actual: homeJs },
+    { id: "js-certificate-gz", limit: BUDGETS.certificate, actual: certificateJs },
+    { id: "image-max", limit: BUDGETS.imageMax, actual: imgMax },
   ],
   limits: [
     "Paid providers were tested against fakes only.",
