@@ -9,8 +9,9 @@ interface Props {
   description?: string;
   mode?: "product" | "luxury" | "telemetry";
   page: string;
+  noindex?: boolean;
 }
-const { title, description = "Slop Editorial. Generation is cheap. Taste is not. A satire of AI content and the attention economy.", mode = "product", page } = Astro.props;
+const { title, description = "Slop Editorial. Generation is cheap. Taste is not. A satire of AI content and the attention economy.", mode = "product", page, noindex = false } = Astro.props;
 const base = import.meta.env.BASE_URL;
 const u = (p = "") => withBase(base, p);
 const HUB = "https://monsieurgregorio2001-coder.github.io/";
@@ -30,6 +31,7 @@ const nav: Array<[string, string, string]> = [
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <title>{title}</title>
     <meta name="description" content={description} />
+    {noindex && <meta name="robots" content="noindex" />}
     <meta name="color-scheme" content="light dark" />
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />

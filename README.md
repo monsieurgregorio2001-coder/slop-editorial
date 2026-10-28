@@ -12,11 +12,11 @@ A deadpan satire of AI slop and the attention economy, built as software: six-fi
 
 **Live demo:** https://monsieurgregorio2001-coder.github.io/slop-editorial/
 
-The thesis is one line: **Generation is cheap. Taste is not.** The target is platforms, metrics, incentives, AI, and the reader. Every image was generated from a written brief with an image model, then checked by a person against that brief (six digits, three suns, readable text). The certificate object is procedural 3D. The pipeline runs offline by default with a free mock provider, so nothing here needs an account, a key, or a network connection.
+The thesis is one line: **Generation is cheap. Taste is not.** It mocks the platforms and the people scrolling them, me included. Every image was generated from a written brief with an image model, then checked by a person against that brief ([owner confirmation, 2026-10-28](docs/review-record.md); six digits, three suns, readable text). The certificate object is procedural 3D. The pipeline runs offline by default with a free mock provider, so nothing here needs an account, a key, or a network connection.
 
 ## The ten behaviours
 
-Open `/review/` on the running site for the same list with links. Metrics, ratings, ranks, and prices are staged and live in the browser only.
+The unlinked `/review/` page on the running site lists the same behaviours (noindex, not in navigation). Metrics, ratings, ranks, and prices are staged and live in the browser only.
 
 | # | Behaviour | Where | What happens |
 | --- | --- | --- | --- |
@@ -82,7 +82,7 @@ The fal and Replicate adapters follow the public API documentation and are teste
 
 ## Human-in-the-loop approval gates
 
-The same pattern appears in both halves of the project. Automation proposes, a named person disposes, and the decision is written down.
+The same pattern appears in both halves of the project. The tool suggests. A named person approves, and the approval is logged.
 
 A small generic example:
 
