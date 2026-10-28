@@ -1,6 +1,6 @@
 # Slop Editorial: Local context
 
-Updated: 2026-10-28. The room is joined to house 2.0.0 (`site/house.lock.json`, `HOUSE_DIR` points at a hub checkout). The certificate page uses the generated photograph, not three.js. The Method page carries the spend cap toy, backed by `pipeline/slopgen/spend.py`, parity fixtures and a committed mock run record. Counts are in the README.
+Updated: 2026-10-28. The room is joined to house 2.0.1 (`site/house.lock.json`, `HOUSE_DIR` points at a hub checkout). The certificate page uses the generated photograph, not three.js. The Method page carries the spend cap toy, backed by `pipeline/slopgen/spend.py`, parity fixtures and a committed mock run record. Counts are in the README.
 
 ## Implementation
 

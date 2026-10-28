@@ -109,13 +109,6 @@ main:focus { outline: none; }
 .pill[data-tone="ready"]::before { background: var(--gold); }
 .pill[data-tone="in_review"]::before { background: var(--accent); }
 
-/* Shell: the room's own navigation sits under the house crumb. Every target is 44 px tall. ---------- */
-.shell { position: relative; z-index: 40; background: var(--bg); border-bottom: 1px solid var(--line); }
-.shell__in { display: flex; align-items: center; padding: 0 var(--gutter); width: min(100%, var(--measure)); margin-inline: auto; }
-.shell__nav { display: flex; gap: 0 clamp(4px, 2vw, 20px); align-items: center; margin-inline: -10px; }
-.shell__nav a { display: inline-flex; align-items: center; min-height: 44px; padding: 0 10px; font: 500 14px/1 var(--text); text-decoration: none; }
-.shell__nav a:hover { color: var(--room-ink); }
-.shell__nav a[aria-current="page"] { text-decoration: underline; text-underline-offset: 6px; text-decoration-thickness: 2px; text-decoration-color: var(--room); }
 /* One quiet row, always the same height, so the notice that arrives later never moves the page. */
 .visitor { display: flex; gap: 14px; flex-wrap: nowrap; overflow: hidden; white-space: nowrap; width: min(100%, var(--measure)); margin-inline: auto; padding: 0 var(--gutter); font: 400 12px/24px var(--mono); height: 24px; color: var(--muted); font-variant-numeric: tabular-nums; }
 .visitor span { flex: none; }

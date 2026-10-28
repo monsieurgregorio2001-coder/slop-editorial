@@ -4,7 +4,7 @@ import { BUDGETS, pageScripts, staticImports } from "../scripts/lib-budget.mjs";
 import { isHouseHref, structureViolations } from "../scripts/lib-gates.mjs";
 
 test("pageScripts counts module scripts and inline scripts, never the house files", () => {
-  const html = '<script src="/house/2.0.0/house.js"></script><script type="module" src="/slop-editorial/_astro/a.js"></script><script>var x=1</script>';
+  const html = '<script src="/house/2.0.1/house.js"></script><script type="module" src="/slop-editorial/_astro/a.js"></script><script>var x=1</script>';
   const { srcs, inline } = pageScripts(html);
   assert.deepEqual(srcs, ["/slop-editorial/_astro/a.js"]);
   assert.deepEqual(inline, ["var x=1"]);

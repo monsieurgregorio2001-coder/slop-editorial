@@ -5,11 +5,11 @@ import { fileURLToPath, pathToFileURL } from "node:url";
 import path from "node:path";
 import { existsSync } from "node:fs";
 
-// House 2.0.0 (DIRECTION 4.2): the integration marks /house/ external and serves it in dev from HOUSE_DIR.
+// House 2.0.1 (DIRECTION 4.2): the integration marks /house/ external and serves it in dev from HOUSE_DIR.
 // HOUSE_DIR is a checkout of the public hub repo. Locally it is the sibling folder, in CI the pinned commit.
 const houseDir = path.resolve(process.env.HOUSE_DIR || "../../monsieurgregorio2001-coder.github.io");
-const integrationFile = path.join(houseDir, "house", "2.0.0", "tools", "astro-integration.mjs");
-if (!existsSync(integrationFile)) throw new Error(`House 2.0.0 not found at ${integrationFile}. Set HOUSE_DIR to a checkout of the hub repo.`);
+const integrationFile = path.join(houseDir, "house", "2.0.1", "tools", "astro-integration.mjs");
+if (!existsSync(integrationFile)) throw new Error(`House 2.0.1 not found at ${integrationFile}. Set HOUSE_DIR to a checkout of the hub repo.`);
 const { default: house } = await import(pathToFileURL(integrationFile).href);
 
 // Slop Editorial. Static output at the GitHub Pages project path. SITE_BASE and SITE_URL

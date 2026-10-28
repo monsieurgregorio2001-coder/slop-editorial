@@ -56,7 +56,7 @@ flowchart LR
 | Part | Folder | Stack |
 | --- | --- | --- |
 | Generation pipeline `slopgen` | `pipeline/` | Python 3.10 or later, requests, Pillow, python-pptx, reportlab, PyYAML |
-| Publication site | `site/` | Astro 7, MDX, TypeScript, GSAP ScrollTrigger on the feed, motion, house 2.0.0, Node 22.12 or later |
+| Publication site | `site/` | Astro 7, MDX, TypeScript, GSAP ScrollTrigger on the feed, motion, house 2.0.1, Node 22.12 or later |
 
 ### Site features
 
