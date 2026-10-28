@@ -16,12 +16,6 @@ const base = import.meta.env.BASE_URL;
 const u = (p = "") => withBase(base, p);
 const REPO = "https://github.com/monsieurgregorio2001-coder/slop-editorial";
 const ogImage = Astro.site ? new URL(u("og.png"), Astro.site).href : u("og.png");
-const nav: Array<[string, string, string]> = [
-  ["works", "Works", "works/"],
-  ["authenticity", "Certificate", "authenticity/"],
-  ["releases", "Releases", "releases/"],
-  ["about", "Method", "about/"],
-];
 ---
 <!doctype html>
 <html lang="en" data-room="slop-editorial" data-mode={mode} data-page={page}>
@@ -39,10 +33,10 @@ const nav: Array<[string, string, string]> = [
     <meta name="twitter:card" content="summary_large_image" />
     <link rel="icon" type="image/svg+xml" href={u("favicon.svg")} />
     <!-- house:boot --><!-- /house:boot -->
-    <link rel="stylesheet" href="/house/2.0.0/tokens.css" />
-    <link rel="stylesheet" href="/house/2.0.0/house.css" />
-    <script is:inline src="/house/2.0.0/doorway.js"></script>
-    <script is:inline type="module" src="/house/2.0.0/house.js"></script>
+    <link rel="stylesheet" href="/house/2.0.1/tokens.css" />
+    <link rel="stylesheet" href="/house/2.0.1/house.css" />
+    <script is:inline src="/house/2.0.1/doorway.js"></script>
+    <script is:inline type="module" src="/house/2.0.1/house.js"></script>
     <link rel="preload" href={displayUrl} as="font" type="font/woff2" crossorigin />
     <link rel="preload" href={interUrl} as="font" type="font/woff2" crossorigin />
     <!-- Motion and room preferences are applied before first paint. -->
@@ -67,13 +61,6 @@ const nav: Array<[string, string, string]> = [
   <body>
     <a class="house-skip" href="#main">Skip to content</a>
     <div class="house-slot" transition:persist="house-crumb"><!-- house:crumb --><!-- /house:crumb --></div>
-    <div class="shell">
-      <div class="shell__in">
-        <nav class="shell__nav" aria-label="Slop Editorial">
-          {nav.map(([id, label, href]) => <a href={u(href)} aria-current={page === id ? "page" : undefined}>{label}</a>)}
-        </nav>
-      </div>
-    </div>
     <!-- The visitor line: staged measurement in one quiet row. Local only, hidden from assistive tech because it is theatre. -->
     <p class="visitor" aria-hidden="true" transition:persist="hud"><span data-hud-id>Visitor no. 184 today</span><span class="visitor__notice" data-hud-notice></span></p>
     <!-- The one joke every visitor gets. No cookie is set and both buttons agree. -->

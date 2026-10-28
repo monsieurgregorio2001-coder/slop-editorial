@@ -98,7 +98,7 @@ for (const f of files.filter((x) => /\.(webp|png|jpg|svg)$/.test(x))) imgMax = M
 imgMax <= BUDGETS.imageMax ? pass(`perf: largest image ${kb(imgMax)} KB`) : fail(`perf: largest image ${kb(imgMax)} KB over 250`);
 for (const f of pages) {
   const html = await readFile(f, "utf8");
-  /<link[^>]+rel="stylesheet"[^>]+href="(?!\/house\/2\.0\.0\/)/.test(html) ? fail(`speed: render-blocking stylesheet in ${rel(f)}`) : pass(`speed: critical CSS inline in ${rel(f)}`);
+  /<link[^>]+rel="stylesheet"[^>]+href="(?!\/house\/2\.0\.1\/)/.test(html) ? fail(`speed: render-blocking stylesheet in ${rel(f)}`) : pass(`speed: critical CSS inline in ${rel(f)}`);
   const remote = remoteResources(html);
   remote.length ? fail(`external: request to ${remote[0]} in ${rel(f)}`) : pass(`external: no third-party hosts in ${rel(f)}`);
 }

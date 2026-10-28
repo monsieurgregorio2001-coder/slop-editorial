@@ -66,7 +66,7 @@ const M = { viewport: { width: 360, height: 740 }, deviceScaleFactor: 2, hasTouc
   const page = await open(D, "", "home");
   await sleep(300);
   ok("01 no boot screen, the gallery is open at once", await page.evaluate(() => !document.querySelector("[data-boot]") && document.documentElement.dataset.boot !== "on"));
-  ok("01 navigation is present at once", (await page.locator(".shell__nav a").count()) === 4);
+  { const n = await page.locator("#house-menu-room + ul a").count(); ok("01 navigation is present at once", n === 4, String(n)); }
   await page.waitForSelector("[data-cookies][data-on]", { timeout: 6000 });
   const btns = await page.locator("[data-cookies] [data-accept]").allInnerTexts();
   ok("01 cookie sheet offers Accept all and Accept all", btns.length === 2 && btns.every((b) => b.trim() === "Accept all"), JSON.stringify(btns));
@@ -89,7 +89,7 @@ const M = { viewport: { width: 360, height: 740 }, deviceScaleFactor: 2, hasTouc
   ok("house crumb: links that leave the room carry data-astro-reload", await page.evaluate(() => [...document.querySelectorAll('.house-crumb a[href^="/"], .house-footer a[href^="/"]')].filter((a) => !a.getAttribute("href").startsWith("/slop-editorial/")).every((a) => a.hasAttribute("data-astro-reload"))));
   const houseLinks = await page.locator(".house-crumb a, .house-menu a").evaluateAll((as) => as.map((a) => a.getAttribute("href")));
   ok("house crumb and menu carry email, GitHub and LinkedIn", ["mailto:lim.ggreg@outlook.com", "https://github.com/monsieurgregorio2001-coder", "https://www.linkedin.com/in/garfield-lim-8239242a9"].every((h) => houseLinks.includes(h)), houseLinks.join(" "));
-  ok("house footer is pinned to house 2.0.0", /House 2\.0\.0/.test(await text(page, ".house-footer")) && (await page.locator('link[href="/house/2.0.0/house.css"]').count()) === 1);
+  ok("house footer is pinned to house 2.0.1", /House 2\.0\.1/.test(await text(page, ".house-footer")) && (await page.locator('link[href="/house/2.0.1/house.css"]').count()) === 1);
   ok("room tokens: yellow is a fill, the text ink is #7D5E07 in light", await page.evaluate(() => { const c = getComputedStyle(document.documentElement); return c.getPropertyValue("--room").trim().toLowerCase() === "#f2cf3b" && c.getPropertyValue("--room-ink").trim().toLowerCase() === "#7d5e07"; }));
   ok("the static hero is the room hero: #room-hero holds the plate", await page.evaluate(() => !!document.querySelector("#room-hero img[fetchpriority=high]")));
   ok("footer states Built by Garfield Greg Lim III", /Built by Garfield Greg Lim III/.test(await text(page, ".foot")));
@@ -97,7 +97,7 @@ const M = { viewport: { width: 360, height: 740 }, deviceScaleFactor: 2, hasTouc
   const md = await page.request.get(origin + plain);
   ok("the Plain text link serves a plain-text twin of the page", md.status() === 200 && /^# Slop Editorial/.test(await md.text()), `${plain} ${md.status()}`);
   ok("footer is honest about the image model", /generated from a written brief with an image model/.test(await text(page, ".foot")));
-  const navHrefs = await page.locator(".shell__nav a").evaluateAll((as) => as.map((a) => a.getAttribute("href")));
+  const navHrefs = await page.locator("#house-menu-room + ul a").evaluateAll((as) => as.map((a) => a.getAttribute("href")));
   ok("navigation links carry the /slop-editorial/ base", navHrefs.filter((h) => !h.startsWith("http")).every((h) => h.startsWith(base)), navHrefs.join(" "));
   ok("no horizontal scroll on home at 1280", await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth));
   const bg = await page.evaluate(() => getComputedStyle(document.body).backgroundColor);
@@ -449,7 +449,7 @@ const M = { viewport: { width: 360, height: 740 }, deviceScaleFactor: 2, hasTouc
     await sleep(r === "" ? 900 : 300);
     const o = await page.evaluate(() => ({ sw: document.documentElement.scrollWidth, iw: 360, h1: !!document.querySelector("h1") }));
     ok(`360 px: no horizontal scroll on /${r}`, o.sw <= o.iw && o.h1, `${o.sw} of ${o.iw}`);
-    const small = await page.evaluate(() => [...document.querySelectorAll(".shell__nav a, .house-crumb a, .house-crumb button, .foot button, .foot__links a")].filter((e) => { const b = e.getBoundingClientRect(); return b.width > 0 && b.height < 43.5; }).map((e) => `${e.textContent.trim().slice(0, 14)} ${Math.round(e.getBoundingClientRect().height)}px`));
+    const small = await page.evaluate(() => [...document.querySelectorAll(".house-crumb a, .house-crumb button, .foot button, .foot__links a")].filter((e) => { const b = e.getBoundingClientRect(); return b.width > 0 && b.height < 43.5; }).map((e) => `${e.textContent.trim().slice(0, 14)} ${Math.round(e.getBoundingClientRect().height)}px`));
     ok(`360 px: header and footer targets are 44 px on /${r}`, small.length === 0, small.join(", "));
     const hdr = await page.evaluate(() => { const c = document.querySelector(".house-crumb").getBoundingClientRect(); return c.height; });
     ok(`360 px: the house header is one row on /${r}`, hdr <= 53, String(hdr));
@@ -508,7 +508,8 @@ const M = { viewport: { width: 360, height: 740 }, deviceScaleFactor: 2, hasTouc
   ok("keyboard: Enter opens the house menu and Esc closes it", (await kp.evaluate(() => document.getElementById("house-menu").matches(":popover-open"))) && (await (async () => { await kp.keyboard.press("Escape"); await sleep(200); return kp.evaluate(() => !document.getElementById("house-menu").matches(":popover-open")); })()));
   await kp.goto(u("about/"));
   await kp.evaluate(() => { document.querySelector(".house-crumb").dataset.marker = "kept"; });
-  await kp.locator(".shell__nav a", { hasText: "Works" }).click();
+  await kp.locator(".house-menu-btn, .house-crumb button").first().click();
+  await kp.locator("#house-menu a", { hasText: "Works" }).click();
   await kp.waitForURL(/works\/$/);
   ok("the house crumb survives a page change in the same document", await kp.evaluate(() => document.querySelector(".house-crumb").dataset.marker === "kept"));
   await kp.evaluate(() => { window.__still = "same-document"; });

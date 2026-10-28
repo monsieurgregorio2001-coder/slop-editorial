@@ -103,7 +103,7 @@ const alt = "A neon sunset over violet peaks and a mirrored lake. Two chrome sph
   .cover__label { grid-template-columns: minmax(0, 1fr); max-width: 64ch; }
   .cover__row { display: flex; align-items: center; gap: 12px; }
   .cover__title { font-size: clamp(24px, 2.4vw, 34px); }
-  .cover__dwell:empty { display: none; }
+  .cover__dwell:empty { visibility: hidden; min-height: 2lh; }
   .cover__dwell { color: var(--accent); }
   /* From 900 px the wall label hangs beside the plate, so both sit above the fold at 1440 by 900. */
   @media (min-width: 900px) {

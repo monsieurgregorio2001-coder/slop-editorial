@@ -115,7 +115,7 @@ export function initIntent() {
   // Likely next pages, fetched when the browser is idle, lowest priority.
   const idle = (window as unknown as { requestIdleCallback?: (f: () => void) => void }).requestIdleCallback ?? ((f: () => void) => window.setTimeout(f, 1500));
   idle(() => {
-    document.querySelectorAll<HTMLAnchorElement>(".shell__nav a[href^='/'], [data-next], [data-hero-link]").forEach((a) => fetchAhead(a.href, 1));
+    document.querySelectorAll<HTMLAnchorElement>("#house-menu-room + ul a, [data-next], [data-hero-link]").forEach((a) => fetchAhead(a.href, 1));
   });
 }
 

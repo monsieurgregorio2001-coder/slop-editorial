@@ -30,11 +30,11 @@ jobs:
       SITE_URL: https://${{ github.repository_owner }}.github.io
     steps:
       - uses: actions/checkout@v4
-      # House 2.0.0 lives in the public hub repo. The commit is pinned until the tag house-2.0.0 exists.
+      # House 2.0.1 lives in the public hub repo. The commit is pinned until the tag house-2.0.1 exists.
       - uses: actions/checkout@v4
         with:
           repository: monsieurgregorio2001-coder/monsieurgregorio2001-coder.github.io
-          ref: 8938fa639a4edab03948da56d69fc0a50f7f94ae
+          ref: 6b2ee826c1fc654373dd9952ba70732e923a8bbf
           path: hub
       - uses: actions/setup-node@v4
         with: { node-version: "22", cache: npm, cache-dependency-path: site/package-lock.json }
