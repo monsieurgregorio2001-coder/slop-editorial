@@ -8,7 +8,7 @@ A deadpan satire of AI slop and the attention economy, built as software: six-fi
 
 - **Problem.** AI makes images nearly free, so feeds fill with content nobody decided to make. Hands get six fingers, and every comment says Amazing.
 - **Build.** An Astro site that hangs nine generated works like a gallery and labels them like the platforms it mocks (cookie sheet, visitor number, ratings that always read 4.2, a gift shop that arrives in front of the gold). Beside it, a Python pipeline that estimates, caps, approves, and logs every paid generation.
-- **Result.** 143 real-browser checks, 146 build gates, and 68 unit tests pass. CI runs all of them.
+- **Result.** 143 real-browser checks, 146 build gates, and 70 unit tests pass. CI runs all of them.
 
 **Live demo:** https://monsieurgregorio2001-coder.github.io/slop-editorial/
 
@@ -140,7 +140,7 @@ Each count below comes from a suite in this repo. I reran the unit tests and bui
 | Check | Result |
 | --- | --- |
 | Python unit tests (`pipeline/`) | 49 pass |
-| Node unit tests for gate logic and helpers (`site/`) | 19 pass |
+| Node unit tests for gate logic and helpers (`site/`) | 21 pass |
 | Real-browser checks in Chrome (`npm run verify`) | 143 pass, 0 fail |
 | Axe accessibility, 10 page types in light and dark (part of `npm run verify`) | 20 runs, 0 violations (WCAG 2.1 A and AA plus best practice) |
 | Site build gates (`npm run check`) | 146 checks pass |
