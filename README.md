@@ -12,7 +12,7 @@ A deadpan satire of AI slop and the attention economy, built as software: six-fi
 
 **Live demo:** https://monsieurgregorio2001-coder.github.io/slop-editorial/
 
-The thesis is one line: **Generation is cheap. Taste is not.** It mocks the platforms and the people scrolling them, me included. Every image was generated from a written brief with an image model, then checked by a person against that brief ([owner confirmation, 2026-10-28](docs/review-record.md); six digits, three suns, readable text). The certificate object is procedural 3D. The pipeline runs offline by default with a free mock provider, so nothing here needs an account, a key, or a network connection.
+The thesis is one line: **Generation is cheap. Taste is not.** It mocks platforms, incentives and the output, never people. Every image was generated from a written brief with an image model, then checked by a person against that brief ([owner confirmation, 2026-10-28](docs/review-record.md); six digits, three suns, readable text). The certificate object is procedural 3D. The pipeline runs offline by default with a free mock provider, so nothing here needs an account, a key, or a network connection.
 
 ## The ten behaviours
 
